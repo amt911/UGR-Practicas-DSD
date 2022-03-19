@@ -5,46 +5,15 @@
  */
 
 #include "dir.h"
-#include <dirent.h>
-#include <errno.h>
-
-extern int errno;
 
 readdir_res *
-readdir_1_svc(nametype dirname,  struct svc_req *rqstp)
+readdir_1_svc(nametype arg1,  struct svc_req *rqstp)
 {
-
-	DIR *dirp;
-	struct dirent *d;
-	namelist nl;
-	namelist *nlp;
-
-	static readdir_res result;
-	dirp = opendir(dirname);
-
-	if (dirp == (DIR *)NULL) {
-		// result.errno = errno;
-		return (&result);
-	}
+	static readdir_res  result;
 
 	/*
-	 * La siguiente linea de codigo libera la memoria que se asigno * (para el resultado) en una ejecucion previa del servidor
+	 * insert server code here
 	 */
-	xdr_free(xdr_readdir_res, &result);
 
-	nlp = &result.readdir_res_u.list;
-	while (d = readdir(dirp)) {
-		nl = *nlp = (namenode *) malloc(sizeof(namenode));
-		if (nl == (namenode *) NULL) {
-			// result.errno = 10;
-			closedir(dirp);
-			return (&result);
-		}
-		nl->name = strdup(d->d_name);
-		nlp = &nl->next;
-	}
-	*nlp = (namelist)NULL;
-	// result.errno = 0;
-	closedir (dirp);
-	return (&result);
+	return &result;
 }

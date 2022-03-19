@@ -5,62 +5,43 @@
  */
 
 #include "dir.h"
-#include <errno.h>
 
-extern int errno;
 
 void
-dirprog_1(char *server, nametype dir)
+dirprog_1(char *host)
 {
 	CLIENT *clnt;
-	readdir_res *result;
-	namelist nl;
+	readdir_res  *result_1;
+	nametype readdir_1_arg1;
 
-	#ifndef DEBUG
-	clnt = clnt_create(server, DIRPROG, DIRVER, "tcp");
-	if (clnt == (CLIENT *) NULL) {
-		clnt_pcreateerror(server);
-		exit(1);
+#ifndef	DEBUG
+	clnt = clnt_create (host, DIRPROG, DIRVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
-	#endif /* DEBUG */
+#endif	/* DEBUG */
 
-	result = readdir_1(dir, clnt);
-	if (result == (readdir_res *) NULL) {
-		clnt_perror(clnt, server);
-		exit(1);
+	result_1 = readdir_1(readdir_1_arg1, clnt);
+	if (result_1 == (readdir_res *) NULL) {
+		clnt_perror (clnt, "call failed");
 	}
-
-	/*
-	if (result->errno != 0) {
-		errno =result->errno; perror(dir);
-		exit(1);
-	}
-	*/
-
-	for (nl = result->readdir_res_u.list; nl != NULL; nl = nl->next)
-		printf("%s\n", nl->name);
-	
-	xdr_free (xdr_readdir_res, result);
-	
-	#ifndef DEBUG
-		clnt_destroy(clnt);
-	#endif /* DEBUG */
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
 }
 
 
-main( int argc, char* argv[] )
+int
+main (int argc, char *argv[])
 {
-	char *server;
-	nametype dir;
+	char *host;
 
-	// setbuf(stdout, NULL);
-
-	if (argc < 3) {
-		printf("usage: %s server_host directory\n", argv[0]);
-		exit(1);
+	if (argc < 2) {
+		printf ("usage: %s server_host\n", argv[0]);
+		exit (1);
 	}
-
-	server = argv[1];
-	dir = argv[2];
-	dirprog_1(server, dir);
+	host = argv[1];
+	dirprog_1 (host);
+exit (0);
 }
