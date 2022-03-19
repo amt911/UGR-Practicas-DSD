@@ -22,7 +22,6 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 	}
 #endif /* DEBUG */
 
-	print("-----------------%c--------------------\n", op);
 	switch (op)
 	{
 	case '+':
@@ -83,12 +82,12 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 
 	case 'v':
 	{
-		resI = raizcuadrada_1(valor1, clnt);
-		esDouble = 0;
+		res = raizcuadrada_1(valor1, clnt);
 		break;
 	}
 
-	case '!':{
+	case '!':
+	{
 		resI = factorial_1(valor1, clnt);
 		esDouble=0;
 		break;
@@ -103,10 +102,8 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 	printf("###################################\n");
 	if (esDouble == 1)
 		printf("Resultado: %lf\n", *res);
-	else{
-		printf("sale por aqui?");
+	else
 		printf("Resultado: %d\n", *resI);
-	}
 
 	printf("###################################\n\n");
 
@@ -126,7 +123,7 @@ int main(int argc, char *argv[])
 	}
 	else if (argc == 2)
 	{ // Modo interactivo
-#define OPCIONES 9
+#define OPCIONES 10
 #define SALIDA 200
 		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^', '!'};
 		int opcion;
@@ -145,6 +142,11 @@ int main(int argc, char *argv[])
 				printf("8.- Es primo\n");
 				printf("9.- Potencia\n");
 				printf("10.- Factorial\n");
+				printf("11.- Suma matricial\n");
+				printf("12.- Multiplicacion matricial\n");
+				printf("13.- Traspuesta de una matriz\n");
+				printf("14.- Determinante de una matriz\n");
+				printf("15.- Resolvedor de sistemas de ecuaciones\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%d", &opcion);

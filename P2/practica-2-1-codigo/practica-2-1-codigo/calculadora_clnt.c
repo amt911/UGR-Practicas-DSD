@@ -78,30 +78,15 @@ division_1(double arg1, double arg2,  CLIENT *clnt)
 }
 
 int *
-potencia_1(int arg1, int arg2,  CLIENT *clnt)
+modulo_1(int arg1, int arg2,  CLIENT *clnt)
 {
-	potencia_1_argument arg;
+	modulo_1_argument arg;
 	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
-	if (clnt_call (clnt, potencia, (xdrproc_t) xdr_potencia_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
-}
-
-int *
-esprimo_1(int arg1,  CLIENT *clnt)
-{
-	static int clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, esPrimo,
-		(xdrproc_t) xdr_int, (caddr_t) &arg1,
+	if (clnt_call (clnt, modulo, (xdrproc_t) xdr_modulo_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -142,15 +127,30 @@ logaritmo_1(int arg1, int arg2,  CLIENT *clnt)
 }
 
 int *
-modulo_1(int arg1, int arg2,  CLIENT *clnt)
+esprimo_1(int arg1,  CLIENT *clnt)
 {
-	modulo_1_argument arg;
+	static int clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, esPrimo,
+		(xdrproc_t) xdr_int, (caddr_t) &arg1,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+int *
+potencia_1(int arg1, int arg2,  CLIENT *clnt)
+{
+	potencia_1_argument arg;
 	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
-	if (clnt_call (clnt, modulo, (xdrproc_t) xdr_modulo_1_argument, (caddr_t) &arg,
+	if (clnt_call (clnt, potencia, (xdrproc_t) xdr_potencia_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -167,6 +167,85 @@ factorial_1(int arg1,  CLIENT *clnt)
 	if (clnt_call (clnt, factorial,
 		(xdrproc_t) xdr_int, (caddr_t) &arg1,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+matrix *
+sumamatricial_1(matrix arg1, matrix arg2,  CLIENT *clnt)
+{
+	sumamatricial_1_argument arg;
+	static matrix clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.arg1 = arg1;
+	arg.arg2 = arg2;
+	if (clnt_call (clnt, sumaMatricial, (xdrproc_t) xdr_sumamatricial_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_matrix, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+matrix *
+multmatricial_1(matrix arg1, matrix arg2,  CLIENT *clnt)
+{
+	multmatricial_1_argument arg;
+	static matrix clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	arg.arg1 = arg1;
+	arg.arg2 = arg2;
+	if (clnt_call (clnt, multMatricial, (xdrproc_t) xdr_multmatricial_1_argument, (caddr_t) &arg,
+		(xdrproc_t) xdr_matrix, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+matrix *
+traspuesta_1(matrix arg1,  CLIENT *clnt)
+{
+	static matrix clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, traspuesta,
+		(xdrproc_t) xdr_matrix, (caddr_t) &arg1,
+		(xdrproc_t) xdr_matrix, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+double *
+determinantematriz_1(matrix arg1,  CLIENT *clnt)
+{
+	static double clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, determinanteMatriz,
+		(xdrproc_t) xdr_matrix, (caddr_t) &arg1,
+		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+matrix *
+resolversistemas_1(matrix arg1,  CLIENT *clnt)
+{
+	static matrix clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, resolverSistemas,
+		(xdrproc_t) xdr_matrix, (caddr_t) &arg1,
+		(xdrproc_t) xdr_matrix, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

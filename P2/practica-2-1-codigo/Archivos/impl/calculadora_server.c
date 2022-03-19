@@ -48,7 +48,9 @@ division_1_svc(double arg1, double arg2,  struct svc_req *rqstp)
 int *
 potencia_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
-	static int  result=1;
+	static int  result;
+
+	result=1;
 
 	for(int i=0; i<arg2; i++)
 		result*=arg1;
@@ -60,19 +62,21 @@ potencia_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 int *
 esprimo_1_svc(int arg1,  struct svc_req *rqstp)
 {
-	static int  result=0;
+	static int  result;
+
+	result=1;
 
 	for(int i=2; i<=arg1/2; i++)
 		if(arg1%i==0)
-			result=-1;
+			result=0;
 
 	return &result;
 }
 
-int *
-raizcuadrada_1_svc(int arg1,  struct svc_req *rqstp)
+double *
+raizcuadrada_1_svc(double arg1,  struct svc_req *rqstp)
 {
-	static int  result;
+	static double  result;
 
 	result=sqrt(arg1);
 
@@ -83,10 +87,6 @@ double *
 logaritmo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
 	static double  result;
-
-	/*
-	 * insert server code here
-	 */
 
 	return &result;
 }
@@ -106,12 +106,26 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 {
 	static int  result;
 
-	/*
-	 * insert server code here
-	 */
+	result=1;
+
+	//printf("RESULTADO: %d\n", result);
+	//printf("arg1: %d\n", arg1);
+
+	for(int i=1; i<=arg1 && result!=-1; i++){
+		if(i>(INT_MAX/result)){		//En caso de que haya overflow se pone a -1 y se sale
+			result=-1;
+		}
+		else
+			result*=i;
+	}
+
+	//printf("RESULTADO: %d\n", result);
 
 	return &result;
 }
+
+
+
 
 double *
 multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)

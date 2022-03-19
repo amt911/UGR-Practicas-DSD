@@ -6,6 +6,40 @@
 #include "calculadora.h"
 
 bool_t
+xdr_row (XDR *xdrs, row *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (double), (xdrproc_t) xdr_double))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_matriz (XDR *xdrs, matriz *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (row), (xdrproc_t) xdr_row))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_matrix (XDR *xdrs, matrix *objp)
+{
+	register int32_t *buf;
+
+	 if (!xdr_int (xdrs, &objp->fil))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->col))
+		 return FALSE;
+	 if (!xdr_matriz (xdrs, &objp->m))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_suma_1_argument (XDR *xdrs, suma_1_argument *objp)
 {
 	 if (!xdr_double (xdrs, &objp->arg1))
@@ -46,7 +80,7 @@ xdr_division_1_argument (XDR *xdrs, division_1_argument *objp)
 }
 
 bool_t
-xdr_potencia_1_argument (XDR *xdrs, potencia_1_argument *objp)
+xdr_modulo_1_argument (XDR *xdrs, modulo_1_argument *objp)
 {
 	 if (!xdr_int (xdrs, &objp->arg1))
 		 return FALSE;
@@ -66,11 +100,31 @@ xdr_logaritmo_1_argument (XDR *xdrs, logaritmo_1_argument *objp)
 }
 
 bool_t
-xdr_modulo_1_argument (XDR *xdrs, modulo_1_argument *objp)
+xdr_potencia_1_argument (XDR *xdrs, potencia_1_argument *objp)
 {
 	 if (!xdr_int (xdrs, &objp->arg1))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->arg2))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_sumamatricial_1_argument (XDR *xdrs, sumamatricial_1_argument *objp)
+{
+	 if (!xdr_matrix (xdrs, &objp->arg1))
+		 return FALSE;
+	 if (!xdr_matrix (xdrs, &objp->arg2))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_multmatricial_1_argument (XDR *xdrs, multmatricial_1_argument *objp)
+{
+	 if (!xdr_matrix (xdrs, &objp->arg1))
+		 return FALSE;
+	 if (!xdr_matrix (xdrs, &objp->arg2))
 		 return FALSE;
 	return TRUE;
 }

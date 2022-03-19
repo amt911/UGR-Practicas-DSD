@@ -41,15 +41,9 @@ _division_1 (division_1_argument *argp, struct svc_req *rqstp)
 }
 
 static int *
-_potencia_1 (potencia_1_argument *argp, struct svc_req *rqstp)
+_modulo_1 (modulo_1_argument *argp, struct svc_req *rqstp)
 {
-	return (potencia_1_svc(argp->arg1, argp->arg2, rqstp));
-}
-
-static int *
-_esprimo_1 (int  *argp, struct svc_req *rqstp)
-{
-	return (esprimo_1_svc(*argp, rqstp));
+	return (modulo_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static double *
@@ -65,15 +59,51 @@ _logaritmo_1 (logaritmo_1_argument *argp, struct svc_req *rqstp)
 }
 
 static int *
-_modulo_1 (modulo_1_argument *argp, struct svc_req *rqstp)
+_esprimo_1 (int  *argp, struct svc_req *rqstp)
 {
-	return (modulo_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (esprimo_1_svc(*argp, rqstp));
+}
+
+static int *
+_potencia_1 (potencia_1_argument *argp, struct svc_req *rqstp)
+{
+	return (potencia_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static int *
 _factorial_1 (int  *argp, struct svc_req *rqstp)
 {
 	return (factorial_1_svc(*argp, rqstp));
+}
+
+static matrix *
+_sumamatricial_1 (sumamatricial_1_argument *argp, struct svc_req *rqstp)
+{
+	return (sumamatricial_1_svc(argp->arg1, argp->arg2, rqstp));
+}
+
+static matrix *
+_multmatricial_1 (multmatricial_1_argument *argp, struct svc_req *rqstp)
+{
+	return (multmatricial_1_svc(argp->arg1, argp->arg2, rqstp));
+}
+
+static matrix *
+_traspuesta_1 (matrix  *argp, struct svc_req *rqstp)
+{
+	return (traspuesta_1_svc(*argp, rqstp));
+}
+
+static double *
+_determinantematriz_1 (matrix  *argp, struct svc_req *rqstp)
+{
+	return (determinantematriz_1_svc(*argp, rqstp));
+}
+
+static matrix *
+_resolversistemas_1 (matrix  *argp, struct svc_req *rqstp)
+{
+	return (resolversistemas_1_svc(*argp, rqstp));
 }
 
 static double *
@@ -90,12 +120,17 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		resta_1_argument resta_1_arg;
 		mult_1_argument mult_1_arg;
 		division_1_argument division_1_arg;
-		potencia_1_argument potencia_1_arg;
-		int esprimo_1_arg;
+		modulo_1_argument modulo_1_arg;
 		double raizcuadrada_1_arg;
 		logaritmo_1_argument logaritmo_1_arg;
-		modulo_1_argument modulo_1_arg;
+		int esprimo_1_arg;
+		potencia_1_argument potencia_1_arg;
 		int factorial_1_arg;
+		sumamatricial_1_argument sumamatricial_1_arg;
+		multmatricial_1_argument multmatricial_1_arg;
+		matrix traspuesta_1_arg;
+		matrix determinantematriz_1_arg;
+		matrix resolversistemas_1_arg;
 		char *multiplescomandos_1_arg;
 	} argument;
 	char *result;
@@ -131,16 +166,10 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) _division_1;
 		break;
 
-	case potencia:
-		_xdr_argument = (xdrproc_t) xdr_potencia_1_argument;
+	case modulo:
+		_xdr_argument = (xdrproc_t) xdr_modulo_1_argument;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _potencia_1;
-		break;
-
-	case esPrimo:
-		_xdr_argument = (xdrproc_t) xdr_int;
-		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _esprimo_1;
+		local = (char *(*)(char *, struct svc_req *)) _modulo_1;
 		break;
 
 	case raizCuadrada:
@@ -155,16 +184,52 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) _logaritmo_1;
 		break;
 
-	case modulo:
-		_xdr_argument = (xdrproc_t) xdr_modulo_1_argument;
+	case esPrimo:
+		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _modulo_1;
+		local = (char *(*)(char *, struct svc_req *)) _esprimo_1;
+		break;
+
+	case potencia:
+		_xdr_argument = (xdrproc_t) xdr_potencia_1_argument;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (char *(*)(char *, struct svc_req *)) _potencia_1;
 		break;
 
 	case factorial:
 		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) _factorial_1;
+		break;
+
+	case sumaMatricial:
+		_xdr_argument = (xdrproc_t) xdr_sumamatricial_1_argument;
+		_xdr_result = (xdrproc_t) xdr_matrix;
+		local = (char *(*)(char *, struct svc_req *)) _sumamatricial_1;
+		break;
+
+	case multMatricial:
+		_xdr_argument = (xdrproc_t) xdr_multmatricial_1_argument;
+		_xdr_result = (xdrproc_t) xdr_matrix;
+		local = (char *(*)(char *, struct svc_req *)) _multmatricial_1;
+		break;
+
+	case traspuesta:
+		_xdr_argument = (xdrproc_t) xdr_matrix;
+		_xdr_result = (xdrproc_t) xdr_matrix;
+		local = (char *(*)(char *, struct svc_req *)) _traspuesta_1;
+		break;
+
+	case determinanteMatriz:
+		_xdr_argument = (xdrproc_t) xdr_matrix;
+		_xdr_result = (xdrproc_t) xdr_double;
+		local = (char *(*)(char *, struct svc_req *)) _determinantematriz_1;
+		break;
+
+	case resolverSistemas:
+		_xdr_argument = (xdrproc_t) xdr_matrix;
+		_xdr_result = (xdrproc_t) xdr_matrix;
+		local = (char *(*)(char *, struct svc_req *)) _resolversistemas_1;
 		break;
 
 	case multiplesComandos:
