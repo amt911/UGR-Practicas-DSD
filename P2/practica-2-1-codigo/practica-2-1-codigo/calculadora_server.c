@@ -88,10 +88,6 @@ logaritmo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
 	static double  result;
 
-	/*
-	 * insert server code here
-	 */
-
 	return &result;
 }
 
@@ -112,8 +108,8 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 
 	result=1;
 
-	printf("RESULTADO: %d\n", result);
-	printf("arg1: %d\n", arg1);
+	//printf("RESULTADO: %d\n", result);
+	//printf("arg1: %d\n", arg1);
 
 	for(int i=1; i<=arg1 && result!=-1; i++){
 		if(i>(INT_MAX/result)){		//En caso de que haya overflow se pone a -1 y se sale
@@ -123,7 +119,7 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 			result*=i;
 	}
 
-	printf("RESULTADO: %d\n", result);
+	//printf("RESULTADO: %d\n", result);
 
 	return &result;
 }

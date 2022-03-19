@@ -176,7 +176,6 @@ int main(int argc, char *argv[])
 				case 10:
 					printf("Valor: ");
 					scanf("%lf", &valorL);
-					printf("Valor que se mete: %d\n", (int)valorL);
 					break;
 				}
 
