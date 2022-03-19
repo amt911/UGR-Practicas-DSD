@@ -35,39 +35,51 @@ _mult_1 (mult_1_argument *argp, struct svc_req *rqstp)
 }
 
 static double *
-_div_1 (div_1_argument *argp, struct svc_req *rqstp)
+_division_1 (division_1_argument *argp, struct svc_req *rqstp)
 {
-	return (div_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (division_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static int *
-_pow_1 (pow_1_argument *argp, struct svc_req *rqstp)
+_potencia_1 (potencia_1_argument *argp, struct svc_req *rqstp)
 {
-	return (pow_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (potencia_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static int *
-_primo_1 (int  *argp, struct svc_req *rqstp)
+_esprimo_1 (int  *argp, struct svc_req *rqstp)
 {
-	return (primo_1_svc(*argp, rqstp));
-}
-
-static int *
-_sqrt_1 (int  *argp, struct svc_req *rqstp)
-{
-	return (sqrt_1_svc(*argp, rqstp));
+	return (esprimo_1_svc(*argp, rqstp));
 }
 
 static double *
-_log_1 (log_1_argument *argp, struct svc_req *rqstp)
+_raizcuadrada_1 (double  *argp, struct svc_req *rqstp)
 {
-	return (log_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (raizcuadrada_1_svc(*argp, rqstp));
+}
+
+static double *
+_logaritmo_1 (logaritmo_1_argument *argp, struct svc_req *rqstp)
+{
+	return (logaritmo_1_svc(argp->arg1, argp->arg2, rqstp));
 }
 
 static int *
 _modulo_1 (modulo_1_argument *argp, struct svc_req *rqstp)
 {
 	return (modulo_1_svc(argp->arg1, argp->arg2, rqstp));
+}
+
+static int *
+_factorial_1 (int  *argp, struct svc_req *rqstp)
+{
+	return (factorial_1_svc(*argp, rqstp));
+}
+
+static double *
+_multiplescomandos_1 (char * *argp, struct svc_req *rqstp)
+{
+	return (multiplescomandos_1_svc(*argp, rqstp));
 }
 
 static void
@@ -77,12 +89,14 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		suma_1_argument suma_1_arg;
 		resta_1_argument resta_1_arg;
 		mult_1_argument mult_1_arg;
-		div_1_argument div_1_arg;
-		pow_1_argument pow_1_arg;
-		int primo_1_arg;
-		int sqrt_1_arg;
-		log_1_argument log_1_arg;
+		division_1_argument division_1_arg;
+		potencia_1_argument potencia_1_arg;
+		int esprimo_1_arg;
+		double raizcuadrada_1_arg;
+		logaritmo_1_argument logaritmo_1_arg;
 		modulo_1_argument modulo_1_arg;
+		int factorial_1_arg;
+		char *multiplescomandos_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -111,40 +125,52 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) _mult_1;
 		break;
 
-	case div:
-		_xdr_argument = (xdrproc_t) xdr_div_1_argument;
+	case division:
+		_xdr_argument = (xdrproc_t) xdr_division_1_argument;
 		_xdr_result = (xdrproc_t) xdr_double;
-		local = (char *(*)(char *, struct svc_req *)) _div_1;
+		local = (char *(*)(char *, struct svc_req *)) _division_1;
 		break;
 
-	case pow:
-		_xdr_argument = (xdrproc_t) xdr_pow_1_argument;
+	case potencia:
+		_xdr_argument = (xdrproc_t) xdr_potencia_1_argument;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _pow_1;
+		local = (char *(*)(char *, struct svc_req *)) _potencia_1;
 		break;
 
-	case primo:
+	case esPrimo:
 		_xdr_argument = (xdrproc_t) xdr_int;
 		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _primo_1;
+		local = (char *(*)(char *, struct svc_req *)) _esprimo_1;
 		break;
 
-	case sqrt:
-		_xdr_argument = (xdrproc_t) xdr_int;
-		_xdr_result = (xdrproc_t) xdr_int;
-		local = (char *(*)(char *, struct svc_req *)) _sqrt_1;
-		break;
-
-	case log:
-		_xdr_argument = (xdrproc_t) xdr_log_1_argument;
+	case raizCuadrada:
+		_xdr_argument = (xdrproc_t) xdr_double;
 		_xdr_result = (xdrproc_t) xdr_double;
-		local = (char *(*)(char *, struct svc_req *)) _log_1;
+		local = (char *(*)(char *, struct svc_req *)) _raizcuadrada_1;
+		break;
+
+	case logaritmo:
+		_xdr_argument = (xdrproc_t) xdr_logaritmo_1_argument;
+		_xdr_result = (xdrproc_t) xdr_double;
+		local = (char *(*)(char *, struct svc_req *)) _logaritmo_1;
 		break;
 
 	case modulo:
 		_xdr_argument = (xdrproc_t) xdr_modulo_1_argument;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) _modulo_1;
+		break;
+
+	case factorial:
+		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_result = (xdrproc_t) xdr_int;
+		local = (char *(*)(char *, struct svc_req *)) _factorial_1;
+		break;
+
+	case multiplesComandos:
+		_xdr_argument = (xdrproc_t) xdr_wrapstring;
+		_xdr_result = (xdrproc_t) xdr_double;
+		local = (char *(*)(char *, struct svc_req *)) _multiplescomandos_1;
 		break;
 
 	default:

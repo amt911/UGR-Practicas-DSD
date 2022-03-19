@@ -61,15 +61,15 @@ mult_1(double arg1, double arg2,  CLIENT *clnt)
 }
 
 double *
-div_1(double arg1, double arg2,  CLIENT *clnt)
+division_1(double arg1, double arg2,  CLIENT *clnt)
 {
-	div_1_argument arg;
+	division_1_argument arg;
 	static double clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
-	if (clnt_call (clnt, div, (xdrproc_t) xdr_div_1_argument, (caddr_t) &arg,
+	if (clnt_call (clnt, division, (xdrproc_t) xdr_division_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -78,15 +78,15 @@ div_1(double arg1, double arg2,  CLIENT *clnt)
 }
 
 int *
-pow_1(int arg1, int arg2,  CLIENT *clnt)
+potencia_1(int arg1, int arg2,  CLIENT *clnt)
 {
-	pow_1_argument arg;
+	potencia_1_argument arg;
 	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
-	if (clnt_call (clnt, pow, (xdrproc_t) xdr_pow_1_argument, (caddr_t) &arg,
+	if (clnt_call (clnt, potencia, (xdrproc_t) xdr_potencia_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -95,27 +95,12 @@ pow_1(int arg1, int arg2,  CLIENT *clnt)
 }
 
 int *
-primo_1(int arg1,  CLIENT *clnt)
+esprimo_1(int arg1,  CLIENT *clnt)
 {
 	static int clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, primo,
-		(xdrproc_t) xdr_int, (caddr_t) &arg1,
-		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
-}
-
-int *
-sqrt_1(int arg1,  CLIENT *clnt)
-{
-	static int clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, sqrt,
+	if (clnt_call (clnt, esPrimo,
 		(xdrproc_t) xdr_int, (caddr_t) &arg1,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
@@ -125,15 +110,30 @@ sqrt_1(int arg1,  CLIENT *clnt)
 }
 
 double *
-log_1(int arg1, int arg2,  CLIENT *clnt)
+raizcuadrada_1(double arg1,  CLIENT *clnt)
 {
-	log_1_argument arg;
+	static double clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, raizCuadrada,
+		(xdrproc_t) xdr_double, (caddr_t) &arg1,
+		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+double *
+logaritmo_1(int arg1, int arg2,  CLIENT *clnt)
+{
+	logaritmo_1_argument arg;
 	static double clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
-	if (clnt_call (clnt, log, (xdrproc_t) xdr_log_1_argument, (caddr_t) &arg,
+	if (clnt_call (clnt, logaritmo, (xdrproc_t) xdr_logaritmo_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
@@ -152,6 +152,36 @@ modulo_1(int arg1, int arg2,  CLIENT *clnt)
 	arg.arg2 = arg2;
 	if (clnt_call (clnt, modulo, (xdrproc_t) xdr_modulo_1_argument, (caddr_t) &arg,
 		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+int *
+factorial_1(int arg1,  CLIENT *clnt)
+{
+	static int clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, factorial,
+		(xdrproc_t) xdr_int, (caddr_t) &arg1,
+		(xdrproc_t) xdr_int, (caddr_t) &clnt_res,
+		TIMEOUT) != RPC_SUCCESS) {
+		return (NULL);
+	}
+	return (&clnt_res);
+}
+
+double *
+multiplescomandos_1(char *arg1,  CLIENT *clnt)
+{
+	static double clnt_res;
+
+	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+	if (clnt_call (clnt, multiplesComandos,
+		(xdrproc_t) xdr_wrapstring, (caddr_t) &arg1,
+		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

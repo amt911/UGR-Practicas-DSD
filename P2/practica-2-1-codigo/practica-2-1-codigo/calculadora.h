@@ -32,23 +32,23 @@ struct mult_1_argument {
 };
 typedef struct mult_1_argument mult_1_argument;
 
-struct div_1_argument {
+struct division_1_argument {
 	double arg1;
 	double arg2;
 };
-typedef struct div_1_argument div_1_argument;
+typedef struct division_1_argument division_1_argument;
 
-struct pow_1_argument {
+struct potencia_1_argument {
 	int arg1;
 	int arg2;
 };
-typedef struct pow_1_argument pow_1_argument;
+typedef struct potencia_1_argument potencia_1_argument;
 
-struct log_1_argument {
+struct logaritmo_1_argument {
 	int arg1;
 	int arg2;
 };
-typedef struct log_1_argument log_1_argument;
+typedef struct logaritmo_1_argument logaritmo_1_argument;
 
 struct modulo_1_argument {
 	int arg1;
@@ -69,24 +69,30 @@ extern  double * resta_1_svc(double , double , struct svc_req *);
 #define mult 3
 extern  double * mult_1(double , double , CLIENT *);
 extern  double * mult_1_svc(double , double , struct svc_req *);
-#define div 4
-extern  double * div_1(double , double , CLIENT *);
-extern  double * div_1_svc(double , double , struct svc_req *);
-#define pow 5
-extern  int * pow_1(int , int , CLIENT *);
-extern  int * pow_1_svc(int , int , struct svc_req *);
-#define primo 6
-extern  int * primo_1(int , CLIENT *);
-extern  int * primo_1_svc(int , struct svc_req *);
-#define sqrt 7
-extern  int * sqrt_1(int , CLIENT *);
-extern  int * sqrt_1_svc(int , struct svc_req *);
-#define log 8
-extern  double * log_1(int , int , CLIENT *);
-extern  double * log_1_svc(int , int , struct svc_req *);
+#define division 4
+extern  double * division_1(double , double , CLIENT *);
+extern  double * division_1_svc(double , double , struct svc_req *);
+#define potencia 5
+extern  int * potencia_1(int , int , CLIENT *);
+extern  int * potencia_1_svc(int , int , struct svc_req *);
+#define esPrimo 6
+extern  int * esprimo_1(int , CLIENT *);
+extern  int * esprimo_1_svc(int , struct svc_req *);
+#define raizCuadrada 7
+extern  double * raizcuadrada_1(double , CLIENT *);
+extern  double * raizcuadrada_1_svc(double , struct svc_req *);
+#define logaritmo 8
+extern  double * logaritmo_1(int , int , CLIENT *);
+extern  double * logaritmo_1_svc(int , int , struct svc_req *);
 #define modulo 9
 extern  int * modulo_1(int , int , CLIENT *);
 extern  int * modulo_1_svc(int , int , struct svc_req *);
+#define factorial 10
+extern  int * factorial_1(int , CLIENT *);
+extern  int * factorial_1_svc(int , struct svc_req *);
+#define multiplesComandos 11
+extern  double * multiplescomandos_1(char *, CLIENT *);
+extern  double * multiplescomandos_1_svc(char *, struct svc_req *);
 extern int calculadora_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
 
 #else /* K&R C */
@@ -99,24 +105,30 @@ extern  double * resta_1_svc();
 #define mult 3
 extern  double * mult_1();
 extern  double * mult_1_svc();
-#define div 4
-extern  double * div_1();
-extern  double * div_1_svc();
-#define pow 5
-extern  int * pow_1();
-extern  int * pow_1_svc();
-#define primo 6
-extern  int * primo_1();
-extern  int * primo_1_svc();
-#define sqrt 7
-extern  int * sqrt_1();
-extern  int * sqrt_1_svc();
-#define log 8
-extern  double * log_1();
-extern  double * log_1_svc();
+#define division 4
+extern  double * division_1();
+extern  double * division_1_svc();
+#define potencia 5
+extern  int * potencia_1();
+extern  int * potencia_1_svc();
+#define esPrimo 6
+extern  int * esprimo_1();
+extern  int * esprimo_1_svc();
+#define raizCuadrada 7
+extern  double * raizcuadrada_1();
+extern  double * raizcuadrada_1_svc();
+#define logaritmo 8
+extern  double * logaritmo_1();
+extern  double * logaritmo_1_svc();
 #define modulo 9
 extern  int * modulo_1();
 extern  int * modulo_1_svc();
+#define factorial 10
+extern  int * factorial_1();
+extern  int * factorial_1_svc();
+#define multiplesComandos 11
+extern  double * multiplescomandos_1();
+extern  double * multiplescomandos_1_svc();
 extern int calculadora_1_freeresult ();
 #endif /* K&R C */
 
@@ -126,18 +138,18 @@ extern int calculadora_1_freeresult ();
 extern  bool_t xdr_suma_1_argument (XDR *, suma_1_argument*);
 extern  bool_t xdr_resta_1_argument (XDR *, resta_1_argument*);
 extern  bool_t xdr_mult_1_argument (XDR *, mult_1_argument*);
-extern  bool_t xdr_div_1_argument (XDR *, div_1_argument*);
-extern  bool_t xdr_pow_1_argument (XDR *, pow_1_argument*);
-extern  bool_t xdr_log_1_argument (XDR *, log_1_argument*);
+extern  bool_t xdr_division_1_argument (XDR *, division_1_argument*);
+extern  bool_t xdr_potencia_1_argument (XDR *, potencia_1_argument*);
+extern  bool_t xdr_logaritmo_1_argument (XDR *, logaritmo_1_argument*);
 extern  bool_t xdr_modulo_1_argument (XDR *, modulo_1_argument*);
 
 #else /* K&R C */
 extern bool_t xdr_suma_1_argument ();
 extern bool_t xdr_resta_1_argument ();
 extern bool_t xdr_mult_1_argument ();
-extern bool_t xdr_div_1_argument ();
-extern bool_t xdr_pow_1_argument ();
-extern bool_t xdr_log_1_argument ();
+extern bool_t xdr_division_1_argument ();
+extern bool_t xdr_potencia_1_argument ();
+extern bool_t xdr_logaritmo_1_argument ();
 extern bool_t xdr_modulo_1_argument ();
 
 #endif /* K&R C */

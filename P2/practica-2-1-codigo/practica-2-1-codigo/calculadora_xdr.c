@@ -36,7 +36,7 @@ xdr_mult_1_argument (XDR *xdrs, mult_1_argument *objp)
 }
 
 bool_t
-xdr_div_1_argument (XDR *xdrs, div_1_argument *objp)
+xdr_division_1_argument (XDR *xdrs, division_1_argument *objp)
 {
 	 if (!xdr_double (xdrs, &objp->arg1))
 		 return FALSE;
@@ -46,7 +46,7 @@ xdr_div_1_argument (XDR *xdrs, div_1_argument *objp)
 }
 
 bool_t
-xdr_pow_1_argument (XDR *xdrs, pow_1_argument *objp)
+xdr_potencia_1_argument (XDR *xdrs, potencia_1_argument *objp)
 {
 	 if (!xdr_int (xdrs, &objp->arg1))
 		 return FALSE;
@@ -56,7 +56,7 @@ xdr_pow_1_argument (XDR *xdrs, pow_1_argument *objp)
 }
 
 bool_t
-xdr_log_1_argument (XDR *xdrs, log_1_argument *objp)
+xdr_logaritmo_1_argument (XDR *xdrs, logaritmo_1_argument *objp)
 {
 	 if (!xdr_int (xdrs, &objp->arg1))
 		 return FALSE;

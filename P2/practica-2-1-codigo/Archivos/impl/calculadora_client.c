@@ -22,6 +22,7 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 	}
 #endif /* DEBUG */
 
+	print("-----------------%c--------------------\n", op);
 	switch (op)
 	{
 	case '+':
@@ -82,12 +83,12 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 
 	case 'v':
 	{
-		res = raizcuadrada_1(valor1, clnt);
+		resI = raizcuadrada_1(valor1, clnt);
+		esDouble = 0;
 		break;
 	}
 
-	case '!':
-	{
+	case '!':{
 		resI = factorial_1(valor1, clnt);
 		esDouble=0;
 		break;
@@ -102,8 +103,10 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 	printf("###################################\n");
 	if (esDouble == 1)
 		printf("Resultado: %lf\n", *res);
-	else
+	else{
+		printf("sale por aqui?");
 		printf("Resultado: %d\n", *resI);
+	}
 
 	printf("###################################\n\n");
 
@@ -123,7 +126,7 @@ int main(int argc, char *argv[])
 	}
 	else if (argc == 2)
 	{ // Modo interactivo
-#define OPCIONES 10
+#define OPCIONES 9
 #define SALIDA 200
 		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^', '!'};
 		int opcion;
@@ -176,7 +179,6 @@ int main(int argc, char *argv[])
 				case 10:
 					printf("Valor: ");
 					scanf("%lf", &valorL);
-					printf("Valor que se mete: %d\n", (int)valorL);
 					break;
 				}
 
