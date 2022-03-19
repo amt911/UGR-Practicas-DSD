@@ -6,113 +6,183 @@
 
 #include "calculadora.h"
 
-
-void
-calculadora_1(char *host, int valor1, char op, int valor2)
+void calculadora_1(char *host, double valor1, char op, double valor2)
 {
 	CLIENT *clnt;
-	double *resDouble;
-	int *resInt;
-	bool_t esInt=FALSE;
+	double *res;
+	int *resI;
+	int esDouble = 1;
 
-#ifndef	DEBUG
-	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
+#ifndef DEBUG
+	clnt = clnt_create(host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL)
+	{
+		clnt_pcreateerror(host);
+		exit(1);
 	}
-#endif	/* DEBUG */
+#endif /* DEBUG */
 
-	switch(op){
-		case '+':{
-			resDouble = suma_1(valor1, valor2, clnt);
-			esInt=FALSE;
-			break;
-		}
+	switch (op)
+	{
+	case '+':
+	{
+		res = suma_1(valor1, valor2, clnt);
 
-		case'-':{
-			resDouble = resta_1(valor1, valor2, clnt);
-			esInt=FALSE;
-			break;
-		}
-
-		case '/':{
-			resDouble = div_1(valor1, valor2, clnt);
-			esInt=FALSE;
-			break;		
-		}
-
-		case '*':{
-			resDouble = mult_1(valor1, valor2, clnt);
-			esInt=FALSE;
-			break;
-		}
-
-		case 'l':{
-			resDouble = log_1(valor1, valor2, clnt);
-			esInt=FALSE;
-			break;
-		}
-
-		case 'p':{
-			resInt = primo_1(valor1, clnt);
-			esInt=TRUE;
-			break;
-		}
-
-		case '%':{
-			resInt = modulo_1(valor1, valor2, clnt);
-			esInt=TRUE;
-			break;
-		}
-
-		case '^':{
-			resInt = pow_1(valor1, valor2, clnt);
-			esInt=TRUE;
-			break;
-		}
-		
-		case 'v':{
-			resDouble=sqrt_1(valor1, clnt);
-			esInt=FALSE;
-			break;
-		}
+		break;
 	}
 
-	
-	if (resDouble == (double *) NULL && !esInt==TRUE) {
-		clnt_perror (clnt, "call failed");
+	case '-':
+	{
+		res = resta_1(valor1, valor2, clnt);
+
+		break;
 	}
 
-	else 	if (resInt == (int *) NULL && esInt==FALSE) {
-		clnt_perror (clnt, "call failed");
+	case '/':
+	{
+		res = div_1(valor1, valor2, clnt);
+
+		break;
 	}
 
-	if(esInt==TRUE){
-		printf("Resultado: %d\n", *resInt);
+	case '*':
+	{
+		res = mult_1(valor1, valor2, clnt);
+
+		break;
 	}
+
+	case 'l':
+	{
+		res = log_1(valor1, valor2, clnt);
+
+		break;
+	}
+
+	case 'p':
+	{
+		resI = primo_1(valor1, clnt);
+		esDouble = 0;
+		break;
+	}
+
+	case '%':
+	{
+		resI = modulo_1(valor1, valor2, clnt);
+		esDouble = 0;
+		break;
+	}
+
+	case '^':
+	{
+		resI = pow_1(valor1, valor2, clnt);
+		esDouble = 0;
+		break;
+	}
+
+	case 'v':
+	{
+		resI = sqrt_1(valor1, clnt);
+		esDouble = 0;
+		break;
+	}
+	}
+
+	if (res == (double *)NULL && resI == (int *)NULL)
+	{
+		clnt_perror(clnt, "call failed");
+	}
+
+	printf("###################################\n");
+	if (esDouble == 1)
+		printf("Resultado: %lf\n", *res);
 	else
-		printf("Resultado: %f\n", *resDouble);
+		printf("Resultado: %d\n", *resI);
 
-#ifndef	DEBUG
-	clnt_destroy (clnt);
-#endif	 /* DEBUG */
+	printf("###################################\n\n");
+
+#ifndef DEBUG
+	clnt_destroy(clnt);
+#endif /* DEBUG */
 }
 
-
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *host;
 
-	if (argc < 2) {
-		printf ("usage: %s server_host\n", argv[0]);
-		exit (1);
+	if (argc < 2)
+	{
+		printf("usage: %s server_host\n", argv[0]);
+		exit(1);
 	}
-	
-	host = argv[1];
-	int v1=atoi(argv[2]);
-	int v2=atoi(argv[4]);
-	calculadora_1 (host, v1, argv[3][0], v2);
-exit (0);
+	else if (argc == 2)
+	{ // Modo interactivo
+#define OPCIONES 9
+#define SALIDA 200
+		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^'};
+		int opcion;
+		do
+		{
+			do
+			{
+				printf("Modo interactivo. Seleccione opcion:\n");
+				printf("1.- Suma\n");
+				printf("2.- Resta\n");
+				printf("3.- Multiplicacion\n");
+				printf("4.- Division\n");
+				printf("5.- Modulo\n");
+				printf("6.- Raiz cuadrada\n");
+				printf("7.- Logaritmo (WIP)\n");
+				printf("8.- Es primo\n");
+				printf("9.- Potencia\n");
+				printf("%d.- Salir del programa\n", SALIDA);
+				printf("Introduzca la opcion: ");
+				scanf("%d", &opcion);
+
+				if ((opcion > OPCIONES || opcion < 1) && opcion != SALIDA)
+					printf("Opcion incorrecta");
+			} while ((opcion > OPCIONES || opcion < 1) && opcion != SALIDA);
+
+			// Separar los operadores unarios de los binarios
+			if (opcion != SALIDA)
+			{
+				double valorL, valorR;
+
+				switch (opcion)
+				{
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 7:
+				case 9:
+					printf("Primer valor: ");
+					scanf("%lf", &valorL);
+
+					printf("Segundo valor: ");
+					scanf("%lf", &valorR);
+					break;
+
+				case 6:
+				case 8:
+					printf("Valor: ");
+					scanf("%lf", &valorL);
+					break;
+				}
+
+				calculadora_1(argv[1], valorL, op[opcion - 1], valorR);
+			}
+		} while (opcion != SALIDA);
+	}
+	else
+	{ // Modo con parametros
+	}
+	/*
+		host = argv[1];
+		int v1 = atof(argv[2]);
+		int v2 = atof(argv[4]);
+		calculadora_1(host, v1, argv[3][0], v2);
+	*/
+	exit(0);
 }
