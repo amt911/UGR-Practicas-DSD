@@ -6,21 +6,12 @@
 #include "calculadora.h"
 
 bool_t
-xdr_row (XDR *xdrs, row *objp)
+xdr_m (XDR *xdrs, m *objp)
 {
 	register int32_t *buf;
 
-	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (double), (xdrproc_t) xdr_double))
-		 return FALSE;
-	return TRUE;
-}
-
-bool_t
-xdr_matriz (XDR *xdrs, matriz *objp)
-{
-	register int32_t *buf;
-
-	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (row), (xdrproc_t) xdr_row))
+	 if (!xdr_array (xdrs, (char **)&objp->m_val, (u_int *) &objp->m_len, ~0,
+		sizeof (double), (xdrproc_t) xdr_double))
 		 return FALSE;
 	return TRUE;
 }
@@ -34,7 +25,7 @@ xdr_matrix (XDR *xdrs, matrix *objp)
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->col))
 		 return FALSE;
-	 if (!xdr_matriz (xdrs, &objp->m))
+	 if (!xdr_m (xdrs, &objp->m))
 		 return FALSE;
 	return TRUE;
 }

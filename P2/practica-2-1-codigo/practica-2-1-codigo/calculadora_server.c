@@ -32,7 +32,6 @@ mult_1_svc(double arg1, double arg2,  struct svc_req *rqstp)
 	static double  result;
 	result=arg1*arg2;
 
-
 	return &result;
 }
 
@@ -41,6 +40,7 @@ division_1_svc(double arg1, double arg2,  struct svc_req *rqstp)
 {
 	static double  result;
 	result=arg1/arg2;
+
 
 	return &result;
 }
@@ -69,6 +69,10 @@ double *
 logaritmo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
 	static double  result;
+
+	/*
+	 * insert server code here
+	 */
 
 	return &result;
 }
@@ -129,30 +133,19 @@ sumamatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
 {
 	printf("A ver si entramos de una vez\n");
 	static matrix  result;
-/*
-printf("Entro1");
-	if(result.m!=NULL){
-		printf("Entrofree");
-		free(result.m[0]);
-		free(result.m);		
-	}
 
-printf("Entro3");
+	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
+
 	result.fil=arg1.fil;
 	result.col=arg1.col;
 
-printf("Entro4");
-	result.m=malloc(result.fil*sizeof(row));
-
-	result.m[0]=malloc(result.fil*result.col*sizeof(double));
-
-	for(int i=1; i<result.fil; i++)
-		result.m[i]=result.m[i-1]+result.col;	
+	result.m.m_val=calloc(result.fil*result.col, sizeof(double));
+	result.m.m_len=result.fil*result.col*sizeof(double);
 
 	for(int i=0; i<arg1.fil; i++)
 		for(int j=0; j<arg1.col; j++)
-			result.m[i][j]=arg1.m[i][j]+arg2.m[i][j];
-*/
+			result.m.m_val[i*result.col+j]=arg1.m.m_val[i*result.col+j]+arg2.m.m_val[i*result.col+j];
+
 	return &result;
 }
 

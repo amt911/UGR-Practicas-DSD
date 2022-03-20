@@ -46,29 +46,11 @@ division_1_svc(double arg1, double arg2,  struct svc_req *rqstp)
 }
 
 int *
-potencia_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
+modulo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
 	static int  result;
+	result=arg1%arg2;
 
-	result=1;
-
-	for(int i=0; i<arg2; i++)
-		result*=arg1;
-
-
-	return &result;
-}
-
-int *
-esprimo_1_svc(int arg1,  struct svc_req *rqstp)
-{
-	static int  result;
-
-	result=1;
-
-	for(int i=2; i<=arg1/2; i++)
-		if(arg1%i==0)
-			result=0;
 
 	return &result;
 }
@@ -92,10 +74,28 @@ logaritmo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 }
 
 int *
-modulo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
+esprimo_1_svc(int arg1,  struct svc_req *rqstp)
 {
 	static int  result;
-	result=arg1%arg2;
+
+	result=1;
+
+	for(int i=2; i<=arg1/2; i++)
+		if(arg1%i==0)
+			result=0;
+
+	return &result;
+}
+
+int *
+potencia_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
+{
+	static int  result;
+
+	result=1;
+
+	for(int i=0; i<arg2; i++)
+		result*=arg1;
 
 
 	return &result;
@@ -124,8 +124,85 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 	return &result;
 }
 
+matrix *
+sumamatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
+{
+	printf("A ver si entramos de una vez\n");
+	static matrix  result;
+/*
+printf("Entro1");
+	if(result.m!=NULL){
+		printf("Entrofree");
+		free(result.m[0]);
+		free(result.m);		
+	}
 
+printf("Entro3");
+	result.fil=arg1.fil;
+	result.col=arg1.col;
 
+printf("Entro4");
+	result.m=malloc(result.fil*sizeof(row));
+
+	result.m[0]=malloc(result.fil*result.col*sizeof(double));
+
+	for(int i=1; i<result.fil; i++)
+		result.m[i]=result.m[i-1]+result.col;	
+
+	for(int i=0; i<arg1.fil; i++)
+		for(int j=0; j<arg1.col; j++)
+			result.m[i][j]=arg1.m[i][j]+arg2.m[i][j];
+*/
+	return &result;
+}
+
+matrix *
+multmatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
+{
+	static matrix  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+matrix *
+traspuesta_1_svc(matrix arg1,  struct svc_req *rqstp)
+{
+	static matrix  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+double *
+determinantematriz_1_svc(matrix arg1,  struct svc_req *rqstp)
+{
+	static double  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
+
+matrix *
+resolversistemas_1_svc(matrix arg1,  struct svc_req *rqstp)
+{
+	static matrix  result;
+
+	/*
+	 * insert server code here
+	 */
+
+	return &result;
+}
 
 double *
 multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)

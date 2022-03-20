@@ -14,14 +14,15 @@ extern "C" {
 #endif
 
 
-typedef double *row;
-
-typedef row *matriz;
+typedef struct {
+	u_int m_len;
+	double *m_val;
+} m;
 
 struct matrix {
 	int fil;
 	int col;
-	matriz m;
+	m m;
 };
 typedef struct matrix matrix;
 
@@ -188,8 +189,7 @@ extern int calculadora_1_freeresult ();
 /* the xdr functions */
 
 #if defined(__STDC__) || defined(__cplusplus)
-extern  bool_t xdr_row (XDR *, row*);
-extern  bool_t xdr_matriz (XDR *, matriz*);
+extern  bool_t xdr_m (XDR *, m*);
 extern  bool_t xdr_matrix (XDR *, matrix*);
 extern  bool_t xdr_suma_1_argument (XDR *, suma_1_argument*);
 extern  bool_t xdr_resta_1_argument (XDR *, resta_1_argument*);
@@ -202,8 +202,7 @@ extern  bool_t xdr_sumamatricial_1_argument (XDR *, sumamatricial_1_argument*);
 extern  bool_t xdr_multmatricial_1_argument (XDR *, multmatricial_1_argument*);
 
 #else /* K&R C */
-extern bool_t xdr_row ();
-extern bool_t xdr_matriz ();
+extern bool_t xdr_m ();
 extern bool_t xdr_matrix ();
 extern bool_t xdr_suma_1_argument ();
 extern bool_t xdr_resta_1_argument ();

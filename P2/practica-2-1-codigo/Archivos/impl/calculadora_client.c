@@ -5,13 +5,15 @@
  */
 
 #include "calculadora.h"
+#include <time.h>
 
-void calculadora_1(char *host, double valor1, char op, double valor2, char *comandos)
+void calculadora_1(char *host, double valor1, char op, double valor2, char *comandos, matrix *m1, matrix *m2)
 {
 	CLIENT *clnt;
 	double *res;
 	int *resI;
 	int esDouble = 1;
+	matrix *aux;
 
 #ifndef DEBUG
 	clnt = clnt_create(host, CALCULADORA, CALCULADORAVER, "udp");
@@ -92,6 +94,21 @@ void calculadora_1(char *host, double valor1, char op, double valor2, char *coma
 		esDouble=0;
 		break;
 	}
+
+	case 'S':{
+		printf("Entro en el cliente\n");
+		aux=sumamatricial_1(*m1, *m2, clnt);
+
+		printf("RESULTADOS:     S;LDFK;SDLFKS;DFK\n");
+		for(int i=0; i<aux->fil; i++){
+			for(int j=0; j<aux->col; j++)
+				printf("%f ", aux->m[i][j]);
+
+			printf("\n");
+		}
+
+		break;
+	}
 	}
 
 	if (res == (double *)NULL && resI == (int *)NULL)
@@ -123,11 +140,12 @@ int main(int argc, char *argv[])
 	}
 	else if (argc == 2)
 	{ // Modo interactivo
-#define OPCIONES 10
+#define OPCIONES 11
 #define SALIDA 200
-		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^', '!'};
+		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^', '!', 'S'};
 		int opcion;
-		do
+		matrix m1, m2;
+/*		do
 		{
 			do
 			{
@@ -184,9 +202,61 @@ int main(int argc, char *argv[])
 					break;
 				}
 
-				calculadora_1(argv[1], valorL, op[opcion - 1], valorR, NULL);
+				calculadora_1(argv[1], valorL, op[opcion - 1], valorR, NULL, NULL, NULL);
 			}
-		} while (opcion != SALIDA);
+		} while (opcion != SALIDA);*/
+
+		m1.fil=m1.col=3;
+		m1.m=malloc(m1.fil*sizeof(row));
+
+		m1.m[0]=malloc(m1.fil*m1.col*sizeof(double));
+
+		for(int i=1; i<m1.fil; i++)
+			m1.m[i]=m1.m[i-1]+m1.col;
+
+		m2.fil=m2.col=3;
+		m2.m=malloc(m2.fil*sizeof(row));
+
+		m2.m[0]=malloc(m2.fil*m2.col*sizeof(double));
+
+		for(int i=1; i<m2.fil; i++)
+			m2.m[i]=m2.m[i-1]+m2.col;
+		
+		srand(time(NULL));
+
+		for(int i=0; i<m1.fil; i++){
+			for(int j=0; j<m1.col; j++){
+				m1.m[i][j]=rand()%20;
+				m2.m[i][j]=rand()%21;
+			}
+		}
+				
+		for(int i=0; i<m1.fil; i++){
+			for(int j=0; j<m1.col; j++)
+				printf("%f ", m1.m[i][j]);
+
+			printf("\n");
+		}
+
+
+		printf("\n");
+
+		for(int i=0; i<m2.fil; i++){
+			for(int j=0; j<m2.col; j++)
+				printf("%f ", m2.m[i][j]);
+
+			printf("\n");
+		}		
+
+		printf("\n");
+
+		calculadora_1(argv[1], 69, 'S', 69, NULL, &m1, &m2);
+
+
+		free(m1.m[0]);
+		free(m2.m[0]);
+		free(m1.m);
+		free(m2.m);
 	}
 	else
 	{ // Modo con parametros

@@ -1,11 +1,9 @@
-
-typedef double* row;
-typedef row* matriz;
+typedef double m<>;
 
 struct matrix{
     int fil;
     int col;
-    matriz m;
+    m m;
 };
 
 program CALCULADORA{

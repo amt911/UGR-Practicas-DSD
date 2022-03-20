@@ -7,265 +7,366 @@
 #include "calculadora.h"
 #include <time.h>
 
-void calculadora_1(char *host, double valor1, char op, double valor2, char *comandos, matrix *m1, matrix *m2)
-{
+void suma_calculadora_1(char *host, double a, double b){
 	CLIENT *clnt;
 	double *res;
-	int *resI;
-	int esDouble = 1;
-	matrix *aux;
 
-#ifndef DEBUG
-	clnt = clnt_create(host, CALCULADORA, CALCULADORAVER, "udp");
-	if (clnt == NULL)
-	{
-		clnt_pcreateerror(host);
-		exit(1);
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
-#endif /* DEBUG */
+#endif	/* DEBUG */
 
-	switch (op)
-	{
-	case '+':
-	{
-		res = suma_1(valor1, valor2, clnt);
 
-		break;
+	res = suma_1(a, b, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
 	}
+	else{
+		printf("El resultado es: %lf\n", *res);
 
-	case '-':
-	{
-		res = resta_1(valor1, valor2, clnt);
-
-		break;
+		xdr_free((xdrproc_t) xdr_double, res);
 	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
 
-	case '/':
-	{
-		res = division_1(valor1, valor2, clnt);
+void resta_calculadora_1(char *host, double a, double b){
+	CLIENT *clnt;
+	double *res;
 
-		break;
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
+#endif	/* DEBUG */
 
-	case '*':
-	{
-		res = mult_1(valor1, valor2, clnt);
 
-		break;
+	res = resta_1(a, b, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
 	}
+	else{
+			printf("El resultado es: %lf\n", *res);
 
-	case 'l':
-	{
-		res = logaritmo_1(valor1, valor2, clnt);
-
-		break;
+		xdr_free((xdrproc_t) xdr_double, res);
 	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
 
-	case 'p':
-	{
-		resI = esprimo_1(valor1, clnt);
-		esDouble = 0;
-		break;
+void mult_calculadora_1(char *host, double a, double b){
+	CLIENT *clnt;
+	double *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
+#endif	/* DEBUG */
 
-	case '%':
-	{
-		resI = modulo_1(valor1, valor2, clnt);
-		esDouble = 0;
-		break;
+
+	res = mult_1(a, b, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
 	}
-
-	case '^':
-	{
-		resI = potencia_1(valor1, valor2, clnt);
-		esDouble = 0;
-		break;
+	else{
+		printf("El resultado es: %lf\n", *res);
+		xdr_free((xdrproc_t) xdr_double, res);
 	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
 
-	case 'v':
-	{
-		res = raizcuadrada_1(valor1, clnt);
-		break;
+
+void division_calculadora_1(char *host, double a, double b){
+	CLIENT *clnt;
+	double *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
+#endif	/* DEBUG */
 
-	case '!':
-	{
-		resI = factorial_1(valor1, clnt);
-		esDouble=0;
-		break;
+
+	res = division_1(a, b, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
 	}
+	else{
+			printf("El resultado es: %lf\n", *res);
 
-	case 'S':{
-		printf("Entro en el cliente\n");
-		aux=sumamatricial_1(*m1, *m2, clnt);
+		xdr_free((xdrproc_t) xdr_double, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
 
-		printf("RESULTADOS:     S;LDFK;SDLFKS;DFK\n");
-		for(int i=0; i<aux->fil; i++){
-			for(int j=0; j<aux->col; j++)
-				printf("%f ", aux->m[i][j]);
+
+void modulo_calculadora_1(char *host, int a, int b){
+	CLIENT *clnt;
+	int *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = modulo_1(a, b, clnt);
+	if (res == (int *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+			printf("El resultado es: %d\n", *res);
+
+		xdr_free((xdrproc_t) xdr_int, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+void raizcuadrada_calculadora_1(char *host, double a){
+	CLIENT *clnt;
+	double *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = raizcuadrada_1(a, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+			printf("El resultado es: %lf\n", *res);
+
+		xdr_free((xdrproc_t) xdr_double, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+void esprimo_calculadora_1(char *host, int a){
+	CLIENT *clnt;
+	int *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = esprimo_1(a, clnt);
+	if (res == (int *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+			printf("El resultado es: %d\n", *res);
+
+		xdr_free((xdrproc_t) xdr_int, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+void potencia_calculadora_1(char *host, int a, int b){
+	CLIENT *clnt;
+	int *res;
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = potencia_1(a, b, clnt);
+	if (res == (int *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+			printf("El resultado es: %d\n", *res);
+
+		xdr_free((xdrproc_t) xdr_int, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+void factorial_calculadora_1(char *host, int a){
+	CLIENT *clnt;
+	int *res;
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = factorial_1(a, clnt);
+	if (res == (int *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+		printf("El resultado es: %d\n", *res);
+
+		xdr_free((xdrproc_t) xdr_int, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+void
+sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
+{
+	CLIENT *clnt;
+	matrix *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+	res = sumamatricial_1(m1, m2, clnt);
+	if (res == (matrix *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+		for(int i=0; i<res->fil;i++){
+			for(int j=0; j<res->col; j++)
+				printf("%lf ", res->m.m_val[i*res->col+j]);
 
 			printf("\n");
 		}
 
-		break;
+		xdr_free((xdrproc_t) xdr_double, res->m.m_val);
+		xdr_free((xdrproc_t) xdr_matrix, res);
+		//res=NULL;
 	}
-	}
-
-	if (res == (double *)NULL && resI == (int *)NULL)
-	{
-		clnt_perror(clnt, "call failed");
-	}
-
-	printf("###################################\n");
-	if (esDouble == 1)
-		printf("Resultado: %lf\n", *res);
-	else
-		printf("Resultado: %d\n", *resI);
-
-	printf("###################################\n\n");
-
-#ifndef DEBUG
-	clnt_destroy(clnt);
-#endif /* DEBUG */
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
 }
 
-int main(int argc, char *argv[])
+
+int
+main (int argc, char *argv[])
 {
 	char *host;
 
-	if (argc < 2)
+	if (argc < 2) {
+		printf ("usage: %s server_host\n", argv[0]);
+		exit (1);
+	}
+	host = argv[1];
+
+	if(argc==2){		//Modo interactivo
+
+	}
+	else{	//Modo consola
+		char operacion=argv[3][0];
+
+		switch(operacion){
+			case '+':
+				suma_calculadora_1(host, atof(argv[2]), atof(argv[4]));
+				break;
+
+			case '-':
+				resta_calculadora_1(host, atof(argv[2]), atof(argv[4]));
+				break;			
+
+			case 'x':
+				mult_calculadora_1(host, atof(argv[2]), atof(argv[4]));
+				break;				
+
+			case '/':
+				division_calculadora_1(host, atof(argv[2]), atof(argv[4]));
+				break;				
+		}
+	}
+
+/*
+	printf("sizeof: %d\n", sizeof(double));
+
+	matrix m1, m2;
+
+	srand(time(NULL));
+
+	m1.fil=m1.col=m2.fil=m2.col=3;
+
+	m1.m.m_len=m2.m.m_len=m1.fil*m1.col*sizeof(double);					//MUY IMPORTANTE PONERLO, DE OTRA NO SABRIA EMPAQUETAR LOS DATOS
+
+	m1.m.m_val=calloc(m1.fil*m1.col, sizeof(double));
+	m2.m.m_val=calloc(m2.fil*m2.col, sizeof(double));
+
+
+	for(int i=0; i<m1.fil; i++){
+		for(int j=0; j<m1.col; j++){
+			m1.m.m_val[i*m1.col+j]=rand()%20;
+			m2.m.m_val[i*m2.col+j]=rand()%21;
+		}
+	}
+
+	for(int i=0; i<m1.fil; i++){
+		for(int j=0; j<m1.col; j++)
+			printf("%lf ", m1.m.m_val[i*m1.col+j]);
+
+		printf("\n");
+	}
+
+
+	printf("\n");
+
+	for (int i = 0; i < m2.fil; i++)
 	{
-		printf("usage: %s server_host\n", argv[0]);
-		exit(1);
-	}
-	else if (argc == 2)
-	{ // Modo interactivo
-#define OPCIONES 11
-#define SALIDA 200
-		char op[OPCIONES] = {'+', '-', '*', '/', '%', 'v', 'l', 'p', '^', '!', 'S'};
-		int opcion;
-		matrix m1, m2;
-/*		do
-		{
-			do
-			{
-				printf("Modo interactivo. Seleccione opcion:\n");
-				printf("1.- Suma\n");
-				printf("2.- Resta\n");
-				printf("3.- Multiplicacion\n");
-				printf("4.- Division\n");
-				printf("5.- Modulo\n");
-				printf("6.- Raiz cuadrada\n");
-				printf("7.- Logaritmo (WIP)\n");
-				printf("8.- Es primo\n");
-				printf("9.- Potencia\n");
-				printf("10.- Factorial\n");
-				printf("11.- Suma matricial\n");
-				printf("12.- Multiplicacion matricial\n");
-				printf("13.- Traspuesta de una matriz\n");
-				printf("14.- Determinante de una matriz\n");
-				printf("15.- Resolvedor de sistemas de ecuaciones\n");
-				printf("%d.- Salir del programa\n", SALIDA);
-				printf("Introduzca la opcion: ");
-				scanf("%d", &opcion);
-
-				if ((opcion > OPCIONES || opcion < 1) && opcion != SALIDA)
-					printf("Opcion incorrecta");
-			} while ((opcion > OPCIONES || opcion < 1) && opcion != SALIDA);
-
-			// Separar los operadores unarios de los binarios
-			if (opcion != SALIDA)
-			{
-				double valorL, valorR;
-
-				switch (opcion)
-				{
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-				case 7:
-				case 9:
-					printf("Primer valor: ");
-					scanf("%lf", &valorL);
-
-					printf("Segundo valor: ");
-					scanf("%lf", &valorR);
-					break;
-
-				case 6:
-				case 8:
-				case 10:
-					printf("Valor: ");
-					scanf("%lf", &valorL);
-					break;
-				}
-
-				calculadora_1(argv[1], valorL, op[opcion - 1], valorR, NULL, NULL, NULL);
-			}
-		} while (opcion != SALIDA);*/
-
-		m1.fil=m1.col=3;
-		m1.m=malloc(m1.fil*sizeof(row));
-
-		m1.m[0]=malloc(m1.fil*m1.col*sizeof(double));
-
-		for(int i=1; i<m1.fil; i++)
-			m1.m[i]=m1.m[i-1]+m1.col;
-
-		m2.fil=m2.col=3;
-		m2.m=malloc(m2.fil*sizeof(row));
-
-		m2.m[0]=malloc(m2.fil*m2.col*sizeof(double));
-
-		for(int i=1; i<m2.fil; i++)
-			m2.m[i]=m2.m[i-1]+m2.col;
-		
-		srand(time(NULL));
-
-		for(int i=0; i<m1.fil; i++){
-			for(int j=0; j<m1.col; j++){
-				m1.m[i][j]=rand()%20;
-				m2.m[i][j]=rand()%21;
-			}
-		}
-				
-		for(int i=0; i<m1.fil; i++){
-			for(int j=0; j<m1.col; j++)
-				printf("%f ", m1.m[i][j]);
-
-			printf("\n");
-		}
-
+		for (int j = 0; j < m2.col; j++)
+			printf("%lf ", m2.m.m_val[i * m2.col + j]);
 
 		printf("\n");
-
-		for(int i=0; i<m2.fil; i++){
-			for(int j=0; j<m2.col; j++)
-				printf("%f ", m2.m[i][j]);
-
-			printf("\n");
-		}		
-
-		printf("\n");
-
-		calculadora_1(argv[1], 69, 'S', 69, NULL, &m1, &m2);
-
-
-		free(m1.m[0]);
-		free(m2.m[0]);
-		free(m1.m);
-		free(m2.m);
 	}
-	else
-	{ // Modo con parametros
-	}
-	/*
-		host = argv[1];
-		int v1 = atof(argv[2]);
-		int v2 = atof(argv[4]);
-		calculadora_1(host, v1, argv[3][0], v2);
+
+	printf("\n");
+
+	calculadora_1 (host, m1, m2);
+
+	free(m1.m.m_val);
+	free(m2.m.m_val);
 	*/
-	exit(0);
+exit (0);
 }
