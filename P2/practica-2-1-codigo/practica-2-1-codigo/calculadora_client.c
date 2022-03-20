@@ -268,6 +268,26 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+		printf("Primera matriz: \n");
+		for(int i=0; i<m1.fil;i++){
+			for(int j=0; j<m1.col; j++)
+				printf("%lf ", m1.m.m_val[i*res->col+j]);
+
+			printf("\n");
+		}
+
+		printf("\nSegunda matriz: \n");
+
+		for(int i=0; i<m2.fil;i++){
+			for(int j=0; j<m2.col; j++)
+				printf("%lf ", m2.m.m_val[i*res->col+j]);
+
+			printf("\n");
+		}
+
+
+		printf("\nLa suma matricial es: \n");		
+
 		for(int i=0; i<res->fil;i++){
 			for(int j=0; j<res->col; j++)
 				printf("%lf ", res->m.m_val[i*res->col+j]);
@@ -275,6 +295,7 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 			printf("\n");
 		}
 
+		printf("\n");
 		xdr_free((xdrproc_t) xdr_double, res->m.m_val);
 		xdr_free((xdrproc_t) xdr_matrix, res);
 		//res=NULL;
@@ -297,7 +318,33 @@ main (int argc, char *argv[])
 	host = argv[1];
 
 	if(argc==2){		//Modo interactivo
+		#define SALIDA 20
+		#define NUM_OPCIONES 10
+		char opcion;
+		printf("Modo interactivo\n");
 
+		do{
+			do{
+				printf("Calculadora, opciones: \n");
+				printf("1.- Suma\n");
+				printf("2.- Resta\n");
+				printf("3.- Multiplicacion\n");
+				printf("4.- Division\n");
+				printf("5.- Raiz Cuadrada\n");
+				printf("6.- Modulo\n");
+				printf("7.- Potencia\n");
+				printf("8.- Comprobar si un numero es primo\n");
+				printf("9.- Factorial\n");
+				printf("10.- Suma matricial\n");
+				scanf("%hhd", &opcion);
+
+				if((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA)
+					printf("Opcion incorrecta\n");
+			}while((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA);
+		}while(opcion!=SALIDA);
+
+		double v1, v2;
+		matrix *m1, *m2;
 	}
 	else{	//Modo consola
 		char operacion=argv[3][0];
