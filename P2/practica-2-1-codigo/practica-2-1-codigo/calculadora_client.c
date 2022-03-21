@@ -25,7 +25,9 @@ void suma_calculadora_1(char *host, double a, double b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+		printf("#####################################\n");
 		printf("El resultado es: %lf\n", *res);
+		printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_double, res);
 	}
@@ -52,7 +54,9 @@ void resta_calculadora_1(char *host, double a, double b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+			printf("#####################################\n");
 			printf("El resultado es: %lf\n", *res);
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_double, res);
 	}
@@ -79,7 +83,9 @@ void mult_calculadora_1(char *host, double a, double b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+		printf("#####################################\n");
 		printf("El resultado es: %lf\n", *res);
+		printf("#####################################\n");
 		xdr_free((xdrproc_t) xdr_double, res);
 	}
 #ifndef	DEBUG
@@ -106,7 +112,9 @@ void division_calculadora_1(char *host, double a, double b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+			printf("#####################################\n");
 			printf("El resultado es: %lf\n", *res);
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_double, res);
 	}
@@ -134,7 +142,9 @@ void modulo_calculadora_1(char *host, int a, int b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+			printf("#####################################\n");
 			printf("El resultado es: %d\n", *res);
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_int, res);
 	}
@@ -161,7 +171,9 @@ void raizcuadrada_calculadora_1(char *host, double a){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+			printf("#####################################\n");
 			printf("El resultado es: %lf\n", *res);
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_double, res);
 	}
@@ -188,7 +200,15 @@ void esprimo_calculadora_1(char *host, int a){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
-			printf("El resultado es: %d\n", *res);
+			printf("#####################################\n");
+			printf("El resultado es: ");
+
+			if(*res==1)
+				printf("Es primo\n");
+			else
+				printf("No es primo\n");
+
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_int, res);
 	}
@@ -214,7 +234,9 @@ void potencia_calculadora_1(char *host, int a, int b){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+			printf("#####################################\n");
 			printf("El resultado es: %d\n", *res);
+			printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_int, res);
 	}
@@ -240,7 +262,9 @@ void factorial_calculadora_1(char *host, int a){
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+		printf("#####################################\n");
 		printf("El resultado es: %d\n", *res);
+		printf("#####################################\n");
 
 		xdr_free((xdrproc_t) xdr_int, res);
 	}
@@ -331,20 +355,87 @@ main (int argc, char *argv[])
 				printf("3.- Multiplicacion\n");
 				printf("4.- Division\n");
 				printf("5.- Raiz Cuadrada\n");
-				printf("6.- Modulo\n");
-				printf("7.- Potencia\n");
+				printf("6.- Modulo (primer_valor mod segundo valor)\n");
+				printf("7.- Potencia (primer_valor)^(segundo_valor)\n");
 				printf("8.- Comprobar si un numero es primo\n");
 				printf("9.- Factorial\n");
 				printf("10.- Suma matricial\n");
+				printf("%d.- Salir del programa\n", SALIDA);
+				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
 
 				if((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA)
 					printf("Opcion incorrecta\n");
 			}while((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA);
-		}while(opcion!=SALIDA);
 
 		double v1, v2;
 		matrix *m1, *m2;
+
+		//Fase de pedir los datos
+
+		switch(opcion){
+			//Operadores binarios
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 6:
+			case 7:
+				printf("Introduzca el primer valor: ");
+				scanf("%lf", &v1);
+
+				printf("Introduzca el otro valor: ");
+				scanf("%lf", &v2);
+				break;
+
+			case 5:
+			case 8:
+			case 9:
+				printf("Introduzca el valor: ");
+				scanf("%lf", &v1);
+				break;
+		}
+
+
+		//Fase de llamar a las funciones
+		switch(opcion){
+			case 1:
+				suma_calculadora_1(host, v1, v2);
+				break;
+
+			case 2:
+				resta_calculadora_1(host, v1, v2);
+				break;
+
+			case 3:
+				mult_calculadora_1(host, v1, v2);
+				break;
+
+			case 4:
+				division_calculadora_1(host, v1, v2);
+				break;
+
+			case 5:
+				raizcuadrada_calculadora_1(host, v1);
+				break;
+
+			case 6:
+				modulo_calculadora_1(host, v1, v2);
+				break;
+
+			case 7:
+				potencia_calculadora_1(host, v1, v2);
+				break;
+
+			case 8:
+				esprimo_calculadora_1(host, v1);
+				break;
+
+			case 9:			
+				factorial_calculadora_1(host, v1);
+				break;		
+		}
+		}while(opcion!=SALIDA);
 	}
 	else{	//Modo consola
 		char operacion=argv[3][0];
