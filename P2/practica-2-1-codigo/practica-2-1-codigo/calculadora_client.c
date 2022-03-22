@@ -426,7 +426,36 @@ main (int argc, char *argv[])
 					printf("\n");
 					
 				}
+
+				printf("Segunda matriz num filas:");
+				scanf("%d", &(m2->fil));
+
+				printf("Segunda matriz columnas: ");
+				scanf("%d", &(m2->col));
 				
+				m2->m.m_len=m2->fil*m2->col;
+				m2->m.m_val=calloc(m2->fil*m2->col, sizeof(double));
+
+				for(int i=0; i<m2->fil; i++){
+					printf("Fila %d valores (se pueden introducir con espacios: ", i);
+					for (int j = 0; j < m2->col; j++)
+					{
+						scanf("%lf", &(m2->m.m_val[i*m2->col+j]));
+					}
+				}
+
+				for (int i = 0; i < m2->fil; i++)
+				{
+					for (int j = 0; j < m2->col; j++)
+					{
+						printf("%lf ", m2->m.m_val[i*m2->col+j]);
+					}
+
+					printf("\n");
+					
+				}
+
+
 				break;
 		}
 
