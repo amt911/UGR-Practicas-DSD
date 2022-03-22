@@ -399,14 +399,22 @@ main (int argc, char *argv[])
 				m1=calloc(1, sizeof(matrix));
 				m2=calloc(1, sizeof(matrix));
 
-				printf("Primera matriz num filas:");
+				printf("Matriz num filas:");
 				scanf("%d", &(m1->fil));
 
-				printf("Primera matriz columnas: ");
+				printf("Matriz columnas: ");
 				scanf("%d", &(m1->col));
-				
+				m2->fil=m1->fil;
+				m2->col=m1->col;
+
 				m1->m.m_len=m1->fil*m1->col;
 				m1->m.m_val=calloc(m1->fil*m1->col, sizeof(double));
+
+				m2->m.m_len=m2->fil*m2->col;
+				m2->m.m_val=calloc(m2->fil*m2->col, sizeof(double));
+
+				printf("\n--------------------------------\n");
+				printf("Primera matriz: \n");
 
 				for(int i=0; i<m1->fil; i++){
 					printf("Fila %d valores (se pueden introducir con espacios: ", i);
@@ -416,6 +424,19 @@ main (int argc, char *argv[])
 					}
 				}
 
+				printf("\n--------------------------------\n");
+				printf("Segunda matriz: \n");
+
+				for(int i=0; i<m2->fil; i++){
+					printf("Fila %d valores (se pueden introducir con espacios: ", i);
+					for (int j = 0; j < m2->col; j++)
+					{
+						scanf("%lf", &(m2->m.m_val[i*m2->col+j]));
+					}
+				}
+
+				printf("\n-------------Operandos-------------------\n");
+				printf("Primera matriz: \n");
 				for (int i = 0; i < m1->fil; i++)
 				{
 					for (int j = 0; j < m1->col; j++)
@@ -427,23 +448,8 @@ main (int argc, char *argv[])
 					
 				}
 
-				printf("Segunda matriz num filas:");
-				scanf("%d", &(m2->fil));
-
-				printf("Segunda matriz columnas: ");
-				scanf("%d", &(m2->col));
-				
-				m2->m.m_len=m2->fil*m2->col;
-				m2->m.m_val=calloc(m2->fil*m2->col, sizeof(double));
-
-				for(int i=0; i<m2->fil; i++){
-					printf("Fila %d valores (se pueden introducir con espacios: ", i);
-					for (int j = 0; j < m2->col; j++)
-					{
-						scanf("%lf", &(m2->m.m_val[i*m2->col+j]));
-					}
-				}
-
+				printf("--------------------------------");
+				printf("\nSegunda matriz: \n");
 				for (int i = 0; i < m2->fil; i++)
 				{
 					for (int j = 0; j < m2->col; j++)
@@ -455,6 +461,7 @@ main (int argc, char *argv[])
 					
 				}
 
+				printf("\n--------------------------------\n");
 
 				break;
 		}
