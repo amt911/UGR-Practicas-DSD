@@ -135,12 +135,13 @@ sumamatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
 	static matrix  result;
 
 	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
+	result.m.m_len=0;
 
 	result.fil=arg1.fil;
 	result.col=arg1.col;
 
 	result.m.m_val=calloc(result.fil*result.col, sizeof(double));
-	result.m.m_len=result.fil*result.col*sizeof(double);
+	result.m.m_len=result.fil*result.col;
 
 	for(int i=0; i<arg1.fil; i++)
 		for(int j=0; j<arg1.col; j++)
