@@ -503,7 +503,16 @@ main (int argc, char *argv[])
 
 			case 9:			
 				factorial_calculadora_1(host, v1);
-				break;		
+				break;	
+
+			case 10:
+				sumamatricial_calculadora_1(host, *m1, *m2);
+				free(m1->m.m_val);
+				free(m2->m.m_val);
+
+				free(m1);
+				free(m2);
+				break;
 		}
 		}while(opcion!=SALIDA);
 	}
