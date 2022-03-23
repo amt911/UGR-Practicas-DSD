@@ -292,6 +292,7 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 		clnt_perror (clnt, "call failed");
 	}
 	else{
+		/*
 		printf("Primera matriz: \n");
 		for(int i=0; i<m1.fil;i++){
 			for(int j=0; j<m1.col; j++)
@@ -308,6 +309,7 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 
 			printf("\n");
 		}
+		*/
 
 
 		printf("\nLa suma matricial es: \n");		
