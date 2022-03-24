@@ -112,9 +112,6 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 
 	result=1;
 
-	//printf("RESULTADO: %d\n", result);
-	//printf("arg1: %d\n", arg1);
-
 	for(int i=1; i<=arg1 && result!=-1; i++){
 		if(i>(INT_MAX/result)){		//En caso de que haya overflow se pone a -1 y se sale
 			result=-1;
@@ -123,15 +120,12 @@ factorial_1_svc(int arg1,  struct svc_req *rqstp)
 			result*=i;
 	}
 
-	//printf("RESULTADO: %d\n", result);
-
 	return &result;
 }
 
 matrix *
 sumamatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
 {
-	printf("A ver si entramos de una vez\n");
 	static matrix  result;
 
 	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
@@ -154,10 +148,26 @@ matrix *
 multmatricial_1_svc(matrix arg1, matrix arg2,  struct svc_req *rqstp)
 {
 	static matrix  result;
+	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
+	result.m.m_len=0;
 
-	/*
-	 * insert server code here
-	 */
+	result.fil=arg1.fil;
+	result.col=arg2.col;
+
+	result.m.m_val=calloc(result.fil*result.col, sizeof(double));
+	result.m.m_len=result.fil*result.col;
+
+	//Supuestamente la ventaja de calloc es que inicializa la seccion de memoria almacenada
+	//Sin embargo yo lo vuelvo a inicializar
+
+	for(int i=0; i<result.fil; i++)
+		for(int j=0; j<result.col; j++)
+			result.m.m_val[i*result.col+j]=0;
+
+	for(int i=0; i<arg1.fil; i++)
+		for(int j=0; j<arg2.col; j++)
+			for(int k=0; k<arg1.col; k++)
+				result.m.m_val[i*result.col+j]+=arg1.m.m_val[i*arg1.col+k]*arg2.m.m_val[k*arg2.col+j];
 
 	return &result;
 }
