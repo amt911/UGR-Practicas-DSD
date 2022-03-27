@@ -219,6 +219,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 	int contSalida=0, contOperadores=0;
 	char prioridades[]={'^', '*', '/', '+', '-'};
 	int prioridadesValor[]={3, 2, 2, 1, 1};
+	//unsigned char esNro=1;
 
 	for(int i=0; arg1[i]!='\0'; i++){
 		switch(arg1[i]){
@@ -227,6 +228,8 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '*':
 			case '/':
 			case '^':			//Se considera que la potencia es right associative
+
+				salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
 				while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
 					salida[contSalida++]=operadores[--contOperadores];
 					//contOperadores--;
@@ -260,6 +263,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '8':
 			case '9':
 				salida[contSalida++]=arg1[i];
+				//esNro=1;
 				break;
 		}	
 	}
@@ -270,6 +274,65 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 	salida[contSalida++]='\0';
 
 	printf("SALIDA POR FAVOR FUNCIONA: %s\n", salida);
+
+
+	//Fase de calcular el propio valor especificado
+	result=0;
+	int calculo[1000], aux1, aux2;
+	int contCalculo=0;
+
+	for(int i=0; salida[i]!='\0'; i++){
+		switch(salida[i]){
+			case '+':
+				assert(contCalculo>=2);
+				aux2=calculo[--contCalculo];
+				aux1=calculo[--contCalculo];
+				calculo[contCalculo++]=aux1+aux2;
+				break;			
+
+			case '-':
+				assert(contCalculo>=2);
+				aux2=calculo[--contCalculo];
+				aux1=calculo[--contCalculo];
+				calculo[contCalculo++]=aux1-aux2;
+				break;			
+
+			case '*':
+				assert(contCalculo>=2);
+				aux2=calculo[--contCalculo];
+				aux1=calculo[--contCalculo];
+				calculo[contCalculo++]=aux1*aux2;
+				break;			
+
+			case '/':
+				assert(contCalculo>=2);
+				aux2=calculo[--contCalculo];
+				aux1=calculo[--contCalculo];
+				calculo[contCalculo++]=aux1/aux2;
+				break;			
+
+			case '^':
+				assert(contCalculo>=2);
+				aux2=calculo[--contCalculo];
+				aux1=calculo[--contCalculo];
+				calculo[contCalculo++]=pow(aux1, aux2);
+				break;
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':			
+				calculo[contCalculo++]=atoi(&salida[i]);
+				break;
+		}
+	}
+
+	printf("RESULTADO FINAL: %d\n", calculo[0]);
 
 	return &result;
 }
