@@ -485,7 +485,7 @@ main (int argc, char *argv[])
 
 	if(argc==2){		//Modo interactivo
 		#define SALIDA 20
-		#define NUM_OPCIONES 69
+		#define NUM_OPCIONES 13
 		char opcion;
 		printf("Modo interactivo\n");
 
@@ -504,7 +504,7 @@ main (int argc, char *argv[])
 				printf("10.- Suma matricial\n");
 				printf("11.- Resta matricial (sin implementar)\n");
 				printf("12.- Multiplicacion matricial\n");
-				printf("69.- PRUEBA NO USAR\n");
+				printf("13.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
@@ -516,6 +516,7 @@ main (int argc, char *argv[])
 		double v1, v2;
 		matrix *m1=NULL, *m2=NULL;
 		int fil, col;
+		char *v=NULL;
 
 		//Fase de pedir los datos
 
@@ -603,13 +604,11 @@ main (int argc, char *argv[])
 				printf("\n--------------------------------\n");
 				break;
 
-			case 69:
-				char v[1000];
-
+			case 13:
+				v=calloc(1000, sizeof(char));
+				printf("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
 				scanf("%s", v);
-				printf("Salida: %s\n", v);
-
-				multiplescomandos_calculadora_1(host, v);
+				
 				break;
 
 			default:
@@ -676,6 +675,14 @@ main (int argc, char *argv[])
 				liberarMatrix(&m1);
 				liberarMatrix(&m2);
 				break;
+
+			case 13:
+				multiplescomandos_calculadora_1(host, v);
+				free(v);
+				v=NULL;
+
+				break;
+
 		}
 		}while(opcion!=SALIDA);
 	}
@@ -701,52 +708,5 @@ main (int argc, char *argv[])
 		}
 	}
 
-/*
-	printf("sizeof: %d\n", sizeof(double));
-
-	matrix m1, m2;
-
-	srand(time(NULL));
-
-	m1.fil=m1.col=m2.fil=m2.col=3;
-
-	m1.m.m_len=m2.m.m_len=m1.fil*m1.col*sizeof(double);					//MUY IMPORTANTE PONERLO, DE OTRA NO SABRIA EMPAQUETAR LOS DATOS
-
-	m1.m.m_val=calloc(m1.fil*m1.col, sizeof(double));
-	m2.m.m_val=calloc(m2.fil*m2.col, sizeof(double));
-
-
-	for(int i=0; i<m1.fil; i++){
-		for(int j=0; j<m1.col; j++){
-			m1.m.m_val[i*m1.col+j]=rand()%20;
-			m2.m.m_val[i*m2.col+j]=rand()%21;
-		}
-	}
-
-	for(int i=0; i<m1.fil; i++){
-		for(int j=0; j<m1.col; j++)
-			printf("%lf ", m1.m.m_val[i*m1.col+j]);
-
-		printf("\n");
-	}
-
-
-	printf("\n");
-
-	for (int i = 0; i < m2.fil; i++)
-	{
-		for (int j = 0; j < m2.col; j++)
-			printf("%lf ", m2.m.m_val[i * m2.col + j]);
-
-		printf("\n");
-	}
-
-	printf("\n");
-
-	calculadora_1 (host, m1, m2);
-
-	free(m1.m.m_val);
-	free(m2.m.m_val);
-	*/
 exit (0);
 }

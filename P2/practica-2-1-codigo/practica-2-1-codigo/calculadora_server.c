@@ -271,10 +271,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 			default:		//Caso para las funciones
 			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-				//while(arg1[i]!='('){
-					operadores[contOperadores++]=arg1[i];
-				//}
-//				i--;
+			operadores[contOperadores++]=arg1[i];
 					
 				break;
 		}	
@@ -294,7 +291,6 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 
 	//Fase de calcular el propio valor especificado
-	result=0;
 	double calculo[1000], aux1, aux2;
 	int contCalculo=0;
 	i=0;
@@ -346,7 +342,8 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '9':			
 				calculo[contCalculo++]=atof(&salida[i]);
 				
-				if(calculo[contCalculo-1]>10){
+				//if(calculo[contCalculo-1]>10){
+				if(salida[i+1]!='|'){	//Nos encontramos ante un numero mayor que 10 o decimal
 					for(int j=i; j<contSalida && salida[j]!='|'; j++){
 						i=j;
 					}
@@ -359,7 +356,6 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 				aux1=sin(calculo[--contCalculo]);
 				calculo[contCalculo++]=aux1;
 
-				//i+=2;
 				break;
 			}
 
@@ -369,7 +365,6 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 				aux1=cos(calculo[--contCalculo]);
 				calculo[contCalculo++]=aux1;
 
-				//i+=2;
 				break;
 			}
 
@@ -378,7 +373,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 				aux1=tan(calculo[--contCalculo]);
 				calculo[contCalculo++]=aux1;
-				//i+=2;
+
 				break;				
 			}
 
@@ -387,7 +382,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 				aux1=sqrt(calculo[--contCalculo]);
 				calculo[contCalculo++]=aux1;
-				//i+=3;
+
 				break;							
 			}
 
@@ -403,7 +398,8 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 		i++;
 	}
 
-	printf("RESULTADO FINAL: %lf\n", calculo[0]);
+	//printf("RESULTADO FINAL: %lf\n", calculo[0]);
+	result=calculo[0];
 
 	return &result;
 }
