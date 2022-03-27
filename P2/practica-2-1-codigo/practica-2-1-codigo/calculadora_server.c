@@ -268,6 +268,9 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 		}	
 	}
 	
+	if(contOperadores>0)
+		salida[contSalida++]='|';
+
 	for(int i=contOperadores; i>0; i--)
 		salida[contSalida++]=operadores[i-1];
 
@@ -328,6 +331,12 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '8':
 			case '9':			
 				calculo[contCalculo++]=atoi(&salida[i]);
+				
+				if(calculo[contCalculo-1]>10){
+					for(int j=i; j<contSalida && salida[j]!='|'; j++){
+						i=j;
+					}
+				}
 				break;
 		}
 	}
