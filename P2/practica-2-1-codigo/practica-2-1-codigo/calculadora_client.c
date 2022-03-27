@@ -8,6 +8,54 @@
 #include <time.h>
 #include <assert.h>
 
+
+//Funciones que solamente se ejecutan en el cliente
+
+void reservarMatrix(matrix **m, int fil, int col){
+	assert((*m)==NULL);
+
+	*m=calloc(1, sizeof(matrix));
+
+	(*m)->fil=fil;
+	(*m)->col=col;
+
+	(*m)->m.m_val=calloc(fil*col, sizeof(double));
+	(*m)->m.m_len=fil*col;
+}
+
+void liberarMatrix(matrix **m){
+	assert((*m)!=NULL);
+
+	free((*m)->m.m_val);
+	free(*m);
+
+	*m=NULL;
+}
+
+void imprimirMatriz(matrix *m){
+		for (int i = 0; i < m->fil; i++)
+		{
+			for (int j = 0; j < m->col; j++)
+			{
+				printf("%lf ", m->m.m_val[i*m->col+j]);
+			}
+
+			printf("\n");
+			
+		}
+}
+
+
+void rellenarMatriz(matrix *m1){
+	for(int i=0; i<m1->fil; i++){
+		printf("Fila %d valores: ", i);
+		for (int j = 0; j < m1->col; j++)
+		{
+			scanf("%lf", &(m1->m.m_val[i*m1->col+j]));
+		}
+	}	
+}
+
 void suma_calculadora_1(char *host, double a, double b){
 	CLIENT *clnt;
 	double *res;
@@ -295,13 +343,14 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	else{
 		printf("#####################################\n");
 		printf("\nLa suma matricial es: \n");		
-
+/*
 		for(int i=0; i<res->fil;i++){
 			for(int j=0; j<res->col; j++)
 				printf("%lf ", res->m.m_val[i*res->col+j]);
 
 			printf("\n");
-		}
+		}*/
+		imprimirMatriz(res);		
 		printf("#####################################\n");
 
 		printf("\n");
@@ -313,53 +362,46 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 #endif	 /* DEBUG */
 }
 
+void
+multmatricial_calculadora_1(char *host, matrix m1, matrix m2)
+{
+	CLIENT *clnt;
+	matrix *res;
 
-//Funciones que solamente se ejecutan en el cliente
-
-void reservarMatrix(matrix **m, int fil, int col){
-	assert((*m)==NULL);
-
-	*m=calloc(1, sizeof(matrix));
-
-	(*m)->fil=fil;
-	(*m)->col=col;
-
-	(*m)->m.m_val=calloc(fil*col, sizeof(double));
-	(*m)->m.m_len=fil*col;
-}
-
-void liberarMatrix(matrix **m){
-	assert((*m)!=NULL);
-
-	free((*m)->m.m_val);
-	free(*m);
-
-	*m=NULL;
-}
-
-
-void mostrarMatrix(matrix *m){
-	for(int i=0; i<m->fil; i++){
-		for(int j=0; j<m->col; j++)
-			printf("%lf ", m->m.m_val);
-
-		printf("\n");
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
 	}
-}
+#endif	/* DEBUG */
 
-
-void imprimirMatriz(matrix *m){
-		for (int i = 0; i < m->fil; i++)
-		{
-			for (int j = 0; j < m->col; j++)
-			{
-				printf("%lf ", m->m.m_val[i*m->col+j]);
-			}
+	res = multmatricial_1(m1, m2, clnt);
+	if (res == (matrix *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+		printf("#####################################\n");
+		printf("\nLa suma matricial es: \n");		
+/*
+		for(int i=0; i<res->fil;i++){
+			for(int j=0; j<res->col; j++)
+				printf("%lf ", res->m.m_val[i*res->col+j]);
 
 			printf("\n");
-			
-		}
+		}*/
+		imprimirMatriz(res);		
+		printf("#####################################\n");
+
+		printf("\n");
+		xdr_free((xdrproc_t) xdr_double, res->m.m_val);
+		xdr_free((xdrproc_t) xdr_matrix, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
 }
+
 
 int
 main (int argc, char *argv[])
@@ -374,7 +416,7 @@ main (int argc, char *argv[])
 
 	if(argc==2){		//Modo interactivo
 		#define SALIDA 20
-		#define NUM_OPCIONES 10
+		#define NUM_OPCIONES 12
 		char opcion;
 		printf("Modo interactivo\n");
 
@@ -443,25 +485,11 @@ main (int argc, char *argv[])
 
 				printf("\n--------------------------------\n");
 				printf("Primera matriz: \n");
-
-				for(int i=0; i<m1->fil; i++){
-					printf("Fila %d valores: ", i);
-					for (int j = 0; j < m1->col; j++)
-					{
-						scanf("%lf", &(m1->m.m_val[i*m1->col+j]));
-					}
-				}
+				rellenarMatriz(m1);
 
 				printf("\n--------------------------------\n");
 				printf("Segunda matriz: \n");
-
-				for(int i=0; i<m2->fil; i++){
-					printf("Fila %d valores: ", i);
-					for (int j = 0; j < m2->col; j++)
-					{
-						scanf("%lf", &(m2->m.m_val[i*m2->col+j]));
-					}
-				}
+				rellenarMatriz(m2);
 
 				printf("\n-------------Operandos-------------------\n");
 				printf("Primera matriz: \n");
@@ -479,20 +507,30 @@ main (int argc, char *argv[])
 				printf("Filas Matriz 1: ");
 				scanf("%d", &fil);
 
-				printf("Columnas Matriz 2: ");
+				printf("Columnas Matriz 1: ");
 				scanf("%d", &col);
 
 				reservarMatrix(&m1, fil, col);
+				reservarMatrix(&m2, col, fil);
 
-				printf("Filas Matriz 1: ");
-				scanf("%d", &fil);
+				printf("\n--------------------------------\n");
+				printf("Primera matriz: \n");
+				rellenarMatriz(m1);
 
-				printf("Columnas Matriz 2: ");
-				scanf("%d", &col);
+				printf("\n--------------------------------\n");
+				printf("Segunda matriz: \n");
+				rellenarMatriz(m2);
 
-				reservarMatrix(&m2, fil, col);
+				printf("\n-------------Operandos-------------------\n");
+				printf("Primera matriz: \n");
+				imprimirMatriz(m1);
 
+				printf("--------------------------------");
+				printf("\nSegunda matriz: \n");
+				imprimirMatriz(m2);
 
+				printf("\n--------------------------------\n");
+				break;
 
 			default:
 			printf("Opcion no implementada\n");
@@ -540,6 +578,13 @@ main (int argc, char *argv[])
 
 			case 10:
 				sumamatricial_calculadora_1(host, *m1, *m2);
+
+				liberarMatrix(&m1);
+				liberarMatrix(&m2);
+				break;
+
+			case 12:
+				multmatricial_calculadora_1(host, *m1, *m2);
 
 				liberarMatrix(&m1);
 				liberarMatrix(&m2);
