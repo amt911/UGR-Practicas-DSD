@@ -208,10 +208,27 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 	int prioridadesValor[]={3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
 	int i=0;
 
+	//Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9)
+	//Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2
+	//Tambien con: 3*-2 -> 3*0-2 ESTA MAL
 	while(arg1[i]!='\0'){
 		switch(arg1[i]){
 			case '+':
 			case '-':
+					salida[contSalida++]='|';	//Caracter especial para detectar numeros con mas de una cifra
+
+				if(((i-1)>=0 && (arg1[i-1]<'0' || arg1[i-1]>'9') && (arg1[i-1]!=')')) || i==0){
+					//operadores[contOperadores++]=arg1[i];
+					salida[contSalida++]='0';
+					salida[contSalida++]='|';
+				}
+
+				while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
+					salida[contSalida++]=operadores[--contOperadores];
+				}
+				operadores[contOperadores++]=arg1[i];
+				break;
+
 			case '*':
 			case '/':
 			case '^':			//Se considera que la potencia es right associative
@@ -219,7 +236,6 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 				salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
 				while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
 					salida[contSalida++]=operadores[--contOperadores];
-					//contOperadores--;
 				}
 				operadores[contOperadores++]=arg1[i];
 				break;
