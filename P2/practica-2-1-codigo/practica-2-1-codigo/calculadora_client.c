@@ -348,6 +348,19 @@ void mostrarMatrix(matrix *m){
 }
 
 
+void imprimirMatriz(matrix *m){
+		for (int i = 0; i < m->fil; i++)
+		{
+			for (int j = 0; j < m->col; j++)
+			{
+				printf("%lf ", m->m.m_val[i*m->col+j]);
+			}
+
+			printf("\n");
+			
+		}
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -452,29 +465,11 @@ main (int argc, char *argv[])
 
 				printf("\n-------------Operandos-------------------\n");
 				printf("Primera matriz: \n");
-				for (int i = 0; i < m1->fil; i++)
-				{
-					for (int j = 0; j < m1->col; j++)
-					{
-						printf("%lf ", m1->m.m_val[i*m1->col+j]);
-					}
-
-					printf("\n");
-					
-				}
+				imprimirMatriz(m1);
 
 				printf("--------------------------------");
 				printf("\nSegunda matriz: \n");
-				for (int i = 0; i < m2->fil; i++)
-				{
-					for (int j = 0; j < m2->col; j++)
-					{
-						printf("%lf ", m2->m.m_val[i*m2->col+j]);
-					}
-
-					printf("\n");
-					
-				}
+				imprimirMatriz(m2);
 
 				printf("\n--------------------------------\n");
 
