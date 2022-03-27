@@ -111,6 +111,16 @@ xdr_sumamatricial_1_argument (XDR *xdrs, sumamatricial_1_argument *objp)
 }
 
 bool_t
+xdr_restamatricial_1_argument (XDR *xdrs, restamatricial_1_argument *objp)
+{
+	 if (!xdr_matrix (xdrs, &objp->arg1))
+		 return FALSE;
+	 if (!xdr_matrix (xdrs, &objp->arg2))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_multmatricial_1_argument (XDR *xdrs, multmatricial_1_argument *objp)
 {
 	 if (!xdr_matrix (xdrs, &objp->arg1))

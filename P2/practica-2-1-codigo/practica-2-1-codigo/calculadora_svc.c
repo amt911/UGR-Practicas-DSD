@@ -83,6 +83,12 @@ _sumamatricial_1 (sumamatricial_1_argument *argp, struct svc_req *rqstp)
 }
 
 static matrix *
+_restamatricial_1 (restamatricial_1_argument *argp, struct svc_req *rqstp)
+{
+	return (restamatricial_1_svc(argp->arg1, argp->arg2, rqstp));
+}
+
+static matrix *
 _multmatricial_1 (multmatricial_1_argument *argp, struct svc_req *rqstp)
 {
 	return (multmatricial_1_svc(argp->arg1, argp->arg2, rqstp));
@@ -101,9 +107,9 @@ _determinantematriz_1 (matrix  *argp, struct svc_req *rqstp)
 }
 
 static matrix *
-_resolversistemas_1 (matrix  *argp, struct svc_req *rqstp)
+_resolverecuaciones_1 (matrix  *argp, struct svc_req *rqstp)
 {
-	return (resolversistemas_1_svc(*argp, rqstp));
+	return (resolverecuaciones_1_svc(*argp, rqstp));
 }
 
 static double *
@@ -127,10 +133,11 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		potencia_1_argument potencia_1_arg;
 		int factorial_1_arg;
 		sumamatricial_1_argument sumamatricial_1_arg;
+		restamatricial_1_argument restamatricial_1_arg;
 		multmatricial_1_argument multmatricial_1_arg;
 		matrix traspuesta_1_arg;
 		matrix determinantematriz_1_arg;
-		matrix resolversistemas_1_arg;
+		matrix resolverecuaciones_1_arg;
 		char *multiplescomandos_1_arg;
 	} argument;
 	char *result;
@@ -208,6 +215,12 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) _sumamatricial_1;
 		break;
 
+	case restaMatricial:
+		_xdr_argument = (xdrproc_t) xdr_restamatricial_1_argument;
+		_xdr_result = (xdrproc_t) xdr_matrix;
+		local = (char *(*)(char *, struct svc_req *)) _restamatricial_1;
+		break;
+
 	case multMatricial:
 		_xdr_argument = (xdrproc_t) xdr_multmatricial_1_argument;
 		_xdr_result = (xdrproc_t) xdr_matrix;
@@ -226,10 +239,10 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		local = (char *(*)(char *, struct svc_req *)) _determinantematriz_1;
 		break;
 
-	case resolverSistemas:
+	case resolverEcuaciones:
 		_xdr_argument = (xdrproc_t) xdr_matrix;
 		_xdr_result = (xdrproc_t) xdr_matrix;
-		local = (char *(*)(char *, struct svc_req *)) _resolversistemas_1;
+		local = (char *(*)(char *, struct svc_req *)) _resolverecuaciones_1;
 		break;
 
 	case multiplesComandos:

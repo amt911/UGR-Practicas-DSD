@@ -74,6 +74,12 @@ struct sumamatricial_1_argument {
 };
 typedef struct sumamatricial_1_argument sumamatricial_1_argument;
 
+struct restamatricial_1_argument {
+	matrix arg1;
+	matrix arg2;
+};
+typedef struct restamatricial_1_argument restamatricial_1_argument;
+
 struct multmatricial_1_argument {
 	matrix arg1;
 	matrix arg2;
@@ -117,19 +123,22 @@ extern  int * factorial_1_svc(int , struct svc_req *);
 #define sumaMatricial 11
 extern  matrix * sumamatricial_1(matrix , matrix , CLIENT *);
 extern  matrix * sumamatricial_1_svc(matrix , matrix , struct svc_req *);
-#define multMatricial 12
+#define restaMatricial 12
+extern  matrix * restamatricial_1(matrix , matrix , CLIENT *);
+extern  matrix * restamatricial_1_svc(matrix , matrix , struct svc_req *);
+#define multMatricial 13
 extern  matrix * multmatricial_1(matrix , matrix , CLIENT *);
 extern  matrix * multmatricial_1_svc(matrix , matrix , struct svc_req *);
-#define traspuesta 13
+#define traspuesta 14
 extern  matrix * traspuesta_1(matrix , CLIENT *);
 extern  matrix * traspuesta_1_svc(matrix , struct svc_req *);
-#define determinanteMatriz 14
+#define determinanteMatriz 15
 extern  double * determinantematriz_1(matrix , CLIENT *);
 extern  double * determinantematriz_1_svc(matrix , struct svc_req *);
-#define resolverSistemas 15
-extern  matrix * resolversistemas_1(matrix , CLIENT *);
-extern  matrix * resolversistemas_1_svc(matrix , struct svc_req *);
-#define multiplesComandos 16
+#define resolverEcuaciones 16
+extern  matrix * resolverecuaciones_1(matrix , CLIENT *);
+extern  matrix * resolverecuaciones_1_svc(matrix , struct svc_req *);
+#define multiplesComandos 17
 extern  double * multiplescomandos_1(char *, CLIENT *);
 extern  double * multiplescomandos_1_svc(char *, struct svc_req *);
 extern int calculadora_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
@@ -168,19 +177,22 @@ extern  int * factorial_1_svc();
 #define sumaMatricial 11
 extern  matrix * sumamatricial_1();
 extern  matrix * sumamatricial_1_svc();
-#define multMatricial 12
+#define restaMatricial 12
+extern  matrix * restamatricial_1();
+extern  matrix * restamatricial_1_svc();
+#define multMatricial 13
 extern  matrix * multmatricial_1();
 extern  matrix * multmatricial_1_svc();
-#define traspuesta 13
+#define traspuesta 14
 extern  matrix * traspuesta_1();
 extern  matrix * traspuesta_1_svc();
-#define determinanteMatriz 14
+#define determinanteMatriz 15
 extern  double * determinantematriz_1();
 extern  double * determinantematriz_1_svc();
-#define resolverSistemas 15
-extern  matrix * resolversistemas_1();
-extern  matrix * resolversistemas_1_svc();
-#define multiplesComandos 16
+#define resolverEcuaciones 16
+extern  matrix * resolverecuaciones_1();
+extern  matrix * resolverecuaciones_1_svc();
+#define multiplesComandos 17
 extern  double * multiplescomandos_1();
 extern  double * multiplescomandos_1_svc();
 extern int calculadora_1_freeresult ();
@@ -199,6 +211,7 @@ extern  bool_t xdr_modulo_1_argument (XDR *, modulo_1_argument*);
 extern  bool_t xdr_logaritmo_1_argument (XDR *, logaritmo_1_argument*);
 extern  bool_t xdr_potencia_1_argument (XDR *, potencia_1_argument*);
 extern  bool_t xdr_sumamatricial_1_argument (XDR *, sumamatricial_1_argument*);
+extern  bool_t xdr_restamatricial_1_argument (XDR *, restamatricial_1_argument*);
 extern  bool_t xdr_multmatricial_1_argument (XDR *, multmatricial_1_argument*);
 
 #else /* K&R C */
@@ -212,6 +225,7 @@ extern bool_t xdr_modulo_1_argument ();
 extern bool_t xdr_logaritmo_1_argument ();
 extern bool_t xdr_potencia_1_argument ();
 extern bool_t xdr_sumamatricial_1_argument ();
+extern bool_t xdr_restamatricial_1_argument ();
 extern bool_t xdr_multmatricial_1_argument ();
 
 #endif /* K&R C */

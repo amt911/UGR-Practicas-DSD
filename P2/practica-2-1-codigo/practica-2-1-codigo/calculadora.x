@@ -19,10 +19,11 @@ program CALCULADORA{
         int potencia(int, int)=9;
         int factorial(int)=10;
         matrix sumaMatricial(matrix, matrix)=11;
-        matrix multMatricial(matrix, matrix)=12;
-        matrix traspuesta(matrix)=13;
-        double determinanteMatriz(matrix)=14;
-        matrix resolverSistemas(matrix)=15;
-        double multiplesComandos(string)=16;
+        matrix restaMatricial(matrix, matrix)=12;
+        matrix multMatricial(matrix, matrix)=13;
+        matrix traspuesta(matrix)=14;
+        double determinanteMatriz(matrix)=15;
+        matrix resolverEcuaciones(matrix)=16;
+        double multiplesComandos(string)=17;
     } =1;
 } = 0x20000001;
