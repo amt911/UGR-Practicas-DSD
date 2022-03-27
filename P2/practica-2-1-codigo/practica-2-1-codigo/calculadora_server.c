@@ -203,18 +203,13 @@ resolverecuaciones_1_svc(matrix arg1,  struct svc_req *rqstp)
 {
 	static matrix  result;
 
-	/*
-	 * insert server code here
-	 */
-
 	return &result;
 }
 
-double *
-multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
+double operacionAlgebraicaShuntingYard(char *arg1, double x)
 {
-	//Se aplica el algoritmo de shunting yard de Dijkstra
-	static double  result;
+	//Se aplica el algoritmo de shunting yard de Dijkstra para pasar a la forma postfijo
+	double  result;
 	char salida[1000], operadores[1000];
 	int contSalida=0, contOperadores=0;
 	char prioridades[]={'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
@@ -265,6 +260,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '8':
 			case '9':
 			case '.':
+			case 'x':
 				salida[contSalida++]=arg1[i];
 
 				break;
@@ -350,6 +346,9 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 				}
 				break;
 
+			case 'x':			
+				calculo[contCalculo++]=x;
+
 			case 's':{	//sin
 				assert(contCalculo>=1);
 
@@ -400,6 +399,14 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 	//printf("RESULTADO FINAL: %lf\n", calculo[0]);
 	result=calculo[0];
+
+	return result;
+}
+
+double *
+multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp){
+	static double result;
+	result=operacionAlgebraicaShuntingYard(arg1, 0);
 
 	return &result;
 }
