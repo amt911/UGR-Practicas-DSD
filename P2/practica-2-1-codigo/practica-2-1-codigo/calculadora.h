@@ -86,6 +86,12 @@ struct multmatricial_1_argument {
 };
 typedef struct multmatricial_1_argument multmatricial_1_argument;
 
+struct resolverecuaciones_1_argument {
+	char *arg1;
+	double arg2;
+};
+typedef struct resolverecuaciones_1_argument resolverecuaciones_1_argument;
+
 #define CALCULADORA 0x20000001
 #define CALCULADORAVER 1
 
@@ -136,8 +142,8 @@ extern  matrix * traspuesta_1_svc(matrix , struct svc_req *);
 extern  double * determinantematriz_1(matrix , CLIENT *);
 extern  double * determinantematriz_1_svc(matrix , struct svc_req *);
 #define resolverEcuaciones 16
-extern  matrix * resolverecuaciones_1(matrix , CLIENT *);
-extern  matrix * resolverecuaciones_1_svc(matrix , struct svc_req *);
+extern  double * resolverecuaciones_1(char *, double , CLIENT *);
+extern  double * resolverecuaciones_1_svc(char *, double , struct svc_req *);
 #define multiplesComandos 17
 extern  double * multiplescomandos_1(char *, CLIENT *);
 extern  double * multiplescomandos_1_svc(char *, struct svc_req *);
@@ -190,8 +196,8 @@ extern  matrix * traspuesta_1_svc();
 extern  double * determinantematriz_1();
 extern  double * determinantematriz_1_svc();
 #define resolverEcuaciones 16
-extern  matrix * resolverecuaciones_1();
-extern  matrix * resolverecuaciones_1_svc();
+extern  double * resolverecuaciones_1();
+extern  double * resolverecuaciones_1_svc();
 #define multiplesComandos 17
 extern  double * multiplescomandos_1();
 extern  double * multiplescomandos_1_svc();
@@ -213,6 +219,7 @@ extern  bool_t xdr_potencia_1_argument (XDR *, potencia_1_argument*);
 extern  bool_t xdr_sumamatricial_1_argument (XDR *, sumamatricial_1_argument*);
 extern  bool_t xdr_restamatricial_1_argument (XDR *, restamatricial_1_argument*);
 extern  bool_t xdr_multmatricial_1_argument (XDR *, multmatricial_1_argument*);
+extern  bool_t xdr_resolverecuaciones_1_argument (XDR *, resolverecuaciones_1_argument*);
 
 #else /* K&R C */
 extern bool_t xdr_m ();
@@ -227,6 +234,7 @@ extern bool_t xdr_potencia_1_argument ();
 extern bool_t xdr_sumamatricial_1_argument ();
 extern bool_t xdr_restamatricial_1_argument ();
 extern bool_t xdr_multmatricial_1_argument ();
+extern bool_t xdr_resolverecuaciones_1_argument ();
 
 #endif /* K&R C */
 

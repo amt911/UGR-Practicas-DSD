@@ -129,3 +129,13 @@ xdr_multmatricial_1_argument (XDR *xdrs, multmatricial_1_argument *objp)
 		 return FALSE;
 	return TRUE;
 }
+
+bool_t
+xdr_resolverecuaciones_1_argument (XDR *xdrs, resolverecuaciones_1_argument *objp)
+{
+	 if (!xdr_string (xdrs, &objp->arg1, ~0))
+		 return FALSE;
+	 if (!xdr_double (xdrs, &objp->arg2))
+		 return FALSE;
+	return TRUE;
+}

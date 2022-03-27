@@ -198,14 +198,6 @@ determinantematriz_1_svc(matrix arg1,  struct svc_req *rqstp)
 	return &result;
 }
 
-matrix *
-resolverecuaciones_1_svc(matrix arg1,  struct svc_req *rqstp)
-{
-	static matrix  result;
-
-	return &result;
-}
-
 double operacionAlgebraicaShuntingYard(char *arg1, double x)
 {
 	//Se aplica el algoritmo de shunting yard de Dijkstra para pasar a la forma postfijo
@@ -401,6 +393,44 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 	result=calculo[0];
 
 	return result;
+}
+
+
+double *
+resolverecuaciones_1_svc(char *ecuacion, double error, struct svc_req *rqstp)
+{
+	static double  result;
+
+	double a=-300, b=300;
+	unsigned char encontrado=0;
+
+	for(int i=0; i<100 && !encontrado; i++){
+		if(operacionAlgebraicaShuntingYard(ecuacion, a)*operacionAlgebraicaShuntingYard(ecuacion, b)>=0){		//Por Bolzano
+			a-=300;
+			b+=300;
+		}
+		else
+			encontrado=1;
+	}
+
+	result=a;
+
+	while((b-a)>=error){
+		result=(a+b)/2;
+
+		if(operacionAlgebraicaShuntingYard(ecuacion, result) == 0.0){
+			result=result;
+			//break;				//QUITAR ESTO DE INMEDIATO
+		}
+		else if(operacionAlgebraicaShuntingYard(ecuacion, result)*operacionAlgebraicaShuntingYard(ecuacion, a)<0){
+			b=result;
+		}
+		else
+			a=result;
+	}
+
+	printf("Resultado: %lf\n", result);
+	return &result;
 }
 
 double *

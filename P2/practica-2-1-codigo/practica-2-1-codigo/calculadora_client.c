@@ -472,6 +472,36 @@ multmatricial_calculadora_1(char *host, matrix m1, matrix m2)
 }
 
 
+void resolverecuaciones_calculadora_1(char *host, char *ecuacion, double error){
+		CLIENT *clnt;
+	double *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+
+	res = resolverecuaciones_1(ecuacion, error, clnt);
+	if (res == (double *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+			printf("#####################################\n");
+			printf("El resultado es: %lf\n", *res);
+			printf("#####################################\n");
+
+		xdr_free((xdrproc_t) xdr_double, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
+
 int
 main (int argc, char *argv[])
 {
@@ -485,7 +515,7 @@ main (int argc, char *argv[])
 
 	if(argc==2){		//Modo interactivo
 		#define SALIDA 20
-		#define NUM_OPCIONES 13
+		#define NUM_OPCIONES 14
 		char opcion;
 		printf("Modo interactivo\n");
 
@@ -505,6 +535,7 @@ main (int argc, char *argv[])
 				printf("11.- Resta matricial (sin implementar)\n");
 				printf("12.- Multiplicacion matricial\n");
 				printf("13.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
+				printf("14.- Resolver ecuaciones de la forma ...=0\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
@@ -513,7 +544,7 @@ main (int argc, char *argv[])
 					printf("Opcion incorrecta\n");
 			}while((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA);
 
-		double v1, v2;
+		double v1, v2, error;
 		matrix *m1=NULL, *m2=NULL;
 		int fil, col;
 		char *v=NULL;
@@ -611,6 +642,16 @@ main (int argc, char *argv[])
 				
 				break;
 
+			case 14:
+				v=calloc(1000, sizeof(char));
+				printf("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
+				scanf("%s", v);
+
+				printf("Introduzca el error: ");
+				scanf("%lf", &error);
+
+				break;
+
 			default:
 			printf("Opcion no implementada\n");
 			break;
@@ -678,6 +719,13 @@ main (int argc, char *argv[])
 
 			case 13:
 				multiplescomandos_calculadora_1(host, v);
+				free(v);
+				v=NULL;
+
+				break;
+
+			case 14:
+				resolverecuaciones_calculadora_1(host, v, error);
 				free(v);
 				v=NULL;
 
