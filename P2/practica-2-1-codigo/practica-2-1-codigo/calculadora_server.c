@@ -217,11 +217,11 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 	static double  result;
 	char salida[1000], operadores[1000];
 	int contSalida=0, contOperadores=0;
-	char prioridades[]={'^', '*', '/', '+', '-'};
-	int prioridadesValor[]={3, 2, 2, 1, 1};
-	//unsigned char esNro=1;
+	char prioridades[]={'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
+	int prioridadesValor[]={3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
+	int i=0;
 
-	for(int i=0; arg1[i]!='\0'; i++){
+	while(arg1[i]!='\0'){
 		switch(arg1[i]){
 			case '+':
 			case '-':
@@ -238,10 +238,12 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 				break;
 
 			case '(':
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
 				operadores[contOperadores++]=arg1[i];
 				break;
 
 			case ')':
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
 				while(operadores[contOperadores-1]!='('){
 					assert(contOperadores>0);
 					salida[contSalida++]=operadores[--contOperadores];
@@ -262,10 +264,22 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '7':
 			case '8':
 			case '9':
+			case '.':
 				salida[contSalida++]=arg1[i];
-				//esNro=1;
+
+				break;
+
+			default:		//Caso para las funciones
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
+				//while(arg1[i]!='('){
+					operadores[contOperadores++]=arg1[i];
+				//}
+//				i--;
+					
 				break;
 		}	
+
+		i++;
 	}
 	
 	if(contOperadores>0)
@@ -281,10 +295,10 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 
 	//Fase de calcular el propio valor especificado
 	result=0;
-	int calculo[1000], aux1, aux2;
+	double calculo[1000], aux1, aux2;
 	int contCalculo=0;
-
-	for(int i=0; salida[i]!='\0'; i++){
+	i=0;
+	while( salida[i]!='\0'){
 		switch(salida[i]){
 			case '+':
 				assert(contCalculo>=2);
@@ -330,7 +344,7 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 			case '7':
 			case '8':
 			case '9':			
-				calculo[contCalculo++]=atoi(&salida[i]);
+				calculo[contCalculo++]=atof(&salida[i]);
 				
 				if(calculo[contCalculo-1]>10){
 					for(int j=i; j<contSalida && salida[j]!='|'; j++){
@@ -338,10 +352,58 @@ multiplescomandos_1_svc(char *arg1,  struct svc_req *rqstp)
 					}
 				}
 				break;
+
+			case 's':{	//sin
+				assert(contCalculo>=1);
+
+				aux1=sin(calculo[--contCalculo]);
+				calculo[contCalculo++]=aux1;
+
+				//i+=2;
+				break;
+			}
+
+			case 'c':{	//cos
+				assert(contCalculo>=1);
+
+				aux1=cos(calculo[--contCalculo]);
+				calculo[contCalculo++]=aux1;
+
+				//i+=2;
+				break;
+			}
+
+			case 't':{	//tan
+				assert(contCalculo>=1);
+
+				aux1=tan(calculo[--contCalculo]);
+				calculo[contCalculo++]=aux1;
+				//i+=2;
+				break;				
+			}
+
+			case 'r':{		//sqrt
+				assert(contCalculo>=1);
+
+				aux1=sqrt(calculo[--contCalculo]);
+				calculo[contCalculo++]=aux1;
+				//i+=3;
+				break;							
+			}
+
+			case 'e':{	//Para las exponenciales con el numero e
+				assert(contCalculo>=1);
+
+				aux1=exp(calculo[--contCalculo]);
+				calculo[contCalculo++]=aux1;
+
+				break;											
+			}
 		}
+		i++;
 	}
 
-	printf("RESULTADO FINAL: %d\n", calculo[0]);
+	printf("RESULTADO FINAL: %lf\n", calculo[0]);
 
 	return &result;
 }
