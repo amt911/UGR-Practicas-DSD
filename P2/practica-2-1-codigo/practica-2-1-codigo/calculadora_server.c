@@ -208,57 +208,30 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 	char prioridades[]={'E', 'R', 'S', 'C', 'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
 	int prioridadesValor[]={3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
 	int i=0;
-	//unsigned char cerrarParentesis=0;
 
 	//Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
 	//Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
 	//Tambien con: 3*-2 -> 3*0-2 ESTA MAL
-
-//Para el - unario
-			/*
-					salida[contSalida++]='|';	//Caracter especial para detectar numeros con mas de una cifra
-
-				if(((i-1)>=0 && (arg1[i-1]<'0' || arg1[i-1]>'9') && (arg1[i-1]!=')')) || i==0){
-					operadores[contOperadores++]= '(';
-					salida[contSalida++]='0';
-					salida[contSalida++]='|';
-					cerrarParentesis=1;
-				}
-
-				while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
-					salida[contSalida++]=operadores[--contOperadores];
-				}
-				operadores[contOperadores++]=arg1[i];
-				*/
-				//break;
-
-//Para la parte de operandos cuando - es unario
-/*
-				//Lo siguiente que tiene que hacer es cerrar el parentesis si esta puesto a cerrarlo
-				if(cerrarParentesis==1 && (arg1[i+1]<'0' || arg1[i+1]>'9') && arg1[i+1]!='.'){
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-				while(operadores[contOperadores-1]!='('){
-					assert(contOperadores>0);
-					salida[contSalida++]=operadores[--contOperadores];
-					//contOperadores--;
-				}
-
-				assert(operadores[contOperadores-1]=='(');
-				contOperadores--;
-				cerrarParentesis=0;					
-				}
-				*/
-
+	// -c(96*5*-r(6^2))/5+7		Tiene que dar: 7.133423546
+	// -(9-10)
+	// -s(-(3-7))		Tiene que dar: 0.7568
 
 	while(arg1[i]!='\0'){
 		//Si es el operador - unario
 		if(arg1[i]=='-' && (((i-1)>=0 && (arg1[i-1]<'0' || arg1[i-1]>'9') && (arg1[i-1]!=')')) || i==0)){
 			if(arg1[i+1]>='0' && arg1[i+1]<='9')
 				salida[contSalida++]='u';	//Inserto caracter especial para los - unarios
+
+			else if(arg1[i+1]=='('){
+				//Si hay algo del tipo: -(9-8) se convierte a -1*(9-8)
+
+				salida[contSalida++]='u';	//Se mete el - unario
+				salida[contSalida++]='1';	//Se mete el 1
+				arg1[i--]='*';	//Se convierte ese - unario de la entrada por un * para que lo detecte como multiplicacion
+			}
 			else{
 				arg1[i+1]=toupper(arg1[i+1]);	//SI es una funcion se le cambia el estado a negativo
 			}
-			//salida[contSalida++]=arg1[++i];
 		}
 
 		else if(arg1[i]=='+' || arg1[i]=='-' || arg1[i]=='*' || arg1[i]=='/' || arg1[i]=='^'){
@@ -314,7 +287,7 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 
 	while( salida[i]!='\0'){
 		if(salida[i]=='+' || salida[i]=='-' || salida[i]=='*' || salida[i]=='/' || salida[i]=='^'){
-			//assert(contCalculo>=2);
+			assert(contCalculo>=2);
 			aux2=calculo[--contCalculo];
 			aux1=calculo[--contCalculo];
 
@@ -399,7 +372,6 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 		i++;
 	}
 
-	//printf("RESULTADO FINAL: %lf\n", calculo[0]);
 	result=calculo[0];
 
 	return result;
