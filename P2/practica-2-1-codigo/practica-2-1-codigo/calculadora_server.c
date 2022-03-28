@@ -8,6 +8,7 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 double *
 suma_1_svc(double arg1, double arg2,  struct svc_req *rqstp)
@@ -204,20 +205,16 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 	double  result;
 	char salida[1000], operadores[1000];
 	int contSalida=0, contOperadores=0;
-	char prioridades[]={'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
-	int prioridadesValor[]={3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
+	char prioridades[]={'E', 'R', 'S', 'C', 'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
+	int prioridadesValor[]={3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
 	int i=0;
-	unsigned char cerrarParentesis=0;
+	//unsigned char cerrarParentesis=0;
 
-	//Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9)
-	//Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2
+	//Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
+	//Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
 	//Tambien con: 3*-2 -> 3*0-2 ESTA MAL
 
-
-	while(arg1[i]!='\0'){
-		switch(arg1[i]){
-			case '+':
-			case '-':
+//Para el - unario
 			/*
 					salida[contSalida++]='|';	//Caracter especial para detectar numeros con mas de una cifra
 
@@ -235,47 +232,7 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 				*/
 				//break;
 
-			case '*':
-			case '/':
-			case '^':			//Se considera que la potencia es right associative
-
-				salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-				while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
-					salida[contSalida++]=operadores[--contOperadores];
-				}
-				operadores[contOperadores++]=arg1[i];
-				break;
-
-			case '(':
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-				operadores[contOperadores++]=arg1[i];
-				break;
-
-			case ')':
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-				while(operadores[contOperadores-1]!='('){
-					assert(contOperadores>0);
-					salida[contSalida++]=operadores[--contOperadores];
-					//contOperadores--;
-				}
-
-				assert(operadores[contOperadores-1]=='(');
-				contOperadores--;
-				break;
-
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case '.':
-			case 'x':
-				salida[contSalida++]=arg1[i];
+//Para la parte de operandos cuando - es unario
 /*
 				//Lo siguiente que tiene que hacer es cerrar el parentesis si esta puesto a cerrarlo
 				if(cerrarParentesis==1 && (arg1[i+1]<'0' || arg1[i+1]>'9') && arg1[i+1]!='.'){
@@ -291,19 +248,55 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 				cerrarParentesis=0;					
 				}
 				*/
-				break;
 
-			default:		//Caso para las funciones
+
+	while(arg1[i]!='\0'){
+		//Si es el operador - unario
+		if(arg1[i]=='-' && (((i-1)>=0 && (arg1[i-1]<'0' || arg1[i-1]>'9') && (arg1[i-1]!=')')) || i==0)){
+			if(arg1[i+1]>='0' && arg1[i+1]<='9')
+				salida[contSalida++]='u';	//Inserto caracter especial para los - unarios
+			else{
+				arg1[i+1]=toupper(arg1[i+1]);	//SI es una funcion se le cambia el estado a negativo
+			}
+			//salida[contSalida++]=arg1[++i];
+		}
+
+		else if(arg1[i]=='+' || arg1[i]=='-' || arg1[i]=='*' || arg1[i]=='/' || arg1[i]=='^'){
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
+			while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
+				salida[contSalida++]=operadores[--contOperadores];
+			}
+
+			operadores[contOperadores++]=arg1[i];
+		}
+
+		else if(arg1[i]=='('){
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
+			operadores[contOperadores++]=arg1[i];			
+		}
+		else if(arg1[i]==')'){
+			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
+			
+			while(operadores[contOperadores-1]!='('){
+				assert(contOperadores>0);
+				salida[contSalida++]=operadores[--contOperadores];
+			}
+
+			assert(operadores[contOperadores-1]=='(');
+			contOperadores--;			
+		}
+		else if((arg1[i]>='0' && arg1[i]<='9') || arg1[i]=='.' || arg1[i]=='x'){
+			salida[contSalida++]=arg1[i];
+		}
+		else{
 			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
 			operadores[contOperadores++]=arg1[i];
-					
-				break;
-		}	
+		}
 
 		i++;
 	}
 	
-	if(contOperadores>0)
+	if(contOperadores>0)		//Si todavia quedan operadores se pone un | para diferenciarlos
 		salida[contSalida++]='|';
 
 	for(int i=contOperadores; i>0; i--)
@@ -311,117 +304,98 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 
 	salida[contSalida++]='\0';
 
-	printf("SALIDA POR FAVOR FUNCIONA: %s\n", salida);
+	printf("Salida postfijo: %s\n", salida);
 
 
 	//Fase de calcular el propio valor especificado
 	double calculo[1000], aux1, aux2;
 	int contCalculo=0;
 	i=0;
+
 	while( salida[i]!='\0'){
-		switch(salida[i]){
-			case '+':
-				assert(contCalculo>=2);
-				aux2=calculo[--contCalculo];
-				aux1=calculo[--contCalculo];
+		if(salida[i]=='+' || salida[i]=='-' || salida[i]=='*' || salida[i]=='/' || salida[i]=='^'){
+			//assert(contCalculo>=2);
+			aux2=calculo[--contCalculo];
+			aux1=calculo[--contCalculo];
+
+			switch(salida[i]){
+				case '+':
 				calculo[contCalculo++]=aux1+aux2;
-				break;			
+				break;
 
-			case '-':
-				assert(contCalculo>=2);
-				aux2=calculo[--contCalculo];
-				aux1=calculo[--contCalculo];
+				case '-':
 				calculo[contCalculo++]=aux1-aux2;
-				break;			
+				break;
 
-			case '*':
-				assert(contCalculo>=2);
-				aux2=calculo[--contCalculo];
-				aux1=calculo[--contCalculo];
+				case '*':
 				calculo[contCalculo++]=aux1*aux2;
-				break;			
+				break;
 
-			case '/':
-				assert(contCalculo>=2);
-				aux2=calculo[--contCalculo];
-				aux1=calculo[--contCalculo];
+				case '/':
 				calculo[contCalculo++]=aux1/aux2;
-				break;			
+				break;
 
-			case '^':
-				assert(contCalculo>=2);
-				aux2=calculo[--contCalculo];
-				aux1=calculo[--contCalculo];
+				case '^':
 				calculo[contCalculo++]=pow(aux1, aux2);
 				break;
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':			
-				calculo[contCalculo++]=atof(&salida[i]);
-				
-				//if(calculo[contCalculo-1]>10){
-				if(salida[i+1]!='|'){	//Nos encontramos ante un numero mayor que 10 o decimal
-					for(int j=i; j<contSalida && salida[j]!='|'; j++){
-						i=j;
-					}
+			}			
+		}
+
+		else if((salida[i]>='0' && salida[i]<='9') || salida[i]=='u'){
+			if(salida[i]=='u')
+				i++;
+			
+			calculo[contCalculo++]=atof(&salida[i]);
+
+			if(salida[i-1]=='u')
+				calculo[contCalculo-1]=-calculo[contCalculo-1];
+			
+			if(salida[i+1]!='|'){	//Nos encontramos ante un numero mayor que 10 o decimal
+				for(int j=i; j<contSalida && salida[j]!='|'; j++){
+					i=j;
 				}
-				break;
+			}						
+		}
+		else if(salida[i]=='x')
+			calculo[contCalculo++]=x;
 
-			case 'x':			
-				calculo[contCalculo++]=x;
+		else if(tolower(salida[i])=='s' || tolower(salida[i])=='c' || tolower(salida[i])=='t' || tolower(salida[i])=='r' || tolower(salida[i])=='e'){
+			assert(contCalculo>=1);
 
-			case 's':{	//sin
-				assert(contCalculo>=1);
+			switch(tolower(salida[i])){
+				case 's':{	//sin
+					aux1=sin(calculo[--contCalculo]);
+					break;
+				}
 
-				aux1=sin(calculo[--contCalculo]);
-				calculo[contCalculo++]=aux1;
+				case 'c':{	//cos
+					aux1=cos(calculo[--contCalculo]);
+					break;
+				}
 
-				break;
+				case 't':{	//tan
+					aux1=tan(calculo[--contCalculo]);
+					break;				
+				}
+
+				case 'r':{		//sqrt
+					aux1=sqrt(calculo[--contCalculo]);
+					break;							
+				}
+
+				case 'e':{	//Para las exponenciales con el numero e
+					aux1=exp(calculo[--contCalculo]);
+					break;											
+				}						
 			}
 
-			case 'c':{	//cos
-				assert(contCalculo>=1);
+			calculo[contCalculo++]=aux1;
 
-				aux1=cos(calculo[--contCalculo]);
-				calculo[contCalculo++]=aux1;
-
-				break;
-			}
-
-			case 't':{	//tan
-				assert(contCalculo>=1);
-
-				aux1=tan(calculo[--contCalculo]);
-				calculo[contCalculo++]=aux1;
-
-				break;				
-			}
-
-			case 'r':{		//sqrt
-				assert(contCalculo>=1);
-
-				aux1=sqrt(calculo[--contCalculo]);
-				calculo[contCalculo++]=aux1;
-
-				break;							
-			}
-
-			case 'e':{	//Para las exponenciales con el numero e
-				assert(contCalculo>=1);
-
-				aux1=exp(calculo[--contCalculo]);
-				calculo[contCalculo++]=aux1;
-
-				break;											
+			if(salida[i]>='A' && salida[i]<='Z'){
+				calculo[contCalculo-1]=-calculo[contCalculo-1];
 			}
 		}
+
 		i++;
 	}
 
