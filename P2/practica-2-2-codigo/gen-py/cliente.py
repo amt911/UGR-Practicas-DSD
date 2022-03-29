@@ -13,8 +13,12 @@ client = Calculadora.Client(protocol)
 
 transport.open()
 
-print("hacemos ping al server")
-client.ping()
+n1=float (input("Introduzca primer numero: "))
+n2=float (input("Introduzca segundo numero: "))
+
+print("La suma es: "+str(client.suma(n1, n2)))
+
+#client.ping()
 
 resultado = client.suma(1, 1)
 print("1 + 1 = " + str(resultado))
