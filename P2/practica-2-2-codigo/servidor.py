@@ -1,5 +1,6 @@
 import glob
 import sys
+import this
 
 from calculadora import Calculadora
 
@@ -12,22 +13,62 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-
+import math
 class CalculadoraHandler:
     def __init__(self):
         self.log = {}
 
-    def ping(self):
-        print("me han hecho ping()")
+    def suma(self, num1, num2):
+        return num1+num2
+   
+    def resta(self, num1,  num2):
+        return num1-num2
+   
+    def mult(self, a,  b):
+        return a*b
+    
+    def division(self, a,  b):
+        return a/b
+    
+    def modulo(self, dividendo,  divisor):
+        return dividendo%divisor
+    
+    def raiz_cuadrada(self, a):
+        return math.sqrt(a)
+    
+    def logaritmo(self, a,  b):
+        return "No implementado"
+    
+    def es_primo(self, a):
+        res=True
 
-    def suma(self, n1, n2):
-        print("sumando " + str(n1) + " con " + str(n2))
-        return n1 + n2
+        for i in range(2, (a/2)+1):
+            if(a%i==0):
+                res=False
 
-    def resta(self, n1, n2):
-        print("restando " + str(n1) + " con " + str(n2))
-        return n1 - n2
-
+        return res
+    
+    
+        
+    def potencia(self, base,  exp):
+        return base**exp
+    
+    def factorial(self, a):
+        res=1
+        for i in range(1, a+1):
+            res*=i
+            
+        return res
+        
+'''
+    def suma_matricial(self, a,  b):
+    def resta_matricial(self, a,  b):
+    def mult_matricial(self, a,  b):
+    def traspuesta(self, a):
+    def determinante_matriz(self, a):
+    def resolver_ecuaciones(self, cadena,  eq):
+    def multiples_comandos(self, cadena):
+'''
 
 if __name__ == "__main__":
     handler = CalculadoraHandler()
