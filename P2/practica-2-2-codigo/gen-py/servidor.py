@@ -42,7 +42,7 @@ class CalculadoraHandler:
     def es_primo(self, a):
         res=True
 
-        for i in range(2, (a/2)+1):
+        for i in range(2, int((a/2)+1)):
             if(a%i==0):
                 res=False
 
