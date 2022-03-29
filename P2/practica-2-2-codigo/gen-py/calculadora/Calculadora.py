@@ -1741,13 +1741,13 @@ class modulo_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.dividendo = iprot.readI32()
+                if ftype == TType.I64:
+                    self.dividendo = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
-                if ftype == TType.I32:
-                    self.divisor = iprot.readI32()
+                if ftype == TType.I64:
+                    self.divisor = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -1761,12 +1761,12 @@ class modulo_args(object):
             return
         oprot.writeStructBegin('modulo_args')
         if self.dividendo is not None:
-            oprot.writeFieldBegin('dividendo', TType.I32, 1)
-            oprot.writeI32(self.dividendo)
+            oprot.writeFieldBegin('dividendo', TType.I64, 1)
+            oprot.writeI64(self.dividendo)
             oprot.writeFieldEnd()
         if self.divisor is not None:
-            oprot.writeFieldBegin('divisor', TType.I32, 2)
-            oprot.writeI32(self.divisor)
+            oprot.writeFieldBegin('divisor', TType.I64, 2)
+            oprot.writeI64(self.divisor)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1787,8 +1787,8 @@ class modulo_args(object):
 all_structs.append(modulo_args)
 modulo_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'dividendo', None, None, ),  # 1
-    (2, TType.I32, 'divisor', None, None, ),  # 2
+    (1, TType.I64, 'dividendo', None, None, ),  # 1
+    (2, TType.I64, 'divisor', None, None, ),  # 2
 )
 
 
@@ -1813,8 +1813,8 @@ class modulo_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.I32:
-                    self.success = iprot.readI32()
+                if ftype == TType.I64:
+                    self.success = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -1828,8 +1828,8 @@ class modulo_result(object):
             return
         oprot.writeStructBegin('modulo_result')
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I32, 0)
-            oprot.writeI32(self.success)
+            oprot.writeFieldBegin('success', TType.I64, 0)
+            oprot.writeI64(self.success)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -1849,7 +1849,7 @@ class modulo_result(object):
         return not (self == other)
 all_structs.append(modulo_result)
 modulo_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None, ),  # 0
+    (0, TType.I64, 'success', None, None, ),  # 0
 )
 
 
@@ -1999,13 +1999,13 @@ class logaritmo_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.a = iprot.readI32()
+                if ftype == TType.I64:
+                    self.a = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
-                if ftype == TType.I32:
-                    self.b = iprot.readI32()
+                if ftype == TType.I64:
+                    self.b = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2019,12 +2019,12 @@ class logaritmo_args(object):
             return
         oprot.writeStructBegin('logaritmo_args')
         if self.a is not None:
-            oprot.writeFieldBegin('a', TType.I32, 1)
-            oprot.writeI32(self.a)
+            oprot.writeFieldBegin('a', TType.I64, 1)
+            oprot.writeI64(self.a)
             oprot.writeFieldEnd()
         if self.b is not None:
-            oprot.writeFieldBegin('b', TType.I32, 2)
-            oprot.writeI32(self.b)
+            oprot.writeFieldBegin('b', TType.I64, 2)
+            oprot.writeI64(self.b)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2045,8 +2045,8 @@ class logaritmo_args(object):
 all_structs.append(logaritmo_args)
 logaritmo_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'a', None, None, ),  # 1
-    (2, TType.I32, 'b', None, None, ),  # 2
+    (1, TType.I64, 'a', None, None, ),  # 1
+    (2, TType.I64, 'b', None, None, ),  # 2
 )
 
 
@@ -2132,8 +2132,8 @@ class es_primo_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.a = iprot.readI32()
+                if ftype == TType.I64:
+                    self.a = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2147,8 +2147,8 @@ class es_primo_args(object):
             return
         oprot.writeStructBegin('es_primo_args')
         if self.a is not None:
-            oprot.writeFieldBegin('a', TType.I32, 1)
-            oprot.writeI32(self.a)
+            oprot.writeFieldBegin('a', TType.I64, 1)
+            oprot.writeI64(self.a)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2169,7 +2169,7 @@ class es_primo_args(object):
 all_structs.append(es_primo_args)
 es_primo_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'a', None, None, ),  # 1
+    (1, TType.I64, 'a', None, None, ),  # 1
 )
 
 
@@ -2257,13 +2257,13 @@ class potencia_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.base = iprot.readI32()
+                if ftype == TType.I64:
+                    self.base = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
-                if ftype == TType.I32:
-                    self.exp = iprot.readI32()
+                if ftype == TType.I64:
+                    self.exp = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2277,12 +2277,12 @@ class potencia_args(object):
             return
         oprot.writeStructBegin('potencia_args')
         if self.base is not None:
-            oprot.writeFieldBegin('base', TType.I32, 1)
-            oprot.writeI32(self.base)
+            oprot.writeFieldBegin('base', TType.I64, 1)
+            oprot.writeI64(self.base)
             oprot.writeFieldEnd()
         if self.exp is not None:
-            oprot.writeFieldBegin('exp', TType.I32, 2)
-            oprot.writeI32(self.exp)
+            oprot.writeFieldBegin('exp', TType.I64, 2)
+            oprot.writeI64(self.exp)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2303,8 +2303,8 @@ class potencia_args(object):
 all_structs.append(potencia_args)
 potencia_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'base', None, None, ),  # 1
-    (2, TType.I32, 'exp', None, None, ),  # 2
+    (1, TType.I64, 'base', None, None, ),  # 1
+    (2, TType.I64, 'exp', None, None, ),  # 2
 )
 
 
@@ -2329,8 +2329,8 @@ class potencia_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.I32:
-                    self.success = iprot.readI32()
+                if ftype == TType.I64:
+                    self.success = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2344,8 +2344,8 @@ class potencia_result(object):
             return
         oprot.writeStructBegin('potencia_result')
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I32, 0)
-            oprot.writeI32(self.success)
+            oprot.writeFieldBegin('success', TType.I64, 0)
+            oprot.writeI64(self.success)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2365,7 +2365,7 @@ class potencia_result(object):
         return not (self == other)
 all_structs.append(potencia_result)
 potencia_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None, ),  # 0
+    (0, TType.I64, 'success', None, None, ),  # 0
 )
 
 
@@ -2390,8 +2390,8 @@ class factorial_args(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
-                if ftype == TType.I32:
-                    self.a = iprot.readI32()
+                if ftype == TType.I64:
+                    self.a = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2405,8 +2405,8 @@ class factorial_args(object):
             return
         oprot.writeStructBegin('factorial_args')
         if self.a is not None:
-            oprot.writeFieldBegin('a', TType.I32, 1)
-            oprot.writeI32(self.a)
+            oprot.writeFieldBegin('a', TType.I64, 1)
+            oprot.writeI64(self.a)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2427,7 +2427,7 @@ class factorial_args(object):
 all_structs.append(factorial_args)
 factorial_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'a', None, None, ),  # 1
+    (1, TType.I64, 'a', None, None, ),  # 1
 )
 
 
@@ -2452,8 +2452,8 @@ class factorial_result(object):
             if ftype == TType.STOP:
                 break
             if fid == 0:
-                if ftype == TType.I32:
-                    self.success = iprot.readI32()
+                if ftype == TType.I64:
+                    self.success = iprot.readI64()
                 else:
                     iprot.skip(ftype)
             else:
@@ -2467,8 +2467,8 @@ class factorial_result(object):
             return
         oprot.writeStructBegin('factorial_result')
         if self.success is not None:
-            oprot.writeFieldBegin('success', TType.I32, 0)
-            oprot.writeI32(self.success)
+            oprot.writeFieldBegin('success', TType.I64, 0)
+            oprot.writeI64(self.success)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -2488,7 +2488,7 @@ class factorial_result(object):
         return not (self == other)
 all_structs.append(factorial_result)
 factorial_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None, ),  # 0
+    (0, TType.I64, 'success', None, None, ),  # 0
 )
 
 

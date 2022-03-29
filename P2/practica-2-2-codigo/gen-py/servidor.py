@@ -60,9 +60,22 @@ class CalculadoraHandler:
             
         return res
         
-'''
+
     def suma_matricial(self, a,  b):
+        res=[[0 for j in range(len(a[0]))] for i in range(len(a))]
+        
+        for i in range(len(a)):
+            for j in range(len(a[0])):
+                res[i][j]=a[i][j]+b[i][j]
+        
+        return res
+        
+        
+        
     def resta_matricial(self, a,  b):
+        return False
+        
+'''
     def mult_matricial(self, a,  b):
     def traspuesta(self, a):
     def determinante_matriz(self, a):

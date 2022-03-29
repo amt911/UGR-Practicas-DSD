@@ -19,6 +19,21 @@ transport.open()
 SALIDA=20
 NUM_OPCIONES=14
 
+
+def imprimir_matriz(m):
+    for i in range(len(m)):
+        for j in range(len(m[0])):
+            print(str(m[i][j])+" ", end="")
+            
+        print("\n")
+
+def rellenar_matriz(m):
+	for i in range(len(m)):
+		print("Fila "+str(i)+" valores: ")
+		for j in range(len(m[0])):
+			m[i][j]=float(input(""))
+
+
 opcion=-1
 
 while opcion!=SALIDA:
@@ -55,28 +70,77 @@ while opcion!=SALIDA:
     elif (opcion==5 or opcion==8 or opcion==9):
         v1=float(input("Introduzca el valor: "))
     
+    elif(opcion==10 or opcion==11):
     
-    if(opcion==1):
-        salida=client.suma(v1, v2)
-    elif(opcion==2):
-        salida=client.resta(v1, v2)
-    elif(opcion==3):
-        salida=client.mult(v1, v2)
-    elif(opcion==4):
-        salida=client.division(v1, v2)
-    elif(opcion==5):
-        salida=client.raiz_cuadrada(v1)
-    elif(opcion==6):
-        salida=client.modulo(v1, v2)
-    elif(opcion==7):
-        salida=client.potencia(v1, v2)
-    elif(opcion==8):
-        salida=client.es_primo(int(v1))
-    elif(opcion==9):
-        salida=client.factorial(v1)
+        fil=int(input("Matriz num filas: "))
+        col=int(input("Matriz columnas: "))
+        
+        v1=[[0 for j in range(col)] for i in range(fil)]
+        v2=[[0 for j in range(col)] for i in range(fil)]
+    
+        print("--------------------------------")
+        
+        print("Primera matriz: ")
+        rellenar_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segunda matriz: ")
+        rellenar_matriz(v2)
+        
+        print("-------------Operandos-------------------")
+        
+        print("Primera matriz: ")
+        imprimir_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segunda matriz: ")
+        imprimir_matriz(v2)
+        
+        print("--------------------------------");       
+    
+        
+        
+    print("VALOR OPCION: "+str(opcion))
+    
+    if(1<=opcion<=NUM_OPCIONES):  
+        print("################")
+        print("ENTRANDO")  
+        print("################")
+        if(opcion==1):
+            salida=client.suma(v1, v2)
+        elif(opcion==2):
+            salida=client.resta(v1, v2)
+        elif(opcion==3):
+            salida=client.mult(v1, v2)
+        elif(opcion==4):
+            salida=client.division(v1, v2)
+        elif(opcion==5):
+            salida=client.raiz_cuadrada(v1)
+        elif(opcion==6):
+            salida=client.modulo(int(v1), int(v2))
+        elif(opcion==7):
+            salida=client.potencia(int(v1), int(v2))
+        elif(opcion==8):
+            salida=client.es_primo(int(v1))
+        elif(opcion==9):
+            salida=client.factorial(int(v1))
+        elif(opcion==10):
+            salida=client.suma_matricial(v1, v2)
+            
+            print("###################################")
+            imprimir_matriz(salida)
+            print("###################################")
+            
 
-    print("#######################################################")
-    print("El resultado de la operacion es: "+str(salida))
-    print("#######################################################")
+#        print("#######################################################")
+#        print("El resultado de la operacion es: "+str(salida))
+#        print("#######################################################")
+    
+    
+    matriz=[[1,2,3],[1,2,3]]
+    
+    print("Longitud matrix: "+str(len(matriz)*len(matriz[0])))
 
 transport.close()
