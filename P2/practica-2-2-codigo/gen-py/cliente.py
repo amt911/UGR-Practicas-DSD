@@ -100,14 +100,38 @@ while opcion!=SALIDA:
         
         print("--------------------------------");       
     
+    elif(opcion==12):
+        fil=int(input("Filas Matriz 1: "))
+        col=int(input("Columnas Matriz 1: "))
         
+        v1=[[0 for j in range(col)] for i in range(fil)]
+        v2=[[0 for j in range(fil)] for i in range(col)]
+    
+        print("--------------------------------")
         
-    print("VALOR OPCION: "+str(opcion))
+        print("Primera matriz: ")
+        rellenar_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segunda matriz: ")
+        rellenar_matriz(v2)
+        
+        print("-------------Operandos-------------------")
+        
+        print("Primera matriz: ")
+        imprimir_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segunda matriz: ")
+        imprimir_matriz(v2)
+        
+        print("--------------------------------");               
+        
+
     
     if(1<=opcion<=NUM_OPCIONES):  
-        print("################")
-        print("ENTRANDO")  
-        print("################")
         if(opcion==1):
             salida=client.suma(v1, v2)
         elif(opcion==2):
@@ -128,8 +152,17 @@ while opcion!=SALIDA:
             salida=client.factorial(int(v1))
         elif(opcion==10):
             salida=client.suma_matricial(v1, v2)
+        elif(opcion==11):
+            salida=client.resta_matricial(v1, v2)
+        elif(opcion==12):
+            salida=client.mult_matricial(v1, v2)
             
+            
+            
+        
+        if(10<=opcion<=12):
             print("###################################")
+            print("La operacion matricial da como resultado: ")
             imprimir_matriz(salida)
             print("###################################")
             
