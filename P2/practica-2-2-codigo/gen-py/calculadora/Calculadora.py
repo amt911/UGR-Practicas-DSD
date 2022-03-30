@@ -158,10 +158,11 @@ class Iface(object):
         """
         pass
 
-    def multiples_comandos(self, cadena):
+    def multiples_comandos(self, cadena, x):
         """
         Parameters:
          - cadena
+         - x
 
         """
         pass
@@ -708,19 +709,21 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "resolver_ecuaciones failed: unknown result")
 
-    def multiples_comandos(self, cadena):
+    def multiples_comandos(self, cadena, x):
         """
         Parameters:
          - cadena
+         - x
 
         """
-        self.send_multiples_comandos(cadena)
+        self.send_multiples_comandos(cadena, x)
         return self.recv_multiples_comandos()
 
-    def send_multiples_comandos(self, cadena):
+    def send_multiples_comandos(self, cadena, x):
         self._oprot.writeMessageBegin('multiples_comandos', TMessageType.CALL, self._seqid)
         args = multiples_comandos_args()
         args.cadena = cadena
+        args.x = x
         args.write(self._oprot)
         self._oprot.writeMessageEnd()
         self._oprot.trans.flush()
@@ -1158,7 +1161,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = multiples_comandos_result()
         try:
-            result.success = self._handler.multiples_comandos(args.cadena)
+            result.success = self._handler.multiples_comandos(args.cadena, args.x)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -3474,12 +3477,14 @@ class multiples_comandos_args(object):
     """
     Attributes:
      - cadena
+     - x
 
     """
 
 
-    def __init__(self, cadena=None,):
+    def __init__(self, cadena=None, x=None,):
         self.cadena = cadena
+        self.x = x
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -3495,6 +3500,11 @@ class multiples_comandos_args(object):
                     self.cadena = iprot.readString().decode('utf-8', errors='replace') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.DOUBLE:
+                    self.x = iprot.readDouble()
+                else:
+                    iprot.skip(ftype)
             else:
                 iprot.skip(ftype)
             iprot.readFieldEnd()
@@ -3508,6 +3518,10 @@ class multiples_comandos_args(object):
         if self.cadena is not None:
             oprot.writeFieldBegin('cadena', TType.STRING, 1)
             oprot.writeString(self.cadena.encode('utf-8') if sys.version_info[0] == 2 else self.cadena)
+            oprot.writeFieldEnd()
+        if self.x is not None:
+            oprot.writeFieldBegin('x', TType.DOUBLE, 2)
+            oprot.writeDouble(self.x)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
@@ -3529,6 +3543,7 @@ all_structs.append(multiples_comandos_args)
 multiples_comandos_args.thrift_spec = (
     None,  # 0
     (1, TType.STRING, 'cadena', 'UTF8', None, ),  # 1
+    (2, TType.DOUBLE, 'x', None, None, ),  # 2
 )
 
 

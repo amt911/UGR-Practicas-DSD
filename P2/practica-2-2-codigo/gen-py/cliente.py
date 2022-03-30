@@ -159,7 +159,7 @@ while opcion!=SALIDA:
         elif(opcion==12):
             salida=client.mult_matricial(v1, v2)
         elif(opcion==13):
-            salida=client.multiples_comandos(v1)
+            salida=client.multiples_comandos(v1, -1)
             print(str(salida))
             
             

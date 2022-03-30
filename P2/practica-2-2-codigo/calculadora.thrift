@@ -15,5 +15,5 @@ service Calculadora{
    list<list<double>> traspuesta(1:list<list<double>> a),
    double determinante_matriz(1:list<list<double>> a),
    double resolver_ecuaciones(1:string cadena, 2:double eq),
-   double multiples_comandos(1:string cadena)
+   double multiples_comandos(1:string cadena, 2:double x)
 }

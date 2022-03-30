@@ -92,7 +92,7 @@ class CalculadoraHandler:
                     
         return res
 
-    def multiples_comandos(self, cadena):
+    def multiples_comandos(self, cadena, x):
         salida, operadores = [], []  # No hace falta un contador
 
 	#Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
@@ -188,12 +188,13 @@ class CalculadoraHandler:
 
         print("Salida postfijo: ", end='')
         #for i in range(len(salida)):
-        print(*salida)
+        print(*salida, sep='')
 
 
 	    #Fase de calcular el propio valor especificado
         calculo=[]
         i=0
+        es_negativo=False
 
         while( i<len(salida)):
             if(salida[i]=='+' or salida[i]=='-' or salida[i]=='*' or salida[i]=='/' or salida[i]=='^'):
@@ -222,17 +223,23 @@ class CalculadoraHandler:
 
             elif(('0'<=salida[i]<='9') or salida[i]=='u'):
                 if(salida[i]=='u'):
+                    es_negativo=True
                     i+=1
-			
-                calculo.append(atof(&salida[i]))
+                
+                res_float=[]
+                #Implementacion unica de Python
+                while(salida[i]!='|'):
+                    res_float.append(salida[i])
+                    i+=1
+                
+                
+                #IMPORTANTE COMPROBAR ESTA SECCION
+                calculo.append(float(''.join(res_float)))
 
-                if(salida[i-1]=='u'):
+                if(es_negativo):
                     calculo[-1]=-calculo[-1]
-			
-                if(salida[i+1]!='|'):	#Nos encontramos ante un numero mayor que 10 o decimal
-                    #for(int j=i; j<contSalida and salida[j]!='|'; j++){
-                    #    i=j;
-                    print("IMPORTANTE IMPLEMENTAR")
+                    es_negativo=False
+
 
             elif(salida[i]=='x'):
                 calculo.append(x)
@@ -240,44 +247,31 @@ class CalculadoraHandler:
             elif(salida[i].lower() =='s' or salida[i].lower()=='c' or salida[i].lower()=='t' or salida[i].lower()=='r' or salida[i].lower()=='e'):
                 assert(len(calculo)>=1)
 
-			switch(tolower(salida[i])){
-				case 's':{	//sin
-					aux1=sin(calculo[--contCalculo]);
-					
-				}
+                minuscula=salida[i].lower()
 
-				case 'c':{	//cos
-					aux1=cos(calculo[--contCalculo]);
-					
-				}
+                if(minuscula=='s'):
+                    aux1=math.sin(calculo.pop())
 
-				case 't':{	//tan
-					aux1=tan(calculo[--contCalculo]);
-									
-				}
+                elif(minuscula=='c'):
+                    aux1=math.cos(calculo.pop())
 
-				case 'r':{		//sqrt
-					aux1=sqrt(calculo[--contCalculo]);
-												
-				}
+                elif(minuscula=='t'):
+                    aux1=math.tan(calculo.pop())
 
-				case 'e':{	//Para las exponenciales con el numero e
-					aux1=exp(calculo[--contCalculo]);
-																
-				}						
-			}
+                elif(minuscula=='r'):
+                    aux1=math.sqrt(calculo.pop())
 
-			calculo[contCalculo++]=aux1;
+                elif(minuscula=='e'):
+                    aux1=math.exp(calculo.pop())
 
-			if(salida[i]>='A' and salida[i]<='Z'){
-				calculo[contCalculo-1]=-calculo[contCalculo-1];
-			}
-		}
+                calculo.append(aux1)
 
-		i++;
-	}
-
-	result=calculo[0];
+                if('A'<=salida[i]<='Z'):
+                    calculo[-1]=-calculo[-1]
+            
+            i+=1
+            
+        return calculo[-1]
       
     
 '''
