@@ -95,6 +95,13 @@ class CalculadoraHandler:
     def multiples_comandos(self, cadena):
         salida, operadores = [], []  # No hace falta un contador
 
+	#Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
+	#Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
+	#Tambien con: 3*-2 -> 3*0-2 ESTA MAL
+	# -c(96*5*-r(6^2))/5+7		Tiene que dar: 7.133423546
+	# -(9-10)
+	# -s(-(3-7))		Tiene que dar: 0.7568
+
         prioridades = {
             'E': 3,
             'R': 3,
@@ -183,171 +190,86 @@ class CalculadoraHandler:
         #for i in range(len(salida)):
         print(*salida)
 
-        return 0.2
-'''
-	//Se aplica el algoritmo de shunting yard de Dijkstra para pasar a la forma postfijo
-	char salida[1000], operadores[1000];
-	int contSalida=0, contOperadores=0;
-	char prioridades[]={'E', 'R', 'S', 'C', 'e', 'r', 's', 'c', '^', '*', '/', '+', '-'};	//Sirven para buscar luego la prioridad en el array de abajo (cuanto mas alto mas prioritario)
-	int prioridadesValor[]={3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1};	//Indica la prioridad de la operacion
-	int i=0;
 
-	//Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
-	//Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
-	//Tambien con: 3*-2 -> 3*0-2 ESTA MAL
-	// -c(96*5*-r(6^2))/5+7		Tiene que dar: 7.133423546
-	// -(9-10)
-	// -s(-(3-7))		Tiene que dar: 0.7568
+	    #Fase de calcular el propio valor especificado
+        calculo=[]
+        i=0
 
-	while(arg1[i]!='\0'){
-		//Si es el operador - unario
-		if(arg1[i]=='-' && (((i-1)>=0 && (arg1[i-1]<'0' || arg1[i-1]>'9') && (arg1[i-1]!=')')) || i==0)){
-			if(arg1[i+1]>='0' && arg1[i+1]<='9')
-				salida[contSalida++]='u';	//Inserto caracter especial para los - unarios
+        while( i<len(salida)):
+            if(salida[i]=='+' or salida[i]=='-' or salida[i]=='*' or salida[i]=='/' or salida[i]=='^'):
+                assert(len(calculo)>=2);
+                aux2=calculo.pop();
+                aux1=calculo.pop();
 
-			else if(arg1[i+1]=='('){
-				//Si hay algo del tipo: -(9-8) se convierte a -1*(9-8)
+                if(salida[i]=='+'):
+                    calculo.append(aux1+aux2)
+				
 
-				salida[contSalida++]='u';	//Se mete el - unario
-				salida[contSalida++]='1';	//Se mete el 1
-				arg1[i--]='*';	//Se convierte ese - unario de la entrada por un * para que lo detecte como multiplicacion
-			}
-			else{
-				arg1[i+1]=toupper(arg1[i+1]);	//SI es una funcion se le cambia el estado a negativo
-			}
-		}
+                elif(salida[i]=='-'):
+                    calculo.append(aux1-aux2)
+                
+                
+                elif(salida[i]=='*'):
+                    calculo.append(aux1*aux2)
+                
+                
+                elif(salida[i]=='/'):
+                    calculo.append(aux1/aux2)
+                
+                
+                elif(salida[i]=='^'):
+                    calculo.append(aux1**aux2);
 
-		else if(arg1[i]=='+' || arg1[i]=='-' || arg1[i]=='*' || arg1[i]=='/' || arg1[i]=='^'){
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-			while(contOperadores>0 && operadores[contOperadores-1]!='(' && ((prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]>prioridadesValor[strchr(prioridades, arg1[i])-prioridades]) || (prioridadesValor[strchr(prioridades, operadores[contOperadores-1])-prioridades]==prioridadesValor[strchr(prioridades, arg1[i])-prioridades] && prioridades[strchr(prioridades, arg1[i])-prioridades]!='^'))){
-				salida[contSalida++]=operadores[--contOperadores];
-			}
-
-			operadores[contOperadores++]=arg1[i];
-		}
-
-		else if(arg1[i]=='('){
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-			operadores[contOperadores++]=arg1[i];			
-		}
-		else if(arg1[i]==')'){
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
+            elif(('0'<=salida[i]<='9') or salida[i]=='u'):
+                if(salida[i]=='u'):
+                    i+=1
 			
-			while(operadores[contOperadores-1]!='('){
-				assert(contOperadores>0);
-				salida[contSalida++]=operadores[--contOperadores];
-			}
+                calculo.append(atof(&salida[i]))
 
-			assert(operadores[contOperadores-1]=='(');
-			contOperadores--;			
-		}
-		else if((arg1[i]>='0' && arg1[i]<='9') || arg1[i]=='.' || arg1[i]=='x'){
-			salida[contSalida++]=arg1[i];
-		}
-		else{
-			salida[contSalida++]='|';		//Caracter especial para detectar numeros con mas de una cifra
-			operadores[contOperadores++]=arg1[i];
-		}
-
-		i++;
-	}
-	
-	if(contOperadores>0)		//Si todavia quedan operadores se pone un | para diferenciarlos
-		salida[contSalida++]='|';
-
-	for(int i=contOperadores; i>0; i--)
-		salida[contSalida++]=operadores[i-1];
-
-	salida[contSalida++]='\0';
-
-	printf("Salida postfijo: %s\n", salida);
-
-
-	//Fase de calcular el propio valor especificado
-	double calculo[1000], aux1, aux2;
-	int contCalculo=0;
-	i=0;
-
-	while( salida[i]!='\0'){
-		if(salida[i]=='+' || salida[i]=='-' || salida[i]=='*' || salida[i]=='/' || salida[i]=='^'){
-			assert(contCalculo>=2);
-			aux2=calculo[--contCalculo];
-			aux1=calculo[--contCalculo];
-
-			switch(salida[i]){
-				case '+':
-				calculo[contCalculo++]=aux1+aux2;
-				break;
-
-				case '-':
-				calculo[contCalculo++]=aux1-aux2;
-				break;
-
-				case '*':
-				calculo[contCalculo++]=aux1*aux2;
-				break;
-
-				case '/':
-				calculo[contCalculo++]=aux1/aux2;
-				break;
-
-				case '^':
-				calculo[contCalculo++]=pow(aux1, aux2);
-				break;
-			}			
-		}
-
-		else if((salida[i]>='0' && salida[i]<='9') || salida[i]=='u'){
-			if(salida[i]=='u')
-				i++;
+                if(salida[i-1]=='u'):
+                    calculo[-1]=-calculo[-1]
 			
-			calculo[contCalculo++]=atof(&salida[i]);
+                if(salida[i+1]!='|'):	#Nos encontramos ante un numero mayor que 10 o decimal
+                    #for(int j=i; j<contSalida and salida[j]!='|'; j++){
+                    #    i=j;
+                    print("IMPORTANTE IMPLEMENTAR")
 
-			if(salida[i-1]=='u')
-				calculo[contCalculo-1]=-calculo[contCalculo-1];
-			
-			if(salida[i+1]!='|'){	//Nos encontramos ante un numero mayor que 10 o decimal
-				for(int j=i; j<contSalida && salida[j]!='|'; j++){
-					i=j;
-				}
-			}						
-		}
-		else if(salida[i]=='x')
-			calculo[contCalculo++]=x;
+            elif(salida[i]=='x'):
+                calculo.append(x)
 
-		else if(tolower(salida[i])=='s' || tolower(salida[i])=='c' || tolower(salida[i])=='t' || tolower(salida[i])=='r' || tolower(salida[i])=='e'){
-			assert(contCalculo>=1);
+            elif(salida[i].lower() =='s' or salida[i].lower()=='c' or salida[i].lower()=='t' or salida[i].lower()=='r' or salida[i].lower()=='e'):
+                assert(len(calculo)>=1)
 
 			switch(tolower(salida[i])){
 				case 's':{	//sin
 					aux1=sin(calculo[--contCalculo]);
-					break;
+					
 				}
 
 				case 'c':{	//cos
 					aux1=cos(calculo[--contCalculo]);
-					break;
+					
 				}
 
 				case 't':{	//tan
 					aux1=tan(calculo[--contCalculo]);
-					break;				
+									
 				}
 
 				case 'r':{		//sqrt
 					aux1=sqrt(calculo[--contCalculo]);
-					break;							
+												
 				}
 
 				case 'e':{	//Para las exponenciales con el numero e
 					aux1=exp(calculo[--contCalculo]);
-					break;											
+																
 				}						
 			}
 
 			calculo[contCalculo++]=aux1;
 
-			if(salida[i]>='A' && salida[i]<='Z'){
+			if(salida[i]>='A' and salida[i]<='Z'){
 				calculo[contCalculo-1]=-calculo[contCalculo-1];
 			}
 		}
@@ -356,7 +278,7 @@ class CalculadoraHandler:
 	}
 
 	result=calculo[0];
-'''        
+      
     
 '''
     def traspuesta(self, a):
