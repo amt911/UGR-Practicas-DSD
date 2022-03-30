@@ -274,8 +274,15 @@ class CalculadoraHandler:
         return calculo[-1]
       
     
-'''
     def traspuesta(self, a):
+        res=[[0 for j in range(len(a[0]))] for i in range(len(a))]
+        
+        for i in range(len(a)):
+            for j in range(len(a[0])):
+                res[j][i]=a[i][j]
+                
+        return res
+'''
     def determinante_matriz(self, a):
     def resolver_ecuaciones(self, cadena,  eq):
     

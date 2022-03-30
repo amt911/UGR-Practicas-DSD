@@ -16,8 +16,8 @@ client = Calculadora.Client(protocol)
 
 transport.open()
 
-SALIDA=20
-NUM_OPCIONES=14
+SALIDA=100
+NUM_OPCIONES=15
 
 
 def imprimir_matriz(m):
@@ -50,10 +50,11 @@ while opcion!=SALIDA:
         print("8.- Comprobar si un numero es primo")
         print("9.- Factorial")
         print("10.- Suma matricial")
-        print("11.- Resta matricial (sin implementar)")
+        print("11.- Resta matricial")
         print("12.- Multiplicacion matricial")
-        print("13.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones")
-        print("14.- Resolver ecuaciones de la forma ...=0")
+        print("13.- Traspuesta de una matriz")
+        print("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones")
+        print("15.- Resolver ecuaciones de la forma ...=0")
         print(str(SALIDA)+".- Salir del programa")
         opcion=int(input("Introduzca la opcion: "))
 
@@ -127,9 +128,27 @@ while opcion!=SALIDA:
         print("Segunda matriz: ")
         imprimir_matriz(v2)
         
-        print("--------------------------------");               
-        
+        print("--------------------------------")
+    
     elif(opcion==13):
+        fil=int(input("Filas Matriz: "))
+        col=int(input("Columnas Matriz: "))
+        
+        v1=[[0 for j in range(col)] for i in range(fil)]
+    
+        print("--------------------------------")
+        
+        print("Matriz: ")
+        rellenar_matriz(v1)
+        
+        print("-------------Operandos-------------------")
+        
+        print("Matriz: ")
+        imprimir_matriz(v1)
+        
+        print("--------------------------------")
+        
+    elif(opcion==14):
         v1=input("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")   
 
     
@@ -159,16 +178,23 @@ while opcion!=SALIDA:
         elif(opcion==12):
             salida=client.mult_matricial(v1, v2)
         elif(opcion==13):
+            salida=client.traspuesta(v1)
+        elif(opcion==14):
             salida=client.multiples_comandos(v1, -1)
-            print(str(salida))
             
-            
+        if(1<=opcion<=10 or 14<=opcion<=15):
+            print("#######################################################")
+            print("El resultado de la operacion es: "+str(salida))
+            print("#######################################################")                
         
-        if(10<=opcion<=12):
-            print("###################################")
+        elif(10<=opcion<=13):
+            print("#######################################################")
             print("La operacion matricial da como resultado: ")
             imprimir_matriz(salida)
-            print("###################################")
+            print("#######################################################")
+            
+        else:
+            print("placeholder")
             
 
 #        print("#######################################################")
