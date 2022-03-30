@@ -471,6 +471,39 @@ multmatricial_calculadora_1(char *host, matrix m1, matrix m2)
 #endif	 /* DEBUG */
 }
 
+void
+traspuesta_calculadora_1(char *host, matrix m)
+{
+	CLIENT *clnt;
+	matrix *res;
+
+#ifndef	DEBUG
+	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
+	if (clnt == NULL) {
+		clnt_pcreateerror (host);
+		exit (1);
+	}
+#endif	/* DEBUG */
+
+	res = traspuesta_1(m, clnt);
+	if (res == (matrix *) NULL) {
+		clnt_perror (clnt, "call failed");
+	}
+	else{
+		printf("#####################################\n");
+		printf("\nLa multiplicacion matricial es: \n");		
+		imprimirMatriz(res);		
+		printf("#####################################\n");
+
+		printf("\n");
+		xdr_free((xdrproc_t) xdr_double, res->m.m_val);
+		xdr_free((xdrproc_t) xdr_matrix, res);
+	}
+#ifndef	DEBUG
+	clnt_destroy (clnt);
+#endif	 /* DEBUG */
+}
+
 
 void resolverecuaciones_calculadora_1(char *host, char *ecuacion, double error){
 		CLIENT *clnt;
@@ -514,9 +547,9 @@ main (int argc, char *argv[])
 	host = argv[1];
 
 	if(argc==2){		//Modo interactivo
-		#define SALIDA 20
-		#define NUM_OPCIONES 14
-		char opcion;
+		#define SALIDA 100
+		#define NUM_OPCIONES 15
+		unsigned char opcion;
 		printf("Modo interactivo\n");
 
 		do{
@@ -532,10 +565,11 @@ main (int argc, char *argv[])
 				printf("8.- Comprobar si un numero es primo\n");
 				printf("9.- Factorial\n");
 				printf("10.- Suma matricial\n");
-				printf("11.- Resta matricial (sin implementar)\n");
+				printf("11.- Resta matricial\n");
 				printf("12.- Multiplicacion matricial\n");
 				printf("13.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
 				printf("14.- Resolver ecuaciones de la forma ...=0\n");
+				printf("15.- Traspuesta de una matriz\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
@@ -652,6 +686,29 @@ main (int argc, char *argv[])
 
 				break;
 
+			case 15:
+				printf("Matriz num filas: ");
+				scanf("%d", &fil);
+
+				printf("Matriz columnas: ");
+				scanf("%d", &col);
+
+				reservarMatrix(&m1, fil, col);
+
+				printf("\n--------------------------------\n");
+				
+				printf("Matriz: \n");
+				rellenarMatriz(m1);
+
+				printf("\n-------------Operandos-------------------\n");
+				
+				printf("Matriz: \n");
+				imprimirMatriz(m1);
+
+				printf("--------------------------------\n");
+
+				break;		
+
 			default:
 			printf("Opcion no implementada\n");
 			break;
@@ -729,6 +786,9 @@ main (int argc, char *argv[])
 				free(v);
 				v=NULL;
 
+			case 15:
+				traspuesta_calculadora_1(host, *m1);
+				liberarMatrix(&m1);
 				break;
 
 		}

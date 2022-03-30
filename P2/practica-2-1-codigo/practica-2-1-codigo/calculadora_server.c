@@ -58,7 +58,7 @@ modulo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 	return &result;
 }
 
-double *
+double *		//Un poco mejorable
 raizcuadrada_1_svc(double arg1,  struct svc_req *rqstp)
 {
 	static double  result;
@@ -68,7 +68,7 @@ raizcuadrada_1_svc(double arg1,  struct svc_req *rqstp)
 	return &result;
 }
 
-double *
+double *		//Puede que no lo haga
 logaritmo_1_svc(int arg1, int arg2,  struct svc_req *rqstp)
 {
 	static double  result;
@@ -179,10 +179,18 @@ matrix *
 traspuesta_1_svc(matrix arg1,  struct svc_req *rqstp)
 {
 	static matrix  result;
+	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
+	result.m.m_len=0;
 
-	/*
-	 * insert server code here
-	 */
+	result.fil=arg1.fil;
+	result.col=arg1.col;
+
+	result.m.m_val=calloc(result.fil*result.col, sizeof(double));
+	result.m.m_len=result.fil*result.col;	
+
+	for(int i=0; i<result.fil; i++)
+		for(int j=0; j<result.col; j++)
+			result.m.m_val[j*result.col+i]=arg1.m.m_val[i*result.col+j];
 
 	return &result;
 }
