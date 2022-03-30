@@ -129,6 +129,8 @@ while opcion!=SALIDA:
         
         print("--------------------------------");               
         
+    elif(opcion==13):
+        v1=input("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")   
 
     
     if(1<=opcion<=NUM_OPCIONES):  
@@ -156,7 +158,9 @@ while opcion!=SALIDA:
             salida=client.resta_matricial(v1, v2)
         elif(opcion==12):
             salida=client.mult_matricial(v1, v2)
-            
+        elif(opcion==13):
+            salida=client.multiples_comandos(v1)
+            print(str(salida))
             
             
         

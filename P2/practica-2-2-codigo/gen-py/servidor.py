@@ -92,84 +92,98 @@ class CalculadoraHandler:
                     
         return res
 
-
     def multiples_comandos(self, cadena):
-        salida, operadores=[], []       #No hace falta un contador
-        
-        prioridades={
-            'E':3,
-            'R':3,
-            'S':3,
-            'C':3,
-            'e':3,
-            'r':3,
-            's':3,
-            'c':3,
-            '^':3,
-            '*':2,
-            '/':2,
-            '+':1,
-            '-':1
+        salida, operadores = [], []  # No hace falta un contador
+
+        prioridades = {
+            'E': 3,
+            'R': 3,
+            'S': 3,
+            'C': 3,
+            'e': 3,
+            'r': 3,
+            's': 3,
+            'c': 3,
+            '^': 3,
+            '*': 2,
+            '/': 2,
+            '+': 1,
+            '-': 1
         }
-    
-        i=0
-        
-        while(cadena[i]<len(cadena)):
+
+        i = 0
+
+		#Se crea una lista con la cadena ya que en Python los strings son inmutables
+        cadena_list=list(cadena)
+  
+        while(i < len(cadena_list)):
             #Si es el operador - unario
-            if(cadena[i]=='-' and (((i-1)>=0 and (cadena[i-1]<'0' or cadena[i-1]>'9') and (cadena[i-1]!=')')) or i==0)):
-                if('0'<=cadena[i+1]<='9'):
-                    salida.push('u')	#Inserto caracter especial para los - unarios
+            if(cadena_list[i] == '-' and (((i-1) >= 0 and (cadena_list[i-1] < '0' or cadena_list[i-1] > '9') and (cadena_list[i-1] != ')')) or i == 0)):
+                if('0' <= cadena_list[i+1] <= '9'):
+                    # Inserto caracter especial para los - unarios
+                    salida.append('u')
 
-                elif(cadena[i+1]=='('):
+                elif(cadena_list[i+1] == '('):
                     #Si hay algo del tipo: -(9-8) se convierte a -1*(9-8)
-                    salida.push('u')	#Se mete el - unario
-                    salida.push('1')	#Se mete el 1
-                    cadena[i]='*'	#Se convierte ese - unario de la entrada por un * para que lo detecte como multiplicacion
-                    i-=1
-        
-                else:
-                    cadena[i+1]=cadena[i+1].upper()	#Si es una funcion se le cambia el estado a negativo
+                    salida.append('u')  # Se mete el - unario
+                    salida.append('1')  # Se mete el 1
+                    # Se convierte ese - unario de la entrada por un * para que lo detecte como multiplicacion
+                    cadena_list[i] = '*'
+                    i -= 1
 
-            elif(cadena[i]=='+' or cadena[i]=='-' or cadena[i]=='*' or cadena[i]=='/' or cadena[i]=='^'):
-                salida.push('|')		#Caracter especial para detectar numeros con mas de una cifra
-                while(operadores.top()!='(' and ((prioridades[operadores.top()]>prioridades[cadena[i]]) or (prioridades[operadores.top()]==prioridades[cadena[i]] and prioridades[cadena[i]]!='^'))):
-                    salida.push(operadores.pop())
+                else:	#-r(5^2)-s(-5-8)
+                    # Si es una funcion se le cambia el estado a negativo
+                    cadena_list[i+1] = cadena_list[i+1].upper()
+                    
 
-                operadores.push(cadena[i])
+            elif(cadena_list[i] == '+' or cadena_list[i] == '-' or cadena_list[i] == '*' or cadena_list[i] == '/' or cadena_list[i] == '^'):
+                # Caracter especial para detectar numeros con mas de una cifra
+                salida.append('|')
+                while(len(operadores) > 0 and operadores[-1] != '(' and ((prioridades[operadores[-1]] > prioridades[cadena_list[i]]) or (prioridades[operadores[-1]] == prioridades[cadena_list[i]] and prioridades[cadena_list[i]] != '^'))):
+                    salida.append(operadores.pop())
 
-            elif(cadena[i]=='('):
-                salida.push('|')		#Caracter especial para detectar numeros con mas de una cifra
-                operadores.push(cadena[i])			
+                operadores.append(cadena_list[i])
 
-            elif(cadena[i]==')'):
-                salida.push('|')		#Caracter especial para detectar numeros con mas de una cifra
-                
-                while(operadores.top()!='('):
-                    assert(not operadores.empty())
-                    salida.push(operadores.pop())
+            elif(cadena_list[i] == '('):
+                # Caracter especial para detectar numeros con mas de una cifra
+                salida.append('|')
+                operadores.append(cadena_list[i])
 
-                assert(operadores.top()=='(')
+            elif(cadena_list[i] == ')'):
+                # Caracter especial para detectar numeros con mas de una cifra
+                salida.append('|')
+
+                while(operadores[-1] != '('):
+                    assert(len(operadores) > 0)
+                    salida.append(operadores.pop())
+
+                assert(operadores[-1] == '(')
                 operadores.pop()
 
-            elif(('0'<=cadena[i]<='9') or cadena[i]=='.' or cadena[i]=='x'):
-                salida.push(cadena[i])
+            elif(('0' <= cadena_list[i] <= '9') or cadena_list[i] == '.' or cadena_list[i] == 'x'):
+                salida.append(cadena_list[i])
 
             else:
-                salida.push('|')		#Caracter especial para detectar numeros con mas de una cifra
-                operadores.push(cadena[i])
+                # Caracter especial para detectar numeros con mas de una cifra
+                salida.append('|')
+                operadores.append(cadena_list[i])
 
-            i+=1
-        
-        if(not operadores.empty()):		#Si todavia quedan operadores se pone un | para diferenciarlos
-            salida.push('|')
+            i += 1
 
-        #for(int i=contOperadores; i>0; i--)
-        while(not operadores.empty()):
-            salida.push(operadores.pop())
 
-        #salida[contSalida++]='\0';
+        if(len(operadores) > 0):  # Si todavia quedan operadores se pone un | para diferenciarlos
+            salida.append('|')
 
-        print("Salida postfijo: "+salida)
+
+        while(len(operadores) > 0):
+            salida.append(operadores.pop())
+
+
+        print("Salida postfijo: ", end='')
+        #for i in range(len(salida)):
+        print(*salida)
+
+        return 0.2
 '''
 	//Se aplica el algoritmo de shunting yard de Dijkstra para pasar a la forma postfijo
 	char salida[1000], operadores[1000];
