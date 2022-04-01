@@ -14,6 +14,6 @@ service Calculadora{
    list<list<double>> mult_matricial(1:list<list<double>> a, 2:list<list<double>> b),
    list<list<double>> traspuesta(1:list<list<double>> a),
    double determinante_matriz(1:list<list<double>> a),
-   double resolver_ecuaciones(1:string cadena, 2:double eq),
+   string biseccion(1:string ecuacion, 2:double error, 3:double inf, 4:double sup),
    double multiples_comandos(1:string cadena, 2:double x)
 }

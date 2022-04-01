@@ -125,7 +125,7 @@ class CalculadoraHandler:
   
         while(i < len(cadena_list)):
             #Si es el operador - unario
-            if(cadena_list[i] == '-' and (((i-1) >= 0 and (cadena_list[i-1] < '0' or cadena_list[i-1] > '9') and (cadena_list[i-1] != ')')) or i == 0)):
+            if(cadena_list[i] == '-' and (((i-1) >= 0 and (cadena_list[i-1] < '0' or cadena_list[i-1] > '9') and (cadena_list[i-1] != ')' and cadena_list[i-1] != 'x')) or i == 0)):
                 if('0' <= cadena_list[i+1] <= '9'):
                     # Inserto caracter especial para los - unarios
                     salida.append('u')
@@ -282,10 +282,31 @@ class CalculadoraHandler:
                 res[j][i]=a[i][j]
                 
         return res
+    
+    def biseccion(self, ecuacion, error, inf, sup):
+        if(self.multiples_comandos(ecuacion, inf)*self.multiples_comandos(ecuacion, sup)>=0):
+            res="Error"
+            
+        res=inf
+        
+        while((sup-inf)>=error):
+            res=(inf+sup)/2.0
+            
+            if(self.multiples_comandos(ecuacion, res)==0.0):
+                break
+            
+            elif(self.multiples_comandos(ecuacion, res)*self.multiples_comandos(ecuacion, inf)<0):
+                sup=res
+            else:
+                inf=res
+                
+        
+        res=str(res)
+            
+        return res
+        
 '''
     def determinante_matriz(self, a):
-    def resolver_ecuaciones(self, cadena,  eq):
-    
 '''
 
 

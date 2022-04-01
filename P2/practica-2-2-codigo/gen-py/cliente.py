@@ -151,6 +151,12 @@ while opcion!=SALIDA:
     elif(opcion==14):
         v1=input("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")   
 
+    elif(opcion==15):
+        v1=input("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")
+        error=float(input("Introduzca el error: "))
+        
+        inf=float(input("Introduzca el extremo inferior del intervalo (donde se sospecha que puede estar la solucion): "))
+        sup=float(input("Introduzca el extremo superior del intervalo (donde se sospecha que puede estar la solucion): "))
     
     if(1<=opcion<=NUM_OPCIONES):  
         if(opcion==1):
@@ -181,6 +187,8 @@ while opcion!=SALIDA:
             salida=client.traspuesta(v1)
         elif(opcion==14):
             salida=client.multiples_comandos(v1, -1)
+        elif(opcion==15):
+            salida=client.biseccion(v1, error, inf, sup)
             
         if(1<=opcion<=10 or 14<=opcion<=15):
             print("#######################################################")
@@ -195,15 +203,5 @@ while opcion!=SALIDA:
             
         else:
             print("placeholder")
-            
-
-#        print("#######################################################")
-#        print("El resultado de la operacion es: "+str(salida))
-#        print("#######################################################")
-    
-    
-    matriz=[[1,2,3],[1,2,3]]
-    
-    print("Longitud matrix: "+str(len(matriz)*len(matriz[0])))
 
 transport.close()
