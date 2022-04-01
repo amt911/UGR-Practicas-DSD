@@ -95,6 +95,7 @@ class CalculadoraHandler:
     def multiples_comandos(self, cadena, x):
         salida, operadores = [], []  # No hace falta un contador
 
+    #Ecuacion de prueba: x^2+3*x-8
 	#Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
 	#Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
 	#Tambien con: 3*-2 -> 3*0-2 ESTA MAL
