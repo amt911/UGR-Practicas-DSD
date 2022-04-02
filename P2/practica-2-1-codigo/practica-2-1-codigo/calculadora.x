@@ -23,7 +23,7 @@ program CALCULADORA{
         matrix multMatricial(matrix, matrix)=13;
         matrix traspuesta(matrix)=14;
         double determinanteMatriz(matrix)=15;
-        double resolverEcuaciones(string, double)=16;
+        string resolverEcuaciones(string, double, double, double)=16;
         double multiplesComandos(string)=17;
     } =1;
 } = 0x20000001;

@@ -254,17 +254,19 @@ determinantematriz_1(matrix arg1,  CLIENT *clnt)
 	return (&clnt_res);
 }
 
-double *
-resolverecuaciones_1(char *arg1, double arg2,  CLIENT *clnt)
+char **
+resolverecuaciones_1(char *arg1, double arg2, double arg3, double arg4,  CLIENT *clnt)
 {
 	resolverecuaciones_1_argument arg;
-	static double clnt_res;
+	static char *clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
 	arg.arg1 = arg1;
 	arg.arg2 = arg2;
+	arg.arg3 = arg3;
+	arg.arg4 = arg4;
 	if (clnt_call (clnt, resolverEcuaciones, (xdrproc_t) xdr_resolverecuaciones_1_argument, (caddr_t) &arg,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
+		(xdrproc_t) xdr_wrapstring, (caddr_t) &clnt_res,
 		TIMEOUT) != RPC_SUCCESS) {
 		return (NULL);
 	}

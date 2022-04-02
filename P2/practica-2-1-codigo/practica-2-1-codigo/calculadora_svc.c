@@ -106,10 +106,10 @@ _determinantematriz_1 (matrix  *argp, struct svc_req *rqstp)
 	return (determinantematriz_1_svc(*argp, rqstp));
 }
 
-static double *
+static char **
 _resolverecuaciones_1 (resolverecuaciones_1_argument *argp, struct svc_req *rqstp)
 {
-	return (resolverecuaciones_1_svc(argp->arg1, argp->arg2, rqstp));
+	return (resolverecuaciones_1_svc(argp->arg1, argp->arg2, argp->arg3, argp->arg4, rqstp));
 }
 
 static double *
@@ -241,7 +241,7 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 
 	case resolverEcuaciones:
 		_xdr_argument = (xdrproc_t) xdr_resolverecuaciones_1_argument;
-		_xdr_result = (xdrproc_t) xdr_double;
+		_xdr_result = (xdrproc_t) xdr_wrapstring;
 		local = (char *(*)(char *, struct svc_req *)) _resolverecuaciones_1;
 		break;
 

@@ -386,39 +386,42 @@ double operacionAlgebraicaShuntingYard(char *arg1, double x)
 	return result;
 }
 
-double *
-resolverecuaciones_1_svc(char *ecuacion, double error, struct svc_req *rqstp)
+char **
+resolverecuaciones_1_svc(char *ecuacion, double error, double inf, double sup, struct svc_req *rqstp)
 {
-	static double  result;
-
-	double a=-300, b=300;
-	unsigned char encontrado=0;
-
-	for(int i=0; i<100 && !encontrado; i++){
-		if(operacionAlgebraicaShuntingYard(ecuacion, a)*operacionAlgebraicaShuntingYard(ecuacion, b)>=0){		//Por Bolzano
-			a-=300;
-			b+=300;
-		}
-		else
-			encontrado=1;
+	static char  *result;
+	if(result!=NULL){
+		xdr_free((xdrproc_t)xdr_char, result);
+		result=NULL;
 	}
 
-	result=a;
+	result=calloc(1000, sizeof(char));
+	strcpy(result, "Error");
 
-	while((b-a)>=error){
-		result=(a+b)/2;
 
-		if(operacionAlgebraicaShuntingYard(ecuacion, result) == 0.0){
-			result=result;
+	if(operacionAlgebraicaShuntingYard(ecuacion, inf)*operacionAlgebraicaShuntingYard(ecuacion, sup)<0){		//Por Bolzano
+		double res;
+		res=inf;
+
+		while((sup-inf)>=error){
+			res=(inf+sup)/2;
+
+			if(operacionAlgebraicaShuntingYard(ecuacion, res) == 0.0){
+				break;
+			}
+			else if(operacionAlgebraicaShuntingYard(ecuacion, res)*operacionAlgebraicaShuntingYard(ecuacion, inf)<0){
+				sup=res;
+			}
+			else
+				inf=res;
 		}
-		else if(operacionAlgebraicaShuntingYard(ecuacion, result)*operacionAlgebraicaShuntingYard(ecuacion, a)<0){
-			b=result;
-		}
-		else
-			a=result;
+
+		//printf("Resultado: %lf\n", result);
+		//Insertamos el valor como string
+		snprintf(result, 999, "%lf", res);
+		printf("RESULTADO: %s\n", result);
 	}
 
-	printf("Resultado: %lf\n", result);
 	return &result;
 }
 

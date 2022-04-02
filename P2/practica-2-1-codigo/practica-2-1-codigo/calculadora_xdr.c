@@ -137,5 +137,9 @@ xdr_resolverecuaciones_1_argument (XDR *xdrs, resolverecuaciones_1_argument *obj
 		 return FALSE;
 	 if (!xdr_double (xdrs, &objp->arg2))
 		 return FALSE;
+	 if (!xdr_double (xdrs, &objp->arg3))
+		 return FALSE;
+	 if (!xdr_double (xdrs, &objp->arg4))
+		 return FALSE;
 	return TRUE;
 }

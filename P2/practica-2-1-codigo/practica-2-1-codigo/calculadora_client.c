@@ -505,9 +505,9 @@ traspuesta_calculadora_1(char *host, matrix m)
 }
 
 
-void resolverecuaciones_calculadora_1(char *host, char *ecuacion, double error){
+void resolverecuaciones_calculadora_1(char *host, char *ecuacion, double error, double inf, double sup){
 		CLIENT *clnt;
-	double *res;
+	char **res;
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, CALCULADORA, CALCULADORAVER, "udp");
@@ -518,16 +518,16 @@ void resolverecuaciones_calculadora_1(char *host, char *ecuacion, double error){
 #endif	/* DEBUG */
 
 
-	res = resolverecuaciones_1(ecuacion, error, clnt);
-	if (res == (double *) NULL) {
+	res = resolverecuaciones_1(ecuacion, error, inf, sup, clnt);
+	if (res == (char **) NULL) {
 		clnt_perror (clnt, "call failed");
 	}
 	else{
 			printf("#####################################\n");
-			printf("El resultado es: %lf\n", *res);
+			printf("El resultado es: %s\n", *res);
 			printf("#####################################\n");
-
-		xdr_free((xdrproc_t) xdr_double, res);
+			
+		xdr_free((xdrproc_t) xdr_char, res);
 	}
 #ifndef	DEBUG
 	clnt_destroy (clnt);
@@ -567,9 +567,9 @@ main (int argc, char *argv[])
 				printf("10.- Suma matricial\n");
 				printf("11.- Resta matricial\n");
 				printf("12.- Multiplicacion matricial\n");
-				printf("13.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
-				printf("14.- Resolver ecuaciones de la forma ...=0\n");
-				printf("15.- Traspuesta de una matriz\n");
+				printf("13.- Traspuesta de una matriz\n");
+				printf("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
+				printf("15.- Resolver ecuaciones de la forma ...=0\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
@@ -578,7 +578,7 @@ main (int argc, char *argv[])
 					printf("Opcion incorrecta\n");
 			}while((opcion<1 || opcion>NUM_OPCIONES) && opcion!=SALIDA);
 
-		double v1, v2, error;
+		double v1, v2, error, inf, sup;
 		matrix *m1=NULL, *m2=NULL;
 		int fil, col;
 		char *v=NULL;
@@ -669,14 +669,14 @@ main (int argc, char *argv[])
 				printf("\n--------------------------------\n");
 				break;
 
-			case 13:
+			case 14:
 				v=calloc(1000, sizeof(char));
 				printf("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
 				scanf("%s", v);
 				
 				break;
 
-			case 14:
+			case 15:
 				v=calloc(1000, sizeof(char));
 				printf("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
 				scanf("%s", v);
@@ -684,9 +684,16 @@ main (int argc, char *argv[])
 				printf("Introduzca el error: ");
 				scanf("%lf", &error);
 
+				printf("Límite inferior: ");
+				scanf("%lf", &inf);
+
+				printf("Límite superior: ");
+				scanf("%lf", &sup);
+
+
 				break;
 
-			case 15:
+			case 13:
 				printf("Matriz num filas: ");
 				scanf("%d", &fil);
 
@@ -774,19 +781,20 @@ main (int argc, char *argv[])
 				liberarMatrix(&m2);
 				break;
 
-			case 13:
+			case 14:
 				multiplescomandos_calculadora_1(host, v);
 				free(v);
 				v=NULL;
 
 				break;
 
-			case 14:
-				resolverecuaciones_calculadora_1(host, v, error);
+			case 15:
+				resolverecuaciones_calculadora_1(host, v, error, inf , sup);
 				free(v);
 				v=NULL;
+				break;
 
-			case 15:
+			case 13:
 				traspuesta_calculadora_1(host, *m1);
 				liberarMatrix(&m1);
 				break;

@@ -89,6 +89,8 @@ typedef struct multmatricial_1_argument multmatricial_1_argument;
 struct resolverecuaciones_1_argument {
 	char *arg1;
 	double arg2;
+	double arg3;
+	double arg4;
 };
 typedef struct resolverecuaciones_1_argument resolverecuaciones_1_argument;
 
@@ -142,8 +144,8 @@ extern  matrix * traspuesta_1_svc(matrix , struct svc_req *);
 extern  double * determinantematriz_1(matrix , CLIENT *);
 extern  double * determinantematriz_1_svc(matrix , struct svc_req *);
 #define resolverEcuaciones 16
-extern  double * resolverecuaciones_1(char *, double , CLIENT *);
-extern  double * resolverecuaciones_1_svc(char *, double , struct svc_req *);
+extern  char ** resolverecuaciones_1(char *, double , double , double , CLIENT *);
+extern  char ** resolverecuaciones_1_svc(char *, double , double , double , struct svc_req *);
 #define multiplesComandos 17
 extern  double * multiplescomandos_1(char *, CLIENT *);
 extern  double * multiplescomandos_1_svc(char *, struct svc_req *);
@@ -196,8 +198,8 @@ extern  matrix * traspuesta_1_svc();
 extern  double * determinantematriz_1();
 extern  double * determinantematriz_1_svc();
 #define resolverEcuaciones 16
-extern  double * resolverecuaciones_1();
-extern  double * resolverecuaciones_1_svc();
+extern  char ** resolverecuaciones_1();
+extern  char ** resolverecuaciones_1_svc();
 #define multiplesComandos 17
 extern  double * multiplescomandos_1();
 extern  double * multiplescomandos_1_svc();
