@@ -1,9 +1,8 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "P2/practica-2-2-codigo/gen-java/lib/libthrift-0.16.0.jar",
+        "P2/practica-2-2-codigo/gen-java/lib/javax.annotation-api-1.3.2.jar",
         "P2/practica-2-2-codigo/gen-java/lib/slf4j-api-2.0.0-alpha7.jar",
-        "P2/practica-2-2-codigo/gen-java/lib/javax.annotation-api-1.3.2.jar"
-    ],
-    "maven.view": "flat"
+        "P2/practica-2-2-codigo/gen-java/lib/libthrift-0.16.0.jar"
+    ]
 }

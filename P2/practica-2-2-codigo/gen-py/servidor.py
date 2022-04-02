@@ -287,22 +287,22 @@ class CalculadoraHandler:
     def biseccion(self, ecuacion, error, inf, sup):
         if(self.multiples_comandos(ecuacion, inf)*self.multiples_comandos(ecuacion, sup)>=0):
             res="Error"
-            
-        res=inf
         
-        while((sup-inf)>=error):
-            res=(inf+sup)/2.0
+        else:        
+            res=inf
             
-            if(self.multiples_comandos(ecuacion, res)==0.0):
-                break
-            
-            elif(self.multiples_comandos(ecuacion, res)*self.multiples_comandos(ecuacion, inf)<0):
-                sup=res
-            else:
-                inf=res
+            while((sup-inf)>=error):
+                res=(inf+sup)/2.0
                 
-        
-        res=str(res)
+                if(self.multiples_comandos(ecuacion, res)==0.0):
+                    break
+                
+                elif(self.multiples_comandos(ecuacion, res)*self.multiples_comandos(ecuacion, inf)<0):
+                    sup=res
+                else:
+                    inf=res
+                    
+            res=str(res)
             
         return res
         
