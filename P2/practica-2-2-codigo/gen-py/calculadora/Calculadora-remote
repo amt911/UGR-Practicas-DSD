@@ -38,7 +38,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('   resta_matricial( a,  b)')
     print('   mult_matricial( a,  b)')
     print('   traspuesta( a)')
-    print('  double determinante_matriz( a)')
     print('  string biseccion(string ecuacion, double error, double inf, double sup)')
     print('  double multiples_comandos(string cadena, double x)')
     print('')
@@ -203,12 +202,6 @@ elif cmd == 'traspuesta':
         print('traspuesta requires 1 args')
         sys.exit(1)
     pp.pprint(client.traspuesta(eval(args[0]),))
-
-elif cmd == 'determinante_matriz':
-    if len(args) != 1:
-        print('determinante_matriz requires 1 args')
-        sys.exit(1)
-    pp.pprint(client.determinante_matriz(eval(args[0]),))
 
 elif cmd == 'biseccion':
     if len(args) != 4:

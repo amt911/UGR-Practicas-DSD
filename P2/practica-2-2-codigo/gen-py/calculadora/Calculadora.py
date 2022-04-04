@@ -141,14 +141,6 @@ class Iface(object):
         """
         pass
 
-    def determinante_matriz(self, a):
-        """
-        Parameters:
-         - a
-
-        """
-        pass
-
     def biseccion(self, ecuacion, error, inf, sup):
         """
         Parameters:
@@ -645,38 +637,6 @@ class Client(Iface):
             return result.success
         raise TApplicationException(TApplicationException.MISSING_RESULT, "traspuesta failed: unknown result")
 
-    def determinante_matriz(self, a):
-        """
-        Parameters:
-         - a
-
-        """
-        self.send_determinante_matriz(a)
-        return self.recv_determinante_matriz()
-
-    def send_determinante_matriz(self, a):
-        self._oprot.writeMessageBegin('determinante_matriz', TMessageType.CALL, self._seqid)
-        args = determinante_matriz_args()
-        args.a = a
-        args.write(self._oprot)
-        self._oprot.writeMessageEnd()
-        self._oprot.trans.flush()
-
-    def recv_determinante_matriz(self):
-        iprot = self._iprot
-        (fname, mtype, rseqid) = iprot.readMessageBegin()
-        if mtype == TMessageType.EXCEPTION:
-            x = TApplicationException()
-            x.read(iprot)
-            iprot.readMessageEnd()
-            raise x
-        result = determinante_matriz_result()
-        result.read(iprot)
-        iprot.readMessageEnd()
-        if result.success is not None:
-            return result.success
-        raise TApplicationException(TApplicationException.MISSING_RESULT, "determinante_matriz failed: unknown result")
-
     def biseccion(self, ecuacion, error, inf, sup):
         """
         Parameters:
@@ -768,7 +728,6 @@ class Processor(Iface, TProcessor):
         self._processMap["resta_matricial"] = Processor.process_resta_matricial
         self._processMap["mult_matricial"] = Processor.process_mult_matricial
         self._processMap["traspuesta"] = Processor.process_traspuesta
-        self._processMap["determinante_matriz"] = Processor.process_determinante_matriz
         self._processMap["biseccion"] = Processor.process_biseccion
         self._processMap["multiples_comandos"] = Processor.process_multiples_comandos
         self._on_message_begin = None
@@ -1111,29 +1070,6 @@ class Processor(Iface, TProcessor):
             msg_type = TMessageType.EXCEPTION
             result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
         oprot.writeMessageBegin("traspuesta", msg_type, seqid)
-        result.write(oprot)
-        oprot.writeMessageEnd()
-        oprot.trans.flush()
-
-    def process_determinante_matriz(self, seqid, iprot, oprot):
-        args = determinante_matriz_args()
-        args.read(iprot)
-        iprot.readMessageEnd()
-        result = determinante_matriz_result()
-        try:
-            result.success = self._handler.determinante_matriz(args.a)
-            msg_type = TMessageType.REPLY
-        except TTransport.TTransportException:
-            raise
-        except TApplicationException as ex:
-            logging.exception('TApplication exception in handler')
-            msg_type = TMessageType.EXCEPTION
-            result = ex
-        except Exception:
-            logging.exception('Unexpected exception in handler')
-            msg_type = TMessageType.EXCEPTION
-            result = TApplicationException(TApplicationException.INTERNAL_ERROR, 'Internal error')
-        oprot.writeMessageBegin("determinante_matriz", msg_type, seqid)
         result.write(oprot)
         oprot.writeMessageEnd()
         oprot.trans.flush()
@@ -3202,145 +3138,6 @@ class traspuesta_result(object):
 all_structs.append(traspuesta_result)
 traspuesta_result.thrift_spec = (
     (0, TType.LIST, 'success', (TType.LIST, (TType.DOUBLE, None, False), False), None, ),  # 0
-)
-
-
-class determinante_matriz_args(object):
-    """
-    Attributes:
-     - a
-
-    """
-
-
-    def __init__(self, a=None,):
-        self.a = a
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 1:
-                if ftype == TType.LIST:
-                    self.a = []
-                    (_etype157, _size154) = iprot.readListBegin()
-                    for _i158 in range(_size154):
-                        _elem159 = []
-                        (_etype163, _size160) = iprot.readListBegin()
-                        for _i164 in range(_size160):
-                            _elem165 = iprot.readDouble()
-                            _elem159.append(_elem165)
-                        iprot.readListEnd()
-                        self.a.append(_elem159)
-                    iprot.readListEnd()
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
-            return
-        oprot.writeStructBegin('determinante_matriz_args')
-        if self.a is not None:
-            oprot.writeFieldBegin('a', TType.LIST, 1)
-            oprot.writeListBegin(TType.LIST, len(self.a))
-            for iter166 in self.a:
-                oprot.writeListBegin(TType.DOUBLE, len(iter166))
-                for iter167 in iter166:
-                    oprot.writeDouble(iter167)
-                oprot.writeListEnd()
-            oprot.writeListEnd()
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-all_structs.append(determinante_matriz_args)
-determinante_matriz_args.thrift_spec = (
-    None,  # 0
-    (1, TType.LIST, 'a', (TType.LIST, (TType.DOUBLE, None, False), False), None, ),  # 1
-)
-
-
-class determinante_matriz_result(object):
-    """
-    Attributes:
-     - success
-
-    """
-
-
-    def __init__(self, success=None,):
-        self.success = success
-
-    def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
-            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
-            return
-        iprot.readStructBegin()
-        while True:
-            (fname, ftype, fid) = iprot.readFieldBegin()
-            if ftype == TType.STOP:
-                break
-            if fid == 0:
-                if ftype == TType.DOUBLE:
-                    self.success = iprot.readDouble()
-                else:
-                    iprot.skip(ftype)
-            else:
-                iprot.skip(ftype)
-            iprot.readFieldEnd()
-        iprot.readStructEnd()
-
-    def write(self, oprot):
-        if oprot._fast_encode is not None and self.thrift_spec is not None:
-            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
-            return
-        oprot.writeStructBegin('determinante_matriz_result')
-        if self.success is not None:
-            oprot.writeFieldBegin('success', TType.DOUBLE, 0)
-            oprot.writeDouble(self.success)
-            oprot.writeFieldEnd()
-        oprot.writeFieldStop()
-        oprot.writeStructEnd()
-
-    def validate(self):
-        return
-
-    def __repr__(self):
-        L = ['%s=%r' % (key, value)
-             for key, value in self.__dict__.items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-    def __ne__(self, other):
-        return not (self == other)
-all_structs.append(determinante_matriz_result)
-determinante_matriz_result.thrift_spec = (
-    (0, TType.DOUBLE, 'success', None, None, ),  # 0
 )
 
 

@@ -23,7 +23,7 @@ public class Cliente{
 
             Scanner s=new Scanner(System.in);
             final int SALIDA=100;
-            final int NUM_OPCIONES=15;
+            final int NUM_OPCIONES=16;
             int opcion;
             
             do{
@@ -44,9 +44,10 @@ public class Cliente{
                     System.out.println("13.- Traspuesta de una matriz");
                     System.out.println("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones");
                     System.out.println("15.- Resolver ecuaciones de la forma ...=0");
+                    System.out.println("16.- Producto escalar de dos vectores");
                     System.out.println(SALIDA+".- Salir del programa");
                     System.out.print("Introduzca la opcion: ");
-                    //scanf("%hhd", &opcion);
+
                     opcion=s.nextInt();
                     s.nextLine();
                     
@@ -245,6 +246,49 @@ public class Cliente{
     
                     break;		
     
+                case 16:
+                System.out.print("Numero de elementos de los vectores: ");
+                col=s.nextInt();
+                s.nextLine();
+
+                System.out.println("--------------------------------");
+                System.out.println("Primer vector: ");
+
+                for(int i=0; i<1; i++){
+                    List<Double> aux=new ArrayList<>();
+                    for(int j=0; j<col; j++){
+                        aux.add(0.0);
+                    }
+                    m1.add(aux);
+                }                    
+
+                rellenarMatriz(m1);
+
+                System.out.println("--------------------------------");
+                System.out.println("Segundo vector: ");
+
+                for(int i=0; i<col; i++){
+                    List<Double> aux=new ArrayList<>();
+                    for(int j=0; j<1; j++){
+                        aux.add(0.0);
+                    }
+                    m2.add(aux);
+                }                    
+
+                rellenarMatriz(m2);
+
+                System.out.println("-------------Operandos-------------------");
+                System.out.println("Primer vector: ");
+                imprimirMatriz(m1);
+
+                System.out.println("--------------------------------");
+                System.out.println("Segundo vector: ");
+                imprimirMatriz(m2);
+
+                System.out.println("--------------------------------");
+                break;                
+
+
                 default:
                 System.out.println("Opcion no implementada");
                 break;
@@ -296,6 +340,7 @@ public class Cliente{
                     break;
     
                 case 12:
+                case 16:
                     salidaList=client.mult_matricial(m1, m2);
                     break;
                     
@@ -338,8 +383,9 @@ public class Cliente{
                 case 11:
                 case 12:
                 case 13:
+                case 16:
                     System.out.println("#######################################################");
-                    System.out.println("La operacion matricial da como resultado: ");
+                    System.out.println("La operacion matricial/vectorial da como resultado: ");
                     imprimirMatriz(salidaList);
                     System.out.println("#######################################################");
                     break;

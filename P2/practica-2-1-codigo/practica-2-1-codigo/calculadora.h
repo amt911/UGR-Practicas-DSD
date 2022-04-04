@@ -140,13 +140,10 @@ extern  matrix * multmatricial_1_svc(matrix , matrix , struct svc_req *);
 #define traspuesta 14
 extern  matrix * traspuesta_1(matrix , CLIENT *);
 extern  matrix * traspuesta_1_svc(matrix , struct svc_req *);
-#define determinanteMatriz 15
-extern  double * determinantematriz_1(matrix , CLIENT *);
-extern  double * determinantematriz_1_svc(matrix , struct svc_req *);
-#define resolverEcuaciones 16
+#define resolverEcuaciones 15
 extern  char ** resolverecuaciones_1(char *, double , double , double , CLIENT *);
 extern  char ** resolverecuaciones_1_svc(char *, double , double , double , struct svc_req *);
-#define multiplesComandos 17
+#define multiplesComandos 16
 extern  double * multiplescomandos_1(char *, CLIENT *);
 extern  double * multiplescomandos_1_svc(char *, struct svc_req *);
 extern int calculadora_1_freeresult (SVCXPRT *, xdrproc_t, caddr_t);
@@ -194,13 +191,10 @@ extern  matrix * multmatricial_1_svc();
 #define traspuesta 14
 extern  matrix * traspuesta_1();
 extern  matrix * traspuesta_1_svc();
-#define determinanteMatriz 15
-extern  double * determinantematriz_1();
-extern  double * determinantematriz_1_svc();
-#define resolverEcuaciones 16
+#define resolverEcuaciones 15
 extern  char ** resolverecuaciones_1();
 extern  char ** resolverecuaciones_1_svc();
-#define multiplesComandos 17
+#define multiplesComandos 16
 extern  double * multiplescomandos_1();
 extern  double * multiplescomandos_1_svc();
 extern int calculadora_1_freeresult ();

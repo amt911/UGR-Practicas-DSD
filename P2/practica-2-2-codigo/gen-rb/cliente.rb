@@ -10,7 +10,7 @@ client = Calculadora::Client.new(protocol)
 transport.open()
 
 SALIDA=100
-NUM_OPCIONES=15
+NUM_OPCIONES=16
 
 
 def imprimir_matriz(m)
@@ -54,6 +54,7 @@ while opcion!=SALIDA
         print("13.- Traspuesta de una matriz\n")
         print("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n")
         print("15.- Resolver ecuaciones de la forma ...=0\n")
+        print("16.- Producto escalar de dos vectores\n")
         print("#{SALIDA}.- Salir del programa\n")
         print("Introduzca la opcion: ")
         opcion=gets.to_i
@@ -178,6 +179,35 @@ while opcion!=SALIDA
 
         print("Introduzca el extremo superior del intervalo (donde se sospecha que puede estar la solucion): ")
         sup=gets.to_f
+
+    elsif(opcion==16)
+        print("Numero de elementos de los vectores: ")
+        col=gets.to_i
+        
+        v1=Array.new(1){Array.new(col)}
+        v2=Array.new(col){Array.new(1)}
+    
+        print("--------------------------------\n")
+        
+        print("Primer vector: \n")
+        rellenar_matriz(v1)
+        
+        print("--------------------------------\n")
+        
+        print("Segundo vector: \n")
+        rellenar_matriz(v2)
+        
+        print("-------------Operandos-------------------\n")
+        
+        print("Primer vector: \n")
+        imprimir_matriz(v1)
+        
+        print("--------------------------------\n")
+        
+        print("Segundo vector: \n")
+        imprimir_matriz(v2)
+        
+        print("--------------------------------\n")        
     end
 
     if(1<=opcion and opcion<=NUM_OPCIONES)  
@@ -203,7 +233,7 @@ while opcion!=SALIDA
             salida=client.suma_matricial(v1, v2)
         elsif(opcion==11)
             salida=client.resta_matricial(v1, v2)
-        elsif(opcion==12)
+        elsif(opcion==12 or opcion==16)
             salida=client.mult_matricial(v1, v2)
         elsif(opcion==13)
             salida=client.traspuesta(v1)
@@ -218,14 +248,14 @@ while opcion!=SALIDA
             print("El resultado de la operacion es: #{salida}\n")
             print("#######################################################\n")                
         
-        elsif(10<=opcion and opcion<=13)
+        elsif((10<=opcion and opcion<=13) or opcion==16)
             print("#######################################################\n")
-            print("La operacion matricial da como resultado: \n")
+            print("La operacion matricial/vectorial da como resultado: \n")
             imprimir_matriz(salida)
             print("#######################################################\n")
             
         else
-            print("placeholder")
+            print("No deberia llegar aqui")
         end
     end
 end

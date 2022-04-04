@@ -100,12 +100,6 @@ _traspuesta_1 (matrix  *argp, struct svc_req *rqstp)
 	return (traspuesta_1_svc(*argp, rqstp));
 }
 
-static double *
-_determinantematriz_1 (matrix  *argp, struct svc_req *rqstp)
-{
-	return (determinantematriz_1_svc(*argp, rqstp));
-}
-
 static char **
 _resolverecuaciones_1 (resolverecuaciones_1_argument *argp, struct svc_req *rqstp)
 {
@@ -136,7 +130,6 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		restamatricial_1_argument restamatricial_1_arg;
 		multmatricial_1_argument multmatricial_1_arg;
 		matrix traspuesta_1_arg;
-		matrix determinantematriz_1_arg;
 		resolverecuaciones_1_argument resolverecuaciones_1_arg;
 		char *multiplescomandos_1_arg;
 	} argument;
@@ -231,12 +224,6 @@ calculadora_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		_xdr_argument = (xdrproc_t) xdr_matrix;
 		_xdr_result = (xdrproc_t) xdr_matrix;
 		local = (char *(*)(char *, struct svc_req *)) _traspuesta_1;
-		break;
-
-	case determinanteMatriz:
-		_xdr_argument = (xdrproc_t) xdr_matrix;
-		_xdr_result = (xdrproc_t) xdr_double;
-		local = (char *(*)(char *, struct svc_req *)) _determinantematriz_1;
 		break;
 
 	case resolverEcuaciones:

@@ -221,21 +221,6 @@ module Calculadora
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'traspuesta failed: unknown result')
     end
 
-    def determinante_matriz(a)
-      send_determinante_matriz(a)
-      return recv_determinante_matriz()
-    end
-
-    def send_determinante_matriz(a)
-      send_message('determinante_matriz', Determinante_matriz_args, :a => a)
-    end
-
-    def recv_determinante_matriz()
-      result = receive_message(Determinante_matriz_result)
-      return result.success unless result.success.nil?
-      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'determinante_matriz failed: unknown result')
-    end
-
     def biseccion(ecuacion, error, inf, sup)
       send_biseccion(ecuacion, error, inf, sup)
       return recv_biseccion()
@@ -367,13 +352,6 @@ module Calculadora
       result = Traspuesta_result.new()
       result.success = @handler.traspuesta(args.a)
       write_result(result, oprot, 'traspuesta', seqid)
-    end
-
-    def process_determinante_matriz(seqid, iprot, oprot)
-      args = read_args(iprot, Determinante_matriz_args)
-      result = Determinante_matriz_result.new()
-      result.success = @handler.determinante_matriz(args.a)
-      write_result(result, oprot, 'determinante_matriz', seqid)
     end
 
     def process_biseccion(seqid, iprot, oprot)
@@ -852,38 +830,6 @@ module Calculadora
 
     FIELDS = {
       SUCCESS => {:type => ::Thrift::Types::LIST, :name => 'success', :element => {:type => ::Thrift::Types::LIST, :element => {:type => ::Thrift::Types::DOUBLE}}}
-    }
-
-    def struct_fields; FIELDS; end
-
-    def validate
-    end
-
-    ::Thrift::Struct.generate_accessors self
-  end
-
-  class Determinante_matriz_args
-    include ::Thrift::Struct, ::Thrift::Struct_Union
-    A = 1
-
-    FIELDS = {
-      A => {:type => ::Thrift::Types::LIST, :name => 'a', :element => {:type => ::Thrift::Types::LIST, :element => {:type => ::Thrift::Types::DOUBLE}}}
-    }
-
-    def struct_fields; FIELDS; end
-
-    def validate
-    end
-
-    ::Thrift::Struct.generate_accessors self
-  end
-
-  class Determinante_matriz_result
-    include ::Thrift::Struct, ::Thrift::Struct_Union
-    SUCCESS = 0
-
-    FIELDS = {
-      SUCCESS => {:type => ::Thrift::Types::DOUBLE, :name => 'success'}
     }
 
     def struct_fields; FIELDS; end

@@ -372,13 +372,7 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	else{
 		printf("#####################################\n");
 		printf("\nLa suma matricial es: \n");		
-/*
-		for(int i=0; i<res->fil;i++){
-			for(int j=0; j<res->col; j++)
-				printf("%lf ", res->m.m_val[i*res->col+j]);
 
-			printf("\n");
-		}*/
 		imprimirMatriz(res);		
 		printf("#####################################\n");
 
@@ -412,13 +406,7 @@ restamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	else{
 		printf("#####################################\n");
 		printf("\nLa resta matricial es: \n");		
-/*
-		for(int i=0; i<res->fil;i++){
-			for(int j=0; j<res->col; j++)
-				printf("%lf ", res->m.m_val[i*res->col+j]);
 
-			printf("\n");
-		}*/
 		imprimirMatriz(res);		
 		printf("#####################################\n");
 
@@ -452,13 +440,7 @@ multmatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	else{
 		printf("#####################################\n");
 		printf("\nLa multiplicacion matricial es: \n");		
-/*
-		for(int i=0; i<res->fil;i++){
-			for(int j=0; j<res->col; j++)
-				printf("%lf ", res->m.m_val[i*res->col+j]);
 
-			printf("\n");
-		}*/
 		imprimirMatriz(res);		
 		printf("#####################################\n");
 
@@ -548,7 +530,7 @@ main (int argc, char *argv[])
 
 	if(argc==2){		//Modo interactivo
 		#define SALIDA 100
-		#define NUM_OPCIONES 15
+		#define NUM_OPCIONES 16
 		unsigned char opcion;
 		printf("Modo interactivo\n");
 
@@ -570,6 +552,7 @@ main (int argc, char *argv[])
 				printf("13.- Traspuesta de una matriz\n");
 				printf("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones\n");
 				printf("15.- Resolver ecuaciones de la forma ...=0\n");
+				printf("16.- Producto escalar de dos vectores\n");
 				printf("%d.- Salir del programa\n", SALIDA);
 				printf("Introduzca la opcion: ");
 				scanf("%hhd", &opcion);
@@ -716,8 +699,34 @@ main (int argc, char *argv[])
 
 				break;		
 
+
+				case 16:
+					printf("Numero de elementos de los vectores: ");
+					scanf("%d", &col);
+
+					reservarMatrix(&m1, 1, col);
+					reservarMatrix(&m2, col, 1);
+
+					printf("\n--------------------------------\n");
+					printf("Primer vector: \n");
+					rellenarMatriz(m1);
+
+					printf("\n--------------------------------\n");
+					printf("Segundo vector: \n");
+					rellenarMatriz(m2);
+
+					printf("\n-------------Operandos-------------------\n");
+					printf("Primer vector: \n");
+					imprimirMatriz(m1);
+
+					printf("--------------------------------");
+					printf("\nSegundo vector: \n");
+					imprimirMatriz(m2);
+
+					printf("\n--------------------------------\n");				
+
 			default:
-			printf("Opcion no implementada\n");
+			//printf("Opcion no implementada\n");
 			break;
 		}
 
@@ -775,6 +784,7 @@ main (int argc, char *argv[])
 				break;
 
 			case 12:
+			case 16:
 				multmatricial_calculadora_1(host, *m1, *m2);
 
 				liberarMatrix(&m1);

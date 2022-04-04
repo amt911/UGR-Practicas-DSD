@@ -17,7 +17,7 @@ client = Calculadora.Client(protocol)
 transport.open()
 
 SALIDA=100
-NUM_OPCIONES=15
+NUM_OPCIONES=16
 
 
 def imprimir_matriz(m):
@@ -55,6 +55,7 @@ while opcion!=SALIDA:
         print("13.- Traspuesta de una matriz")
         print("14.- Calculo de una cadena de operaciones respetando la jerarquia de operaciones")
         print("15.- Resolver ecuaciones de la forma ...=0")
+        print("16.- Producto escalar de dos vectores")
         print(str(SALIDA)+".- Salir del programa")
         opcion=int(input("Introduzca la opcion: "))
 
@@ -158,6 +159,35 @@ while opcion!=SALIDA:
         inf=float(input("Introduzca el extremo inferior del intervalo (donde se sospecha que puede estar la solucion): "))
         sup=float(input("Introduzca el extremo superior del intervalo (donde se sospecha que puede estar la solucion): "))
     
+    elif(opcion==16):
+        col=int(input("Numero de elementos de los vectores: "))
+        
+        v1=[[0 for j in range(col)] for i in range(1)]
+        v2=[[0 for j in range(1)] for i in range(col)]
+    
+        print("--------------------------------")
+        
+        print("Primer vector: ")
+        rellenar_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segundo vector: ")
+        rellenar_matriz(v2)
+        
+        print("-------------Operandos-------------------")
+        
+        print("Primer vector: ")
+        imprimir_matriz(v1)
+        
+        print("--------------------------------")
+        
+        print("Segundo vector: ")
+        imprimir_matriz(v2)
+        
+        print("--------------------------------")
+    
+    
     if(1<=opcion<=NUM_OPCIONES):  
         if(opcion==1):
             salida=client.suma(v1, v2)
@@ -181,7 +211,7 @@ while opcion!=SALIDA:
             salida=client.suma_matricial(v1, v2)
         elif(opcion==11):
             salida=client.resta_matricial(v1, v2)
-        elif(opcion==12):
+        elif(opcion==12 or opcion==16):
             salida=client.mult_matricial(v1, v2)
         elif(opcion==13):
             salida=client.traspuesta(v1)
@@ -195,7 +225,7 @@ while opcion!=SALIDA:
             print("El resultado de la operacion es: "+str(salida))
             print("#######################################################")                
         
-        elif(10<=opcion<=13):
+        elif(10<=opcion<=13 or opcion==16):
             print("#######################################################")
             print("La operacion matricial da como resultado: ")
             imprimir_matriz(salida)

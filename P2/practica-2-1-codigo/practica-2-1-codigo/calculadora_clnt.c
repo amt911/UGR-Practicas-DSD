@@ -239,21 +239,6 @@ traspuesta_1(matrix arg1,  CLIENT *clnt)
 	return (&clnt_res);
 }
 
-double *
-determinantematriz_1(matrix arg1,  CLIENT *clnt)
-{
-	static double clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call (clnt, determinanteMatriz,
-		(xdrproc_t) xdr_matrix, (caddr_t) &arg1,
-		(xdrproc_t) xdr_double, (caddr_t) &clnt_res,
-		TIMEOUT) != RPC_SUCCESS) {
-		return (NULL);
-	}
-	return (&clnt_res);
-}
-
 char **
 resolverecuaciones_1(char *arg1, double arg2, double arg3, double arg4,  CLIENT *clnt)
 {
