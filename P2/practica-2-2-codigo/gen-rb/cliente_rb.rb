@@ -46,7 +46,7 @@ while opcion!=SALIDA
         print("5.- Raiz Cuadrada\n")
         print("6.- Modulo (primer_valor mod segundo valor)\n")
         print("7.- Potencia (primer_valor)^(segundo_valor)\n")
-        print("8.- Comprobar si un numero es primo\n")
+        print("8.- Comprobar si un numero es primo (true=primo, false=no)\n")
         print("9.- Factorial\n")
         print("10.- Suma matricial\n")
         print("11.- Resta matricial\n")

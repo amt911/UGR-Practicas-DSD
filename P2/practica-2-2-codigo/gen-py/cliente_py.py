@@ -47,7 +47,7 @@ while opcion!=SALIDA:
         print("5.- Raiz Cuadrada")
         print("6.- Modulo (primer_valor mod segundo valor)")
         print("7.- Potencia (primer_valor)^(segundo_valor)")
-        print("8.- Comprobar si un numero es primo")
+        print("8.- Comprobar si un numero es primo (true=primo, false=no)")
         print("9.- Factorial")
         print("10.- Suma matricial")
         print("11.- Resta matricial")
@@ -220,7 +220,7 @@ while opcion!=SALIDA:
         elif(opcion==15):
             salida=client.biseccion(v1, error, inf, sup)
             
-        if(1<=opcion<=10 or 14<=opcion<=15):
+        if(1<=opcion<=9 or 14<=opcion<=15):
             print("#######################################################")
             print("El resultado de la operacion es: "+str(salida))
             print("#######################################################")                
