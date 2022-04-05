@@ -12,7 +12,7 @@ import org.apache.thrift.*;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 
-public class Cliente{
+public class ClienteJava{
     public static void main(String [] args) throws TException{
             TTransport transport;
             transport = new TSocket("localhost", 9090);
