@@ -96,9 +96,9 @@ class CalculadoraHandler:
         salida, operadores = [], []  # No hace falta un contador
 
     #Ecuacion de prueba: x^2+3*x-8
-	#Falla con: -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
-	#Tambien con: -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
-	#Tambien con: 3*-2 -> 3*0-2 ESTA MAL
+	# -r(6.3245/67567*8^2)-s(9.7554-3)+c(-9) (tiene que dar: -1.443389)
+	# -s(2345.5435/908^23)/(-2-3)-r(67*9.4321/3)*-2 (tiene que dar: 29.02758)
+	# 3*-2 
 	# -c(96*5*-r(6^2))/5+7		Tiene que dar: 7.133423546
 	# -(9-10)
 	# -s(-(3-7))		Tiene que dar: 0.7568
@@ -276,7 +276,7 @@ class CalculadoraHandler:
       
     
     def traspuesta(self, a):
-        res=[[0 for j in range(len(a[0]))] for i in range(len(a))]
+        res=[[0 for j in range(len(a))] for i in range(len(a[0]))]
         
         for i in range(len(a)):
             for j in range(len(a[0])):

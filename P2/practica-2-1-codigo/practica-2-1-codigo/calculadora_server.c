@@ -182,15 +182,15 @@ traspuesta_1_svc(matrix arg1,  struct svc_req *rqstp)
 	xdr_free((xdrproc_t)xdr_double, result.m.m_val);
 	result.m.m_len=0;
 
-	result.fil=arg1.fil;
-	result.col=arg1.col;
+	result.fil=arg1.col;
+	result.col=arg1.fil;
 
 	result.m.m_val=calloc(result.fil*result.col, sizeof(double));
 	result.m.m_len=result.fil*result.col;	
 
-	for(int i=0; i<result.fil; i++)
-		for(int j=0; j<result.col; j++)
-			result.m.m_val[j*result.col+i]=arg1.m.m_val[i*result.col+j];
+	for(int i=0; i<arg1.fil; i++)
+		for(int j=0; j<arg1.col; j++)
+			result.m.m_val[j*result.col+i]=arg1.m.m_val[i*arg1.col+j];
 
 	return &result;
 }

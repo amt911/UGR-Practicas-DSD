@@ -371,7 +371,7 @@ sumamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	}
 	else{
 		printf("#####################################\n");
-		printf("\nLa suma matricial es: \n");		
+		printf("La suma matricial es: \n");		
 
 		imprimirMatriz(res);		
 		printf("#####################################\n");
@@ -405,7 +405,7 @@ restamatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	}
 	else{
 		printf("#####################################\n");
-		printf("\nLa resta matricial es: \n");		
+		printf("La resta matricial es: \n");		
 
 		imprimirMatriz(res);		
 		printf("#####################################\n");
@@ -439,7 +439,7 @@ multmatricial_calculadora_1(char *host, matrix m1, matrix m2)
 	}
 	else{
 		printf("#####################################\n");
-		printf("\nLa multiplicacion matricial es: \n");		
+		printf("La multiplicacion matricial es: \n");		
 
 		imprimirMatriz(res);		
 		printf("#####################################\n");
@@ -473,7 +473,7 @@ traspuesta_calculadora_1(char *host, matrix m)
 	}
 	else{
 		printf("#####################################\n");
-		printf("\nLa multiplicacion matricial es: \n");		
+		printf("La traspuesta de la matriz es: \n");		
 		imprimirMatriz(res);		
 		printf("#####################################\n");
 
