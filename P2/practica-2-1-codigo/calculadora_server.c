@@ -390,12 +390,13 @@ resolverecuaciones_1_svc(char *ecuacion, double error, double inf, double sup, s
 	if(operacionAlgebraicaShuntingYard(ecuacion, inf)*operacionAlgebraicaShuntingYard(ecuacion, sup)<0){		//Por Bolzano
 		double res;
 		res=inf;
+		int terminado=0;
 
-		while((sup-inf)>=error){
+		while((sup-inf)>=error && terminado==0){
 			res=(inf+sup)/2;
 
 			if(operacionAlgebraicaShuntingYard(ecuacion, res) == 0.0){
-				break;
+				terminado=1;
 			}
 			else if(operacionAlgebraicaShuntingYard(ecuacion, res)*operacionAlgebraicaShuntingYard(ecuacion, inf)<0){
 				sup=res;

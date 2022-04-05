@@ -290,12 +290,13 @@ class CalculadoraHandler:
         
         else:        
             res=inf
+            terminado=False
             
-            while((sup-inf)>=error):
+            while((sup-inf)>=error and (not terminado)):
                 res=(inf+sup)/2.0
                 
                 if(self.multiples_comandos(ecuacion, res)==0.0):
-                    break
+                    terminado=True
                 
                 elif(self.multiples_comandos(ecuacion, res)*self.multiples_comandos(ecuacion, inf)<0):
                     sup=res
