@@ -191,13 +191,13 @@ public class Cliente{
                     break;
     
                 case 14:
-                    System.out.print("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
+                    System.out.print("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ");
                     v=s.nextLine();
                     
                     break;
     
                 case 15:
-                    System.out.print("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
+                    System.out.print("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ");
                     v=s.nextLine();
     
                     System.out.print("Introduzca el error: ");

@@ -654,14 +654,14 @@ main (int argc, char *argv[])
 
 			case 14:
 				v=calloc(1000, sizeof(char));
-				printf("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
+				printf("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ");
 				scanf("%s", v);
 				
 				break;
 
 			case 15:
 				v=calloc(1000, sizeof(char));
-				printf("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ");
+				printf("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ");
 				scanf("%s", v);
 
 				printf("Introduzca el error: ");

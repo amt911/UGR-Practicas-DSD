@@ -150,10 +150,10 @@ while opcion!=SALIDA:
         print("--------------------------------")
         
     elif(opcion==14):
-        v1=input("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")   
+        v1=input("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")   
 
     elif(opcion==15):
-        v1=input("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")
+        v1=input("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")
         error=float(input("Introduzca el error: "))
         
         inf=float(input("Introduzca el extremo inferior del intervalo (donde se sospecha que puede estar la solucion): "))

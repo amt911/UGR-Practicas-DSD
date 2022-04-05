@@ -164,11 +164,11 @@ while opcion!=SALIDA
         print("--------------------------------\n")
         
     elsif(opcion==14)
-        print("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")   
+        print("Introduzca expresion algebraica (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")   
         v1=gets.chomp
 
     elsif(opcion==15)
-        ("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(), exp()): ")
+        ("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")
         v1=gets.chomp
 
         print("Introduzca el error: ")
