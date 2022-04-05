@@ -290,7 +290,7 @@ public class Cliente{
 
 
                 default:
-                System.out.println("Opcion no implementada");
+                //System.out.println("Opcion no implementada");
                 break;
             }
             //Fase de llamar a las funciones

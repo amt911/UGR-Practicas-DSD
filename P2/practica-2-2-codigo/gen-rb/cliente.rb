@@ -168,7 +168,7 @@ while opcion!=SALIDA
         v1=gets.chomp
 
     elsif(opcion==15)
-        ("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")
+        print("Introduzca ecuacion en funcion de x (c(): cos(), s(): sin(), t(): tan(), s(): sqrt(), e(): exp()): ")
         v1=gets.chomp
 
         print("Introduzca el error: ")
