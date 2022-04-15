@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, graphics, float}
+\usepackage[a4paper, total={6in, 10in}]{geometry}
+\title{DSD Memoria Práctica 3}
+\author{Andrés Merlo Trujillo}
+\date{}
+\begin{document}
+
+\maketitle
+
+\section{Ejemplos}
+En esta primera parte se pide copiar los códigos de prueba que aparecen en el guión de prácticas y comentar como funcionan y qué hacen.
+
+Lo primero que hay que hacer es tener instalado una versión de OpenJDK lo suficientemente antigua ya que si no al usar el comando \textit{javac *.java} saldrá un error similar a este:
+
+%INSERTAR ERROR DE COMPILACIÓN
+
+En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 8 de la misma y configurarla para que sea la que sale por defecto.
+
+Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen.
+
+%FOTO DE LO OCURRIDO
+Para ello he separado la parte de la invocación de los clientes en otro script para poder lanzar ambos en dos terminales distintas.
+
+\subsection{Ejemplo 1}
+\subsubsection{Descripción}
+Este ejemplo lo único que realiza es que el cliente posee un identificador pasado como argumento en la ejecución del cliente y este a su vez se lo pasa al servidor a través del propio método remoto.
+
+En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
+
+
+\subsubsection{Implementación}
+Para la implementación de este sistema primero es necesario realizar la interfaz del servidor que va a exportar los métodos a los clientes. En este caso sólo se exporta el método \textit{escribir\_mensaje}. También cabe destacar que debe heredar de \textit{Remote}.
+
+En la parte del servidor se crea una clase que implementa los métodos de la interfaz ``Ejemplo\_I''.
+
+El método imprime por la pantalla del servidor que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda esa hebra a dormir durante 5 segundos y luego, con independencia de que 
+
+
+\subsubsection{Funcionamiento}
+
+
+\subsection{Ejemplo 2}
+
+\subsection{Ejemplo 3}
+
+\subsection{Diferencias entre los ejemplos}
+\end{document}
