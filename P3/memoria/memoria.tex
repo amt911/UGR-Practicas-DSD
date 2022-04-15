@@ -35,10 +35,24 @@ Para la implementación de este sistema primero es necesario realizar la interfa
 
 En la parte del servidor se crea una clase que implementa los métodos de la interfaz ``Ejemplo\_I''.
 
-El método imprime por la pantalla del servidor que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda esa hebra a dormir durante 5 segundos y luego, con independencia de que 
+El método imprime por la pantalla del servidor que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda el servidor a dormir durante 5 segundos y luego, con independencia de que sea el proceso 0 ó no, se indica la el número del proceso.
+\\
+%HACE FALTA COMPROBAR QUE CREO QUE RMI ES MULTIHEBRA
+
+\textbf{IMPORTANTE CAMBIAR TODO EL TEXTO QUE HE SUPUESTO QUE ES MULTIHEBRA Y NO LO ES}
+\\\\
+%COMPROBAR ESTO ULTIMO CON EL PDF
+Luego en la parte del main del servidor activa el gestor de seguridad, que es exactamente igual para el cliente, crea una instancia de sí mismo (ya que el main se encuentra en la misma clase) y le indica al rmiregistry su dirección para que los clientes puedan encontrarlo...???
+
+En la parte del cliente lo que hace es activar el gestor de seguridad, si no tenía uno ya, accede al \textit{rmiregistry} que se encuentra en la dirección pasada por consola, y finalmente obtiene a partir del registro la instancia para poder lanzar el método anteriormente mencionado.
 
 
 \subsubsection{Funcionamiento}
+El diagrama del sistema (sin incluir rmiregistry ni stubs, solo los propios objetos y clases) es el siguiente:
+%INSERTAR DIAGRAMA QUE EXPLIQUE MAS O MENOS COMO FUNCIONA
+
+Y ejemplos de ejecución son los siguientes:
+
 
 
 \subsection{Ejemplo 2}
