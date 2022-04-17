@@ -29,6 +29,10 @@ Este ejemplo lo único que realiza es que el cliente posee un identificador pasa
 
 En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
 
+No obstante, si se lanzan varios clientes al mismo tiempo (de manera concurrente) se producen entrelazamiento de mensajes ya que están accediendo al mismo método dos instancias distintas.
+
+%FOTO DEL ENTRELAZAMIENTO
+
 
 \subsubsection{Implementación}
 Para la implementación de este sistema primero es necesario realizar la interfaz del servidor que va a exportar los métodos a los clientes. En este caso sólo se exporta el método \textit{escribir\_mensaje}. También cabe destacar que debe heredar de \textit{Remote}.
@@ -56,7 +60,28 @@ Y ejemplos de ejecución son los siguientes:
 
 
 \subsection{Ejemplo 2}
+\subsubsection{Descripción}
+En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente lanza un numero de hebras que se pasan por consola. La lógica del servidor es exactamente igual al ejemplo anterior (y la del cliente también, pero es con hebras).
 
+Un entrelazamiento que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los clientes.
+
+Tras varias ejecuciones con un solo cliente no se consigue entrelazar los mensajes de entrada de distintas hebras, siempre entra una (excepto las que acaban en 0) y sale antes de entrar la siguiente.
+
+No obstante, cuando varios clientes (instancias del programa cliente multihebrado) acceden al método concurrentemente sí se produce entrelazamiento de mensajes.
+
+%FOTO DEL ENTRELAZAMIENTO CON 2 HEBRAS EN CADA CLIENTE.
+
+%PUEDE QUE HAYA QUE MIRARLO
+Mi suposición, a partir de los resultados obtenidos anteriormente, es que solamente puede acceder una hebra de una misma instancia al método, pero varias instancias pueden acceder concurrentemente al mismo.
+
+\subsubsection{Implementación}
+
+\subsubsection{Uso de \textit{synchronized}}
+Cuando se usa sync es como si fuera un entorno monohebrado, solo puede entrar un trabajo al servidory hasta que este no se realice no continua.
+
+Esto se puede ver porque cuando llega a una hebra que acaba en 0 para la ejecución para dormir 5 segundos.
+
+%INSERTAR IMAGEN DE ESO
 \subsection{Ejemplo 3}
 
 \subsection{Diferencias entre los ejemplos}
