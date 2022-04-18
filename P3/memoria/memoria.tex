@@ -16,7 +16,9 @@ Lo primero que hay que hacer es tener instalado una versión de OpenJDK lo sufic
 
 %INSERTAR ERROR DE COMPILACIÓN
 
-En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 8 de la misma y configurarla para que sea la que sale por defecto.
+En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 11 de la misma y configurarla para que sea la que sale por defecto.
+
+Algo notable que me ha ocurrido, no sé si ha sido mucha casualidad pero he probado la ejecución varias veces, es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11 como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
 
 Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen.
 
@@ -28,8 +30,6 @@ Para ello he separado la parte de la invocación de los clientes en otro script 
 Este ejemplo lo único que realiza es que el cliente posee un identificador pasado como argumento en la ejecución del cliente y este a su vez se lo pasa al servidor a través del propio método remoto.
 
 En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
-
-No obstante, si se lanzan varios clientes al mismo tiempo (de manera concurrente) se producen entrelazamiento de mensajes ya que están accediendo al mismo método dos instancias distintas.
 
 %FOTO DEL ENTRELAZAMIENTO
 
@@ -65,16 +65,18 @@ En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente la
 
 Un entrelazamiento que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los clientes.
 
-Tras varias ejecuciones con un solo cliente no se consigue entrelazar los mensajes de entrada de distintas hebras, siempre entra una (excepto las que acaban en 0) y sale antes de entrar la siguiente.
+Tras varias ejecuciones se puede observar como se produce un entrelazamiento de mensajes en el servidor en el que se muestra que entran varias hebras a la vez y luego se muestran varias veces también que ya salen, al contrario que pasaba en el ejemplo 1 que mostraba el mensaje de entrada y luego el siguiente era el de salida, todo esto por ser un sólo cliente y monohebrado.
 
-No obstante, cuando varios clientes (instancias del programa cliente multihebrado) acceden al método concurrentemente sí se produce entrelazamiento de mensajes.
+%MOSTRAR IMAGEN DEL ENTRELAZAMIENTO
 
-%FOTO DEL ENTRELAZAMIENTO CON 2 HEBRAS EN CADA CLIENTE.
-
-%PUEDE QUE HAYA QUE MIRARLO
-Mi suposición, a partir de los resultados obtenidos anteriormente, es que solamente puede acceder una hebra de una misma instancia al método, pero varias instancias pueden acceder concurrentemente al mismo.
+Por tanto lo que está pasando es que varias hebras pueden invocar el método muy cerca una de otra y hacer que el servidor escriba dos mensajes de entrada antes de que pueda acabar el primero de los métodos para que imprima el mensaje de salida.
 
 \subsubsection{Implementación}
+La implementación de la parte del servidor es exactamente igual que en el ejemplo 1, salvo por algún ligero cambio del mensaje que se muestra por pantalla.
+
+
+%ESTA ULTIMA PARTE ES NECESARIA COMPROBARLA
+En la parte del cliente se realiza prácticamente lo mismo pero se encapsula en el método \textit{run} ya que son hebras, luego desde el main se crea un array de hebras y se lanzan con \textit{start}.
 
 \subsubsection{Uso de \textit{synchronized}}
 Cuando se usa sync es como si fuera un entorno monohebrado, solo puede entrar un trabajo al servidory hasta que este no se realice no continua.
