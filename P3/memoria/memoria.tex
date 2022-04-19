@@ -6,19 +6,20 @@
 \author{Andrés Merlo Trujillo}
 \date{}
 \begin{document}
+%TODO: MUY IMPORTANTE COMPROBAR LOS DE LAS INSTANCIAS DEL SERVIDOR, SEGURAMENTE ESTE MALY SE REFIERA A INSTANCIAS DEL METODO REMOTO O ALGO
 
 \maketitle
 
-\section{Ejemplos}
+\section{Primera parte, Ejemplos}
 En esta primera parte se pide copiar los códigos de prueba que aparecen en el guión de prácticas y comentar como funcionan y qué hacen.
 
-Lo primero que hay que hacer es tener instalado una versión de OpenJDK lo suficientemente antigua ya que si no al usar el comando \textit{javac *.java} saldrá un error similar a este:
+Lo primero que hay que hacer es tener instalado una versión de OpenJDK lo suficientemente antigua porque si no al usar el comando \textit{javac *.java} saldrá un error similar a este:
 
 %INSERTAR ERROR DE COMPILACIÓN
 
 En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 11 de la misma y configurarla para que sea la que sale por defecto.
 
-Algo notable que me ha ocurrido, no sé si ha sido mucha casualidad pero he probado la ejecución varias veces, es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11 como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
+Algo notable que me ha ocurrido, no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces, es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11 como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
 
 Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen.
 
@@ -29,13 +30,13 @@ Para ello he separado la parte de la invocación de los clientes en otro script 
 \subsubsection{Descripción}
 Este ejemplo lo único que realiza es que el cliente posee un identificador pasado como argumento en la ejecución del cliente y este a su vez se lo pasa al servidor a través del propio método remoto.
 
-En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
+En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000 ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
 
 %FOTO DEL ENTRELAZAMIENTO
 
 
 \subsubsection{Implementación}
-Para la implementación de este sistema primero es necesario realizar la interfaz del servidor que va a exportar los métodos a los clientes. En este caso sólo se exporta el método \textit{escribir\_mensaje}. También cabe destacar que debe heredar de \textit{Remote}.
+Para la implementación de este sistema primero es necesario realizar la interfaz del servidor que va a exportar los métodos a los clientes. En este caso solo se exporta el método \textit{escribir\_mensaje}. También cabe destacar que debe heredar de \textit{Remote}.
 
 En la parte del servidor se crea una clase que implementa los métodos de la interfaz ``Ejemplo\_I''.
 
@@ -61,29 +62,41 @@ Y ejemplos de ejecución son los siguientes:
 
 \subsection{Ejemplo 2}
 \subsubsection{Descripción}
-En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente lanza un numero de hebras que se pasan por consola. La lógica del servidor es exactamente igual al ejemplo anterior (y la del cliente también, pero es con hebras).
+En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente lanza un número de hebras que se pasan por consola. La lógica del servidor es exactamente igual al ejemplo anterior (y la del cliente también, pero es con hebras).
 
-Un entrelazamiento que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los clientes.
+\textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede apreciar como se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez antes de que la primera haya mostrado el mensaje de salida y luego cuando salen se muestran varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
 
-Tras varias ejecuciones se puede observar como se produce un entrelazamiento de mensajes en el servidor en el que se muestra que entran varias hebras a la vez y luego se muestran varias veces también que ya salen, al contrario que pasaba en el ejemplo 1 que mostraba el mensaje de entrada y luego el siguiente era el de salida, todo esto por ser un sólo cliente y monohebrado.
+%MOSTRAR EL MENSAJE DE SALIDA DEL SERVIDOR CON EL ENTRELAZAMIENTO
 
-%MOSTRAR IMAGEN DEL ENTRELAZAMIENTO
+Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes.
 
-Por tanto lo que está pasando es que varias hebras pueden invocar el método muy cerca una de otra y hacer que el servidor escriba dos mensajes de entrada antes de que pueda acabar el primero de los métodos para que imprima el mensaje de salida.
+\textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando más de una instancia del método concurrentemente produciendo así como se ha dicho anteriormente entrelazamientos.  
+
+%MIRAR ARRIBA LO QUE PONE INSTANCIA, QUIZAS ESTE MAL
+
+%MOSTRAR TAMBIEN UNA FOTO SOBRE ESO
+
+\textbf{¿Qué ocurre con las hebras cuyo nombre acaba en 0?: }Las hebras que acaban en 0, al igual que en el ejemplo 1, hacen que la instancia del método para esa hebra se ponga a dormir durante 5000 ms (5 segundos). Durante ese tiempo, otras hebras pueden invocar al método para su ejecución y este se ejecuta paralelamente a los otros, como se ha mencionado anteriormente. Esto hace que pueda haber instancias en el servidor que estén durmiendo e instancias que se estén ejecutando paralelamente.
 
 \subsubsection{Implementación}
 La implementación de la parte del servidor es exactamente igual que en el ejemplo 1, salvo por algún ligero cambio del mensaje que se muestra por pantalla.
 
 
 %ESTA ULTIMA PARTE ES NECESARIA COMPROBARLA
-En la parte del cliente se realiza prácticamente lo mismo pero se encapsula en el método \textit{run} ya que son hebras, luego desde el main se crea un array de hebras y se lanzan con \textit{start}.
+En la parte del cliente se realiza prácticamente lo mismo, pero se encapsula en el método \textit{run}, ya que son hebras, luego desde el main se crea un array de hebras y se lanzan con \textit{start}.
 
 \subsubsection{Uso de \textit{synchronized}}
-Cuando se usa sync es como si fuera un entorno monohebrado, solo puede entrar un trabajo al servidory hasta que este no se realice no continua.
+Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones al mismo método produciendo así posibles esperas innecesarias e incluso puede darse el caso de que si se produce una excepción, los demás clientes tengan que esperar infinitamente. 
 
-Esto se puede ver porque cuando llega a una hebra que acaba en 0 para la ejecución para dormir 5 segundos.
+%INTRODUCIR IMAGEN DE LO OCURRIDO
+Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir.
+
+Como conclusión se puede decir que la principal diferencia entre no usar \textit{synchronized} y sí usarlo es que en el primero las hebras no necesitan esperar a que salgan las de delante para que su petición pueda ser procesada. Mientras que en el segundo caso solo una hebra puede acceder al método y las demás tienen que esperar su finalización para que puedan acceder.
 
 %INSERTAR IMAGEN DE ESO
+
+
+%QUIZAS TAMBIEN SE PODRIA INSERTAR DIAGRAMAS DE LAS PETICIONES, OBVIANDO STUBS Y COSAS ASI
 \subsection{Ejemplo 3}
 
 \subsection{Diferencias entre los ejemplos}
