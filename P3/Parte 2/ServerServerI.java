@@ -7,5 +7,5 @@ public interface ServerServerI extends Remote {
     boolean existeCliente(int id) throws RemoteException;
     void añadirCliente(int id) throws RemoteException;
     String getNombreReplica() throws RemoteException;
-    void ponerACero() throws RemoteException;
+    //void ponerACero() throws RemoteException;
 }

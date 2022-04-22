@@ -15,10 +15,10 @@ public class ClienteMain {
             int id=Integer.parseInt(args[0]);
             // Crea el stub para el cliente especificando el nombre del servidor
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            ServerClientI replica = (ServerClientI) mireg.lookup("S1");
+            ServerClientI replica = (ServerClientI) mireg.lookup("S0");
             String res=replica.registrarCliente(id);
             System.out.println("SALIDA: "+res);
-            if(res!="S1"){
+            if(res!="S0"){
                 replica = (ServerClientI) mireg.lookup(res);
             }
 

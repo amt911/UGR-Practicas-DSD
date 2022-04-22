@@ -7,5 +7,5 @@ public interface ServerClientI extends Remote{
     int totalDonado(int id) throws RemoteException;
     int totalDonadoCliente(int id) throws RemoteException;
     String getNombreReplica() throws RemoteException;
-    void ponerACero() throws RemoteException;
+    //void ponerACero() throws RemoteException;
 }
