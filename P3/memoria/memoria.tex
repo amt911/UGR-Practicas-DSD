@@ -7,6 +7,7 @@
 \date{}
 \begin{document}
 %TODO: MUY IMPORTANTE COMPROBAR LOS DE LAS INSTANCIAS DEL SERVIDOR, SEGURAMENTE ESTE MALY SE REFIERA A INSTANCIAS DEL METODO REMOTO O ALGO
+%TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
 
 \maketitle
 
@@ -28,28 +29,24 @@ Para ello he separado la parte de la invocación de los clientes en otro script 
 
 \subsection{Ejemplo 1}
 \subsubsection{Descripción}
-Este ejemplo lo único que realiza es que el cliente posee un identificador pasado como argumento en la ejecución del cliente y este a su vez se lo pasa al servidor a través del propio método remoto.
+Este ejemplo lo que realiza en el lado del cliente es llamar al método remoto \textit{escribir\_mensaje} con el identificador pasado por consola del cliente.
 
-En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000 ms (5 segundos), en otro caso simplemente indica que ha recibido la petición e indica el número de hebra.
+En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000 ms (5 segundos), en otro caso simplemente indica que ha recibido la petición y muestra el identificador del cliente.
 
-%FOTO DEL ENTRELAZAMIENTO
+%FOTO CON ALGUNA EJECUCION
+
 
 
 \subsubsection{Implementación}
-Para la implementación de este sistema primero es necesario realizar la interfaz del servidor que va a exportar los métodos a los clientes. En este caso solo se exporta el método \textit{escribir\_mensaje}. También cabe destacar que debe heredar de \textit{Remote}.
+Para la implementación de este sistema primero es necesario realizar la interfaz remota del servidor que va a exportar los métodos a los clientes. En este caso solo se exporta el método \textit{escribir\_mensaje}.
 
-En la parte del servidor se crea una clase que implementa los métodos de la interfaz ``Ejemplo\_I''.
+En la parte del servidor se crea una clase que implementa los métodos de la interfaz remota ``Ejemplo\_I''.
 
-El método imprime por la pantalla del servidor que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda el servidor a dormir durante 5 segundos y luego, con independencia de que sea el proceso 0 ó no, se indica la el número del proceso.
-\\
-%HACE FALTA COMPROBAR QUE CREO QUE RMI ES MULTIHEBRA
+El método imprime por la pantalla del servidor (remota) que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda el cliente que ha llamado al método remoto a dormir durante 5 segundos y luego, con independencia de que sea el proceso 0 ó no, se indica el identificador del cliente en la pantalla remota.
 
-\textbf{IMPORTANTE CAMBIAR TODO EL TEXTO QUE HE SUPUESTO QUE ES MULTIHEBRA Y NO LO ES}
-\\\\
-%COMPROBAR ESTO ULTIMO CON EL PDF
-Luego en la parte del main del servidor activa el gestor de seguridad, que es exactamente igual para el cliente, crea una instancia de sí mismo (ya que el main se encuentra en la misma clase) y le indica al rmiregistry su dirección para que los clientes puedan encontrarlo...???
+En la parte del main del servidor activa el gestor de seguridad, que es exactamente igual para el cliente, crea una instancia de del objeto remoto y por último se exporta y se registra en ``rmiregistry'' para que los clientes puedan encontrarlo.
 
-En la parte del cliente lo que hace es activar el gestor de seguridad, si no tenía uno ya, accede al \textit{rmiregistry} que se encuentra en la dirección pasada por consola, y finalmente obtiene a partir del registro la instancia para poder lanzar el método anteriormente mencionado.
+En la parte del cliente se activa el gestor de seguridad accede al ``rmiregistry'' que se encuentra en la dirección pasada por consola, y obtiene a partir del registro el stub del objeto remoto para poder lanzar el método anteriormente mencionado.
 
 
 \subsubsection{Funcionamiento}
@@ -64,19 +61,19 @@ Y ejemplos de ejecución son los siguientes:
 \subsubsection{Descripción}
 En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente lanza un número de hebras que se pasan por consola. La lógica del servidor es exactamente igual al ejemplo anterior (y la del cliente también, pero es con hebras).
 
-\textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede apreciar como se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez antes de que la primera haya mostrado el mensaje de salida y luego cuando salen se muestran varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
+\textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede observar como se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez antes de que la primera haya mostrado el mensaje de salida y luego cuando salen muestra varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
 
 %MOSTRAR EL MENSAJE DE SALIDA DEL SERVIDOR CON EL ENTRELAZAMIENTO
 
-Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes.
+Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Puede ser porque realmente las hebras del cliente no llamen al método remoto en el mismo orden en que se crean (las hebras).
 
-\textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando más de una instancia del método concurrentemente produciendo así como se ha dicho anteriormente entrelazamientos.  
-
-%MIRAR ARRIBA LO QUE PONE INSTANCIA, QUIZAS ESTE MAL
+\textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando el mismo método concurrentemente produciendo así, como se ha dicho anteriormente, entrelazamientos.  
+Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se produjera en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (cerrojos, semáforos, monitores, etc.) entre clientes/hebras para un correcto estado del objeto que exporta el servidor.
 
 %MOSTRAR TAMBIEN UNA FOTO SOBRE ESO
+%MOSTRAR UN DIAGRAMA CON LOS POSIBLES ENTRELAZAMIENTOS, POR EJEMPLO HACER PARA EL CASO DE 3 HEBRAS
 
-\textbf{¿Qué ocurre con las hebras cuyo nombre acaba en 0?: }Las hebras que acaban en 0, al igual que en el ejemplo 1, hacen que la instancia del método para esa hebra se ponga a dormir durante 5000 ms (5 segundos). Durante ese tiempo, otras hebras pueden invocar al método para su ejecución y este se ejecuta paralelamente a los otros, como se ha mencionado anteriormente. Esto hace que pueda haber instancias en el servidor que estén durmiendo e instancias que se estén ejecutando paralelamente.
+\textbf{¿Qué ocurre con las hebras cuyo nombre acaba en 0?: }Las hebras que acaban en 0, al igual que en el ejemplo 1, se ponen a dormir durante 5000 ms (5 segundos) al llamar al método remoto. Durante ese tiempo, otras hebras pueden invocar al método remoto para su ejecución y este se ejecuta paralelamente a los otros, como se ha mencionado anteriormente. Esto hace que pueda haber instancias en el servidor que estén durmiendo e instancias que se estén ejecutando concurrentemente.
 
 \subsubsection{Implementación}
 La implementación de la parte del servidor es exactamente igual que en el ejemplo 1, salvo por algún ligero cambio del mensaje que se muestra por pantalla.
