@@ -14,13 +14,19 @@
 \section{Primera parte, Ejemplos}
 En esta primera parte se pide copiar los códigos de prueba que aparecen en el guión de prácticas y comentar como funcionan y qué hacen.
 
+\bigskip
+
 Lo primero que hay que hacer es tener instalado una versión de OpenJDK lo suficientemente antigua porque si no al usar el comando \textit{javac *.java} saldrá un error similar a este:
 
 %INSERTAR ERROR DE COMPILACIÓN
 
-En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 11 de la misma y configurarla para que sea la que sale por defecto.
+En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 11 de la misma y configurarla para que sea la que se use por defecto.
 
-Algo notable que me ha ocurrido, no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces, es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11 como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
+\bigskip
+
+Algo interesante que me ha ocurrido (no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces) es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos y sin usar la palabra clave \textit{synchronized}. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11, como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
+
+\bigskip
 
 Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen.
 
@@ -86,7 +92,7 @@ En la parte del cliente se realiza prácticamente lo mismo, pero se encapsula en
 Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones al mismo método produciendo así posibles esperas innecesarias e incluso puede darse el caso de que si se produce una excepción, los demás clientes tengan que esperar infinitamente. 
 
 %INTRODUCIR IMAGEN DE LO OCURRIDO
-Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir.
+Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir. Esto arreglaría el entrelazamiento, pero a costa de introducir esperas innecesarias, ya que ahora el método se comporta como si fuera monohebrado.
 
 Como conclusión se puede decir que la principal diferencia entre no usar \textit{synchronized} y sí usarlo es que en el primero las hebras no necesitan esperar a que salgan las de delante para que su petición pueda ser procesada. Mientras que en el segundo caso solo una hebra puede acceder al método y las demás tienen que esperar su finalización para que puedan acceder.
 
@@ -95,6 +101,26 @@ Como conclusión se puede decir que la principal diferencia entre no usar \texti
 
 %QUIZAS TAMBIEN SE PODRIA INSERTAR DIAGRAMAS DE LAS PETICIONES, OBVIANDO STUBS Y COSAS ASI
 \subsection{Ejemplo 3}
+\subsubsection{Descripcion}
+En este ejemplo se separa el propio objeto remoto del servidor. Para ello se crea la interfaz remota como en los ejemplos anteriores pero esta vez se implementa en una clase aparte sin tener un main asociado.
 
+El main se encuentra en otra clase servidor que se encarga como en los demas ejemplos de crear la instancia del objeto remoto y exportarlo al \textit{rmiregistry}.
+
+\bigskip
+
+Por la parte del cliente realiza la misma tarea que en los ejemplos anteriores, pero esta vez una vez creado el stub pone el contador a 0 ya que es posible que otros procesos hayan modificado el atributo ``suma''. Una vez realizado esto toma el tiempo de entrada y realiza 1000 llamadas al método remoto \textit{incrementar}, cuando acaba de realizar las llamadas toma el tiempo de salida y muestra por consola el tiempo que ha tardado y, haciendo una llamada al método getter remoto \textit{sumar}, obtiene el valor del atributo del objeto remoto, que en caso de no haber sido accedido por otros procesos o hebras será el mismo número que el de llamadas RMI realizadas.
+
+%MOSTRAR IMAGEN DE ESTO Y QUIZAS AÑADIR ALGO MAS
 \subsection{Diferencias entre los ejemplos}
+En estos 3 ejemplos se han visto varios aspectos importantes de RMI que hace que los diferencien en cierta medida. 
+
+La primera diferencia es que en los ejemplos 1 y 3 se usan solamente los procesos como tal en los que no existen hebras, sino los propios procesos (JVM). Mientras que en el ejemplo 2 el cliente lanza varias hebras que acceden concurrentemente a un método remoto.
+
+La segunda diferencia es en la implementacion de la interfaz remota, en la que en los ejemplos 1 y 2 se realiza en la propia clase del servidor mientras que en el ejemplo 3 se realiza en una clase aparte, haciendo que el servidor solo se encargue de crear la instancia remota y exportarla. Esto permite separar la implementación del objeto remoto del propio código del servidor.
+
+Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en los ejemplos 1 y 2 supone que se ha lanzado el rmiregistry y solo se encarga en exportar el objeto remoto, mientras que en el ejemplo 3 es el propio servidor el que crea el rmiregistry y le asigna un puerto mediante el método \textit{createRegistry}, es más, si se intenta lanzar rmiregistry primero y luego este servidor va a dar error por lo que es necesario matar a todos los procesos que el sistema tenga.
+
+%MOSTRAR EL ERROR EXPLICADO EN EL PARRAFO ANTERIOR
+
+
 \end{document}
