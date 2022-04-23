@@ -1,5 +1,10 @@
+package Cliente;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import Interfaces.ServerClientI;
+
 import java.rmi.*;
 
 

@@ -1,6 +1,10 @@
+package Server;
+
 import java.rmi.registry.*;
 import java.rmi.server.*;
 import java.util.ArrayList;
+
+import Interfaces.ServerClientI;
 
 public class ServidorMain {
     public static void main(String [] args){

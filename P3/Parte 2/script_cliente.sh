@@ -4,4 +4,4 @@
 echo
 echo "Lanzando el primer cliente"
 echo
-java -cp . -Djava.security.policy=server.policy ClienteMain $1
+java -cp . -Djava.security.policy=server.policy Cliente/ClienteMain $1

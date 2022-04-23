@@ -5,6 +5,6 @@
 
 for i in `seq 1 $1`
 do
-    java -cp . -Djava.security.policy=server.policy ClienteMainEntre $i &
+    java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainEntre $i &
     sleep 1
 done

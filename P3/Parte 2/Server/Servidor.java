@@ -1,7 +1,12 @@
+package Server;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+
+import Interfaces.ServerClientI;
+import Interfaces.ServerServerI;
 
 public class Servidor implements ServerClientI, ServerServerI{
     private static int numReplicas=0;
