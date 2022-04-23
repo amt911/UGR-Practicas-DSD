@@ -11,4 +11,4 @@ javac *.java
 
 echo
 echo "Lanzando el servidor"
-java -cp . -Djava.rmi.server.codebase=file:./ -Djava.rmi.server.hostname=localhost -Djava.security.policy=server.policy ServidorMain
+java -cp . -Djava.rmi.server.codebase=file:./ -Djava.rmi.server.hostname=localhost -Djava.security.policy=server.policy ServidorMain $1

@@ -1,6 +1,5 @@
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Scanner;
 import java.rmi.*;
 
 
@@ -18,15 +17,11 @@ public class ClienteMainEntre {
             ServerClientI replica = (ServerClientI) mireg.lookup("S0");
             String res=replica.registrarCliente(id);
             System.out.println("SALIDA: "+res);
-            if(res!="S0"){
-                replica = (ServerClientI) mireg.lookup(res);
-            }
+            replica = (ServerClientI) mireg.lookup(res);
 
             for(int i=0; i<1000; i++){
                 replica.donar(id, 1);
-                //System.out.println("Cantidad total servidor: "+replica.totalDonado(id));
             }
-            //replica.ponerACero();
                 
         } catch (NotBoundException | RemoteException e) {
             System.err.println("Exception del sistema: " + e);

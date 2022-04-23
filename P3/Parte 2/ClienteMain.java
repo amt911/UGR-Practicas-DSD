@@ -18,13 +18,12 @@ public class ClienteMain {
             ServerClientI replica = (ServerClientI) mireg.lookup("S0");
             String res=replica.registrarCliente(id);
             System.out.println("SALIDA: "+res);
-            if(res!="S0"){
-                replica = (ServerClientI) mireg.lookup(res);
-            }
+            
+            replica = (ServerClientI) mireg.lookup(res);
 
             int opcion;
             do{
-                System.out.println("Cliente: "+1);
+                System.out.println("Cliente: "+id);
                 System.out.println("Cantidad donada: "+replica.totalDonadoCliente(id));
                 System.out.println("Conectado a replica: "+replica.getNombreReplica());
                 System.out.println("Cantidad total servidor: "+replica.totalDonado(id));
