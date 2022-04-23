@@ -5,6 +5,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+import Interfaces.AnilloServerI;
 import Interfaces.ServerClientI;
 import Interfaces.ServerServerI;
 
@@ -14,6 +15,7 @@ public class Servidor implements ServerClientI, ServerServerI{
     public ArrayList<Integer> clientes;
     ArrayList<Integer> donacionesClientes;
     int idServer;
+    boolean token;
 
 
     Servidor(){
@@ -22,7 +24,8 @@ public class Servidor implements ServerClientI, ServerServerI{
         idServer=numReplicas++;
         donacionesClientes=new ArrayList<>();
 
-        System.out.println("idserver: "+idServer);
+        //System.out.println("idserver: "+idServer);
+        token=false;
     }
 
     @Override
@@ -122,12 +125,12 @@ public class Servidor implements ServerClientI, ServerServerI{
     }
 
     private ServerServerI obtenerReplica(int id){
-        ServerServerI micontador=null;
+        ServerServerI replica=null;
         
             //String replica=(nombreServidor=="S1")?"S2":"S1";
             try {
                 Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-                micontador = (ServerServerI) mireg.lookup("S"+id);
+                replica = (ServerServerI) mireg.lookup("S"+id);
 
                 //res=obtenerSubtotal()+micontador.obtenerSubtotal();
             } catch (Exception e) {
@@ -135,7 +138,7 @@ public class Servidor implements ServerClientI, ServerServerI{
                 e.printStackTrace();
             }
             //}
-        return micontador;
+        return replica;
     }
 
     @Override
