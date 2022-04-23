@@ -21,18 +21,22 @@ public class Anillo implements AnilloI, AnilloServerI{
 
     @Override
     public void solicitarAnillo() throws RemoteException {
-        // TODO Auto-generated method stub
+        while(!token){
+            //System.out.println("Esperando a que se libere el token");
+            System.out.println("id: "+idAnillo);
+        }
         
+        token=false;
     }
 
     @Override
     public void liberarAnilllo() throws RemoteException {
-        // TODO Auto-generated method stub
-        
+        System.out.println("Liberando token: "+idAnillo);
+        token=true;
     }
 
     @Override
-    public void pasarAnillo() throws RemoteException {
+    public void pasarToken() throws RemoteException {
         if(token){
             token=false;
             AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
@@ -51,7 +55,7 @@ public class Anillo implements AnilloI, AnilloServerI{
             //String replica=(nombreServidor=="S1")?"S2":"S1";
             try {
                 Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-                replica = (AnilloI) mireg.lookup("AI"+id);
+                replica = (AnilloI) mireg.lookup("A"+id);
 
                 //res=obtenerSubtotal()+micontador.obtenerSubtotal();
             } catch (Exception e) {

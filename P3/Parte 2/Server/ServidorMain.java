@@ -34,26 +34,27 @@ public class ServidorMain {
 
             System.out.println("Lanzados los servidores de donacion");
 
-            //Ahora toca lanzar los anillos
             ArrayList<Anillo> replicasAnillos=new ArrayList<>();
-
+            
             for(int i=0; i<Integer.parseInt(args[0]); i++){
                 replicasAnillos.add(new Anillo());
             }
+            
 
-            //Registry registry = LocateRegistry.getRegistry();
-            ArrayList<AnilloI> stubsAnillos=new ArrayList<>();
+            //Ahora toca exportar los anillos externos
+            ArrayList<AnilloServerI> stubsAnillosExternos=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
-                stubsAnillos.add((AnilloI) UnicastRemoteObject.exportObject(replicasAnillos.get(i), 0));
+                stubsAnillosExternos.add((AnilloServerI) UnicastRemoteObject.exportObject(replicasAnillos.get(i), 0));
             }
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
-                registry.rebind("AI"+i, stubsAnillos.get(i));
+                registry.rebind("A"+i, stubsAnillosExternos.get(i));
             }
 
-            System.out.println("Lanzados los servidores de anillos");            
-
+            System.out.println("Lanzados los servidores de anillos externos");                        
+            
+            
             int contador=0;
             while(true){
                 System.out.println("---------------------------------------------------------------");
@@ -62,8 +63,9 @@ public class ServidorMain {
                 }
                 System.out.println("---------------------------------------------------------------");
                 contador=(contador+1)%Anillo.numInstancias;
-                AnilloI replica = (AnilloI) registry.lookup("AI"+contador);                
-                replica.pasarAnillo();
+                AnilloI replica = (AnilloI) registry.lookup("A"+contador);                
+                replica.pasarToken();
+                Thread.sleep(1000);
             }
         } catch (Exception e) {
             System.err.println("Exception:");

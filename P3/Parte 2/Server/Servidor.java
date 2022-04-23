@@ -5,6 +5,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
+import Anillo.Anillo;
 import Interfaces.AnilloServerI;
 import Interfaces.ServerClientI;
 import Interfaces.ServerServerI;
@@ -115,29 +116,44 @@ public class Servidor implements ServerClientI, ServerServerI{
     @Override
     public void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
+            AnilloServerI replica=obtenerReplicaAnillo(idServer);
+
+            replica.solicitarAnillo();
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
             subtotal+=cantidad;
             System.out.println("SUPUESTA DONACION: "+totalDonado(id));
+            replica.liberarAnilllo();
         }
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
         }
     }
 
+    private AnilloServerI obtenerReplicaAnillo(int id){
+        AnilloServerI replica=null;
+        
+        try {
+            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            replica = (AnilloServerI) mireg.lookup("A"+id);
+        } catch (Exception e) {
+            System.err.println("Exception:");
+            e.printStackTrace();
+        }
+
+        return replica;
+    }
+
     private ServerServerI obtenerReplica(int id){
         ServerServerI replica=null;
         
-            //String replica=(nombreServidor=="S1")?"S2":"S1";
-            try {
-                Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-                replica = (ServerServerI) mireg.lookup("S"+id);
+        try {
+            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            replica = (ServerServerI) mireg.lookup("S"+id);
+        } catch (Exception e) {
+            System.err.println("Exception:");
+            e.printStackTrace();
+        }
 
-                //res=obtenerSubtotal()+micontador.obtenerSubtotal();
-            } catch (Exception e) {
-                System.err.println("Ejemplo exception:");
-                e.printStackTrace();
-            }
-            //}
         return replica;
     }
 
