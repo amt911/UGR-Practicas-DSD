@@ -3,12 +3,17 @@ package Anillo;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import Interfaces.AnilloI;
 import Interfaces.AnilloServerI;
 
 public class Anillo implements AnilloI, AnilloServerI{
     public static int numInstancias=0;
     public volatile boolean token;
+    public volatile boolean solicitado=false;
     public int idAnillo;
 
     public Anillo(){
@@ -20,29 +25,62 @@ public class Anillo implements AnilloI, AnilloServerI{
             token=false;
     }
 
+    Lock lock=new ReentrantLock();
+    Condition sinToken=lock.newCondition();
+    Condition conSolicitud=lock.newCondition();
+
     @Override
-    public synchronized void solicitarToken() throws RemoteException {
-        while(!token){
-            //synchronized(this){}
-            System.out.println("Identificador anillo: "+idAnillo);
+    public void solicitarToken() throws RemoteException {
+        lock.lock();
+        try {
+            solicitado = true;
+            while (!token) {
+                try {
+                    sinToken.await();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        } finally {
+            lock.unlock();
         }
-
-        token=false;
-        //setToken(false);
+        // token=false;
     }
 
     @Override
-    public synchronized void liberarToken() throws RemoteException {
-        token=true;
+    public void liberarToken() throws RemoteException {
+        // token=true;
+        lock.lock();
+        try {
+            solicitado = false;
+            conSolicitud.signalAll();
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
-    public synchronized void pasarToken() throws RemoteException {
-        if(token){
-            token=false;
+    public void pasarToken() throws RemoteException {
+        lock.lock();
+        try {
+            if (token) {
+                while (solicitado) {
+                    sinToken.signalAll();
+                    try {
+                        conSolicitud.await();
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                token = false;
 
-            AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
-            replica.setToken(true);
+                AnilloI replica = obtenerReplica((idAnillo + 1) % numInstancias);
+                replica.setToken(true);
+            }
+        } finally {
+            lock.unlock();
         }
     }
 

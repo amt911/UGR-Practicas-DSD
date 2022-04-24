@@ -65,7 +65,7 @@ public class ServidorMain {
                 contador=(contador+1)%Anillo.numInstancias;
                 AnilloI replica = (AnilloI) registry.lookup("A"+contador);                
                 replica.pasarToken();
-                Thread.sleep(200);
+                //Thread.sleep(200);
 
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(0));
