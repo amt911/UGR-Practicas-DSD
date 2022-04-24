@@ -4,7 +4,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-import Interfaces.ServerClientI;
+import Interfaces.IDonacionesExterno;
 
 import java.rmi.*;
 
@@ -20,11 +20,11 @@ public class ClienteMain {
             int id=Integer.parseInt(args[0]);
             // Crea el stub para el cliente especificando el nombre del servidor
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            ServerClientI replica = (ServerClientI) mireg.lookup("S0");
+            IDonacionesExterno replica = (IDonacionesExterno) mireg.lookup("S0");
             String res=replica.registrarCliente(id);
             System.out.println("SALIDA: "+res);
             
-            replica = (ServerClientI) mireg.lookup(res);
+            replica = (IDonacionesExterno) mireg.lookup(res);
 
             int opcion;
             do{

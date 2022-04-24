@@ -7,10 +7,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import Interfaces.AnilloI;
-import Interfaces.AnilloServerI;
+import Interfaces.IAnilloExterno;
+import Interfaces.IAnilloInterno;
 
-public class Anillo implements AnilloI, AnilloServerI{
+public class Anillo implements IAnilloExterno, IAnilloInterno{
     public static int numInstancias=0;
     public volatile boolean token;
     public volatile boolean solicitado=false;
@@ -76,7 +76,7 @@ public class Anillo implements AnilloI, AnilloServerI{
                 }
                 token = false;
 
-                AnilloI replica = obtenerReplica((idAnillo + 1) % numInstancias);
+                IAnilloExterno replica = obtenerReplica((idAnillo + 1) % numInstancias);
                 replica.setToken(true);
             }
         } finally {
@@ -120,12 +120,12 @@ public class Anillo implements AnilloI, AnilloServerI{
         token=valor;
     }
 
-    private AnilloI obtenerReplica(int id){
-        AnilloI replica=null;
+    private IAnilloExterno obtenerReplica(int id){
+        IAnilloExterno replica=null;
 
         try {
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            replica = (AnilloI) mireg.lookup("A"+id);
+            replica = (IAnilloExterno) mireg.lookup("A"+id);
 
         } catch (Exception e) {
             System.err.println("Ejemplo exception:");

@@ -5,11 +5,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
-import Interfaces.AnilloServerI;
-import Interfaces.ServerClientI;
-import Interfaces.ServerServerI;
+import Interfaces.IAnilloInterno;
+import Interfaces.IDonacionesExterno;
+import Interfaces.IDonacionesInterno;
 
-public class Servidor implements ServerClientI, ServerServerI{
+public class Servidor implements IDonacionesExterno, IDonacionesInterno{
     private static int numReplicas=0;
     public ArrayList<Integer> clientes;
     ArrayList<Integer> donacionesClientes;
@@ -61,7 +61,7 @@ public class Servidor implements ServerClientI, ServerServerI{
             boolean encontrado=false;
             for(int i=0; i<numReplicas && !encontrado; i++){
                 if(i!=idServer){
-                    ServerServerI aux=obtenerReplica(i);
+                    IDonacionesInterno aux=obtenerReplica(i);
                     //encontrado=aux.existeCliente(id);
 
                     //Es solo un igual para que se asigne y se compruebe en una sola instruccion
@@ -84,7 +84,7 @@ public class Servidor implements ServerClientI, ServerServerI{
         int idMinimo=idServer;
         for(int i=0;i<numReplicas;i++){
             if(i!=idServer){
-                ServerServerI aux=obtenerReplica(i);
+                IDonacionesInterno aux=obtenerReplica(i);
                 if(aux.clientesSize()<minimo){
                     minimo=aux.clientesSize();
                     idMinimo=i;
@@ -99,7 +99,7 @@ public class Servidor implements ServerClientI, ServerServerI{
                 res="S"+idMinimo;
             }
             else{
-                ServerServerI replica=obtenerReplica(idMinimo);
+                IDonacionesInterno replica=obtenerReplica(idMinimo);
                 replica.añadirCliente(id);
                 res=replica.getNombreReplica();
             }
@@ -113,7 +113,7 @@ public class Servidor implements ServerClientI, ServerServerI{
     @Override
     public synchronized void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
-            AnilloServerI replica=obtenerReplicaAnillo(idServer);
+            IAnilloInterno replica=obtenerReplicaAnillo(idServer);
 
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
     
@@ -127,12 +127,12 @@ public class Servidor implements ServerClientI, ServerServerI{
         }
     }
 
-    private AnilloServerI obtenerReplicaAnillo(int id){
-        AnilloServerI replica=null;
+    private IAnilloInterno obtenerReplicaAnillo(int id){
+        IAnilloInterno replica=null;
         
         try {
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            replica = (AnilloServerI) mireg.lookup("A"+id);
+            replica = (IAnilloInterno) mireg.lookup("A"+id);
         } catch (Exception e) {
             System.err.println("Exception:");
             e.printStackTrace();
@@ -141,12 +141,12 @@ public class Servidor implements ServerClientI, ServerServerI{
         return replica;
     }
 
-    private ServerServerI obtenerReplica(int id){
-        ServerServerI replica=null;
+    private IDonacionesInterno obtenerReplica(int id){
+        IDonacionesInterno replica=null;
         
         try {
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            replica = (ServerServerI) mireg.lookup("S"+id);
+            replica = (IDonacionesInterno) mireg.lookup("S"+id);
         } catch (Exception e) {
             System.err.println("Exception:");
             e.printStackTrace();

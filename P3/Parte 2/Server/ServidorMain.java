@@ -5,9 +5,9 @@ import java.rmi.server.*;
 import java.util.ArrayList;
 
 import Anillo.Anillo;
-import Interfaces.AnilloI;
-import Interfaces.AnilloServerI;
-import Interfaces.ServerClientI;
+import Interfaces.IAnilloExterno;
+import Interfaces.IAnilloInterno;
+import Interfaces.IDonacionesExterno;
 
 public class ServidorMain {
     public static void main(String [] args){
@@ -15,17 +15,17 @@ public class ServidorMain {
             System.setSecurityManager(new SecurityManager());
         }
         try {
-            ArrayList<ServerClientI> replicas=new ArrayList<>();
+            ArrayList<IDonacionesExterno> replicas=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
                 replicas.add(new Servidor());
             }
 
             Registry registry = LocateRegistry.getRegistry();
-            ArrayList<ServerClientI> stubs=new ArrayList<>();
+            ArrayList<IDonacionesExterno> stubs=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
-                stubs.add((ServerClientI) UnicastRemoteObject.exportObject(replicas.get(i), 0));
+                stubs.add((IDonacionesExterno) UnicastRemoteObject.exportObject(replicas.get(i), 0));
             }
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
@@ -42,10 +42,10 @@ public class ServidorMain {
             
 
             //Ahora toca exportar los anillos externos
-            ArrayList<AnilloServerI> stubsAnillosExternos=new ArrayList<>();
+            ArrayList<IAnilloInterno> stubsAnillosExternos=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
-                stubsAnillosExternos.add((AnilloServerI) UnicastRemoteObject.exportObject(replicasAnillos.get(i), 0));
+                stubsAnillosExternos.add((IAnilloInterno) UnicastRemoteObject.exportObject(replicasAnillos.get(i), 0));
             }
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
@@ -54,7 +54,7 @@ public class ServidorMain {
 
             System.out.println("Lanzados los servidores de anillos externos");                        
             
-            ServerClientI s=(ServerClientI) registry.lookup("S0");
+            IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
             int contador=0;
             while(true){
                 System.out.println("---------------------------------------------------------------");
@@ -63,7 +63,7 @@ public class ServidorMain {
                 }
                 //System.out.println("---------------------------------------------------------------");
                 contador=(contador+1)%Anillo.numInstancias;
-                AnilloI replica = (AnilloI) registry.lookup("A"+contador);                
+                IAnilloExterno replica = (IAnilloExterno) registry.lookup("A"+contador);                
                 replica.pasarToken();
                 //Thread.sleep(200);
 
