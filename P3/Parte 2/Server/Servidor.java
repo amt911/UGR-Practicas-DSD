@@ -22,8 +22,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
         clientes=new ArrayList<>();
         idServer=numReplicas++;
         donacionesClientes=new ArrayList<>();
-
-        //System.out.println("idserver: "+idServer);
         token=false;
     }
 
@@ -157,8 +155,11 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
 
     @Override
     public int totalDonado(int id) throws RemoteException {
-
-        return total;
+        int res=-1;
+        if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0)
+            res=total;
+        
+        return res;
     }
 
     @Override
@@ -180,5 +181,39 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
     @Override
     public String getNombreReplica() throws RemoteException {
         return "S"+idServer;
+    }
+
+    @Override
+    public void donarInseguro(int id, int cantidad) throws RemoteException {
+        if(existeCliente(id)){
+            donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
+            total+=cantidad;
+        }
+        else{
+            System.out.println("Lo siento, el usuario no se encuentra registrado");
+        }
+    }
+
+    @Override
+    public synchronized void ponerACero(int id) throws RemoteException {
+        if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
+            IAnilloInterno replica=obtenerReplicaAnillo(idServer);
+    
+            replica.solicitarToken();
+            //Zona de exclusion mutua
+            total=0;
+
+
+            System.out.println("##################################");
+            System.out.println("size: "+donacionesClientes.size());
+            for(int i=0; i<donacionesClientes.size(); i++)
+                donacionesClientes.set(i, 0);
+            System.out.println("##################################");
+            
+            replica.liberarToken();            
+        }
+        else{
+            System.out.println("No es un cliente registrado");
+        }
     }    
 }
