@@ -15,6 +15,9 @@ public class Anillo implements AnilloI, AnilloServerI{
     public volatile boolean token;
     public volatile boolean solicitado=false;
     public int idAnillo;
+    Lock lock=new ReentrantLock();
+    Condition sinToken=lock.newCondition();
+    Condition conSolicitud=lock.newCondition();
 
     public Anillo(){
         idAnillo=numInstancias++;
@@ -25,9 +28,6 @@ public class Anillo implements AnilloI, AnilloServerI{
             token=false;
     }
 
-    Lock lock=new ReentrantLock();
-    Condition sinToken=lock.newCondition();
-    Condition conSolicitud=lock.newCondition();
 
     @Override
     public void solicitarToken() throws RemoteException {
@@ -83,6 +83,37 @@ public class Anillo implements AnilloI, AnilloServerI{
             lock.unlock();
         }
     }
+
+/* Version espera ocupada
+    **
+     * Problema: se puede producir una interfoliacion con pasartoken en el cual 
+     * el cuerpo de este metodo se ejecute entre el while y el token
+     *
+    @Override
+    public void solicitarToken() throws RemoteException {
+        solicitado=true;
+        while(!token){}
+    }
+
+    @Override
+    public void liberarToken() throws RemoteException {
+        solicitado=false;
+    }
+
+    @Override
+    public void pasarToken() throws RemoteException {
+        if(token){
+            while(solicitado){}
+            token=false;
+
+            AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
+            replica.setToken(true);
+        }
+    }
+*/
+
+
+
 
     @Override
     public void setToken(boolean valor) throws RemoteException {
