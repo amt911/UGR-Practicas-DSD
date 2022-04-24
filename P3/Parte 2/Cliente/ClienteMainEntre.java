@@ -27,7 +27,10 @@ public class ClienteMainEntre {
             for(int i=0; i<1000; i++){
                 replica.donar(id, 1);
             }
-                
+
+            System.out.println("######################################");
+            System.out.println("Ya se ha ejecutado por el proceso: "+args[0]);
+            System.out.println("######################################");                
         } catch (NotBoundException | RemoteException e) {
             System.err.println("Exception del sistema: " + e);
         }

@@ -11,7 +11,6 @@ import Interfaces.ServerServerI;
 
 public class Servidor implements ServerClientI, ServerServerI{
     private static int numReplicas=0;
-    int subtotal;
     public ArrayList<Integer> clientes;
     ArrayList<Integer> donacionesClientes;
     int idServer;
@@ -20,7 +19,6 @@ public class Servidor implements ServerClientI, ServerServerI{
 
 
     Servidor(){
-        subtotal=0;
         clientes=new ArrayList<>();
         idServer=numReplicas++;
         donacionesClientes=new ArrayList<>();
@@ -78,9 +76,8 @@ public class Servidor implements ServerClientI, ServerServerI{
     }
 
     @Override
-    public String registrarCliente(int id) throws RemoteException {
+    public synchronized String registrarCliente(int id) throws RemoteException {
         String res="";
-        //ServerServerI replica=obtenerReplica();
 
         //Obtenemos el minimo numero de clientes de las replicas y nos quedamos con su id
         int minimo=clientesSize();
@@ -114,15 +111,15 @@ public class Servidor implements ServerClientI, ServerServerI{
     }
 
     @Override
-    public void donar(int id, int cantidad) throws RemoteException {
+    public synchronized void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
             AnilloServerI replica=obtenerReplicaAnillo(idServer);
 
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
-            //subtotal+=cantidad;
+    
             replica.solicitarToken();
+            //Zona de exclusion mutua
             total+=cantidad;
-            //System.out.println("SUPUESTA DONACION: "+totalDonado(id));
             replica.liberarToken();
         }
         else{
@@ -160,28 +157,8 @@ public class Servidor implements ServerClientI, ServerServerI{
 
     @Override
     public int totalDonado(int id) throws RemoteException {
-        /*
-        int res=-1;
-        
-        if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
-            res=obtenerSubtotal();
 
-            for(int i=0; i<numReplicas; i++){
-                if(i!=idServer)
-                    res+=obtenerReplica(i).obtenerSubtotal();
-            }
-        }
-
-        return res;
-        */
         return total;
-    }
-
-
-    //ServerServerI
-    @Override
-    public int obtenerSubtotal() throws RemoteException {
-        return subtotal;
     }
 
     @Override

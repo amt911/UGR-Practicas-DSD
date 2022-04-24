@@ -19,16 +19,17 @@ public class Anillo implements AnilloI, AnilloServerI{
     }
 
     @Override
-    public void solicitarToken() throws RemoteException {
+    public synchronized void solicitarToken() throws RemoteException {
         while(!token){
-            synchronized(this){
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+            //        try {
+            //            wait();
+            //        } catch (InterruptedException e) {
+            //            // TODO Auto-generated catch block
+            //            e.printStackTrace();
+            //        }
+            //
+            //System.out.println("Estado del token para el id="+idAnillo+": "+token);
+            synchronized(this){}
         }
 
         token=false;
@@ -36,12 +37,12 @@ public class Anillo implements AnilloI, AnilloServerI{
 
     @Override
     public void liberarToken() throws RemoteException {
-        System.out.println("Liberando token: "+idAnillo);
+        //System.out.println("Liberando token: "+idAnillo);
         token=true;
 
-        synchronized(this){
-            notifyAll();
-        }
+        //synchronized(this){
+        //    notifyAll();
+        //}
     }
 
     @Override
@@ -50,6 +51,10 @@ public class Anillo implements AnilloI, AnilloServerI{
             token=false;
             AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
             replica.setToken(true);
+
+            //synchronized(this){
+            //    notifyAll();
+            //}            
         }
     }
 
