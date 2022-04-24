@@ -204,16 +204,29 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
             total=0;
 
 
-            System.out.println("##################################");
-            System.out.println("size: "+donacionesClientes.size());
             for(int i=0; i<donacionesClientes.size(); i++)
                 donacionesClientes.set(i, 0);
-            System.out.println("##################################");
             
+
+            //Ahora para las replicas remotas
+            for(int i=0; i<numReplicas; i++){
+                if(i!=id){
+                    IDonacionesInterno server=obtenerReplica(i);
+
+                    for(int j=0; j<server.clientesSize(); j++)
+                        server.setDonacionesClientes(j, 0);
+                }
+            }
+
             replica.liberarToken();            
         }
         else{
             System.out.println("No es un cliente registrado");
         }
+    }
+
+    @Override
+    public void setDonacionesClientes(int id, int valor) throws RemoteException {
+        donacionesClientes.set(id, valor);
     }    
 }

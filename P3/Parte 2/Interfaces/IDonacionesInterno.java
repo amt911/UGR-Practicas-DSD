@@ -2,11 +2,12 @@ package Interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface IDonacionesInterno extends Remote {
     int clientesSize() throws RemoteException;
     boolean existeCliente(int id) throws RemoteException;
     void añadirCliente(int id) throws RemoteException;
     String getNombreReplica() throws RemoteException;
-    //void ponerACero() throws RemoteException;
+    void setDonacionesClientes(int id, int valor) throws RemoteException;
 }

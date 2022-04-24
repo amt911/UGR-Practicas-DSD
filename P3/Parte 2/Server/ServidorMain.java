@@ -63,7 +63,7 @@ public class ServidorMain {
                 for(int i=0; i<Integer.parseInt(args[0]); i++){
                     System.out.println("Anillo "+replicasAnillos.get(i).getID()+": "+replicasAnillos.get(i).getToken());
                 }
-                //System.out.println("---------------------------------------------------------------");
+
                 contador=(contador+1)%Anillo.numInstancias;
                 IAnilloExterno replica = (IAnilloExterno) registry.lookup("A"+contador);                
                 replica.pasarToken();
