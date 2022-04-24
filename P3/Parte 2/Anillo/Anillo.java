@@ -8,7 +8,7 @@ import Interfaces.AnilloServerI;
 
 public class Anillo implements AnilloI, AnilloServerI{
     public static int numInstancias=0;
-    public boolean token;
+    public volatile boolean token;
     public int idAnillo;
 
     public Anillo(){
@@ -16,45 +16,33 @@ public class Anillo implements AnilloI, AnilloServerI{
 
         if(idAnillo==0)
             token=true;
+        else
+            token=false;
     }
 
     @Override
     public synchronized void solicitarToken() throws RemoteException {
         while(!token){
-            //        try {
-            //            wait();
-            //        } catch (InterruptedException e) {
-            //            // TODO Auto-generated catch block
-            //            e.printStackTrace();
-            //        }
-            //
-            //System.out.println("Estado del token para el id="+idAnillo+": "+token);
-            synchronized(this){}
+            //synchronized(this){}
+            System.out.println("Identificador anillo: "+idAnillo);
         }
 
         token=false;
+        //setToken(false);
     }
 
     @Override
-    public void liberarToken() throws RemoteException {
-        //System.out.println("Liberando token: "+idAnillo);
+    public synchronized void liberarToken() throws RemoteException {
         token=true;
-
-        //synchronized(this){
-        //    notifyAll();
-        //}
     }
 
     @Override
-    public void pasarToken() throws RemoteException {
+    public synchronized void pasarToken() throws RemoteException {
         if(token){
             token=false;
+
             AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
             replica.setToken(true);
-
-            //synchronized(this){
-            //    notifyAll();
-            //}            
         }
     }
 
