@@ -156,7 +156,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
     @Override
     public int totalDonado(int id) throws RemoteException {
         int res=-1;
-        if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0)
+        if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1)
             res=total;
         
         return res;

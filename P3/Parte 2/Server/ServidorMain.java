@@ -55,6 +55,8 @@ public class ServidorMain {
             System.out.println("Lanzados los servidores de anillos externos");                        
             
             IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
+            String res=s.registrarCliente(-1);
+            s=(IDonacionesExterno) registry.lookup(res);
             int contador=0;
             while(true){
                 System.out.println("---------------------------------------------------------------");
@@ -68,7 +70,7 @@ public class ServidorMain {
                 //Thread.sleep(200);
 
                 System.out.println("---------------------------------------------------------------");
-                System.out.println("Total donado: "+s.totalDonado(0));
+                System.out.println("Total donado: "+s.totalDonado(-1));
                 System.out.println("---------------------------------------------------------------");
 
             }
