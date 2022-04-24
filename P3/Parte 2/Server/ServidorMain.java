@@ -54,18 +54,23 @@ public class ServidorMain {
 
             System.out.println("Lanzados los servidores de anillos externos");                        
             
-            
+            ServerClientI s=(ServerClientI) registry.lookup("S0");
             int contador=0;
             while(true){
                 System.out.println("---------------------------------------------------------------");
                 for(int i=0; i<Integer.parseInt(args[0]); i++){
                     System.out.println("Anillo "+replicasAnillos.get(i).getID()+": "+replicasAnillos.get(i).getToken());
                 }
-                System.out.println("---------------------------------------------------------------");
+                //System.out.println("---------------------------------------------------------------");
                 contador=(contador+1)%Anillo.numInstancias;
                 AnilloI replica = (AnilloI) registry.lookup("A"+contador);                
                 replica.pasarToken();
                 Thread.sleep(1000);
+
+                System.out.println("---------------------------------------------------------------");
+                System.out.println("Total donado: "+s.totalDonado(0));
+                System.out.println("---------------------------------------------------------------");
+
             }
         } catch (Exception e) {
             System.err.println("Exception:");

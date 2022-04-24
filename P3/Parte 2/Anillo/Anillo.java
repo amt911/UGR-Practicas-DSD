@@ -3,7 +3,6 @@ package Anillo;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-
 import Interfaces.AnilloI;
 import Interfaces.AnilloServerI;
 
@@ -20,19 +19,29 @@ public class Anillo implements AnilloI, AnilloServerI{
     }
 
     @Override
-    public void solicitarAnillo() throws RemoteException {
+    public void solicitarToken() throws RemoteException {
         while(!token){
-            //System.out.println("Esperando a que se libere el token");
-            System.out.println("id: "+idAnillo);
+            synchronized(this){
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
-        
+
         token=false;
     }
 
     @Override
-    public void liberarAnilllo() throws RemoteException {
+    public void liberarToken() throws RemoteException {
         System.out.println("Liberando token: "+idAnillo);
         token=true;
+
+        synchronized(this){
+            notifyAll();
+        }
     }
 
     @Override
@@ -51,30 +60,26 @@ public class Anillo implements AnilloI, AnilloServerI{
 
     private AnilloI obtenerReplica(int id){
         AnilloI replica=null;
-        
-            //String replica=(nombreServidor=="S1")?"S2":"S1";
-            try {
-                Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-                replica = (AnilloI) mireg.lookup("A"+id);
 
-                //res=obtenerSubtotal()+micontador.obtenerSubtotal();
-            } catch (Exception e) {
-                System.err.println("Ejemplo exception:");
-                e.printStackTrace();
-            }
-            //}
+        try {
+            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            replica = (AnilloI) mireg.lookup("A"+id);
+
+        } catch (Exception e) {
+            System.err.println("Ejemplo exception:");
+            e.printStackTrace();
+        }
+
         return replica;
     }
 
     @Override
     public int getID() throws RemoteException {
-        // TODO Auto-generated method stub
         return idAnillo;
     }
 
     @Override
     public boolean getToken() throws RemoteException {
-        // TODO Auto-generated method stub
         return token;
     }
 }

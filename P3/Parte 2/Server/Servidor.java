@@ -5,7 +5,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
-import Anillo.Anillo;
 import Interfaces.AnilloServerI;
 import Interfaces.ServerClientI;
 import Interfaces.ServerServerI;
@@ -17,6 +16,7 @@ public class Servidor implements ServerClientI, ServerServerI{
     ArrayList<Integer> donacionesClientes;
     int idServer;
     boolean token;
+    static int total=0;
 
 
     Servidor(){
@@ -118,11 +118,12 @@ public class Servidor implements ServerClientI, ServerServerI{
         if(existeCliente(id)){
             AnilloServerI replica=obtenerReplicaAnillo(idServer);
 
-            replica.solicitarAnillo();
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
-            subtotal+=cantidad;
-            System.out.println("SUPUESTA DONACION: "+totalDonado(id));
-            replica.liberarAnilllo();
+            //subtotal+=cantidad;
+            replica.solicitarToken();
+            total+=cantidad;
+            //System.out.println("SUPUESTA DONACION: "+totalDonado(id));
+            replica.liberarToken();
         }
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
@@ -159,6 +160,7 @@ public class Servidor implements ServerClientI, ServerServerI{
 
     @Override
     public int totalDonado(int id) throws RemoteException {
+        /*
         int res=-1;
         
         if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
@@ -171,6 +173,8 @@ public class Servidor implements ServerClientI, ServerServerI{
         }
 
         return res;
+        */
+        return total;
     }
 
 
