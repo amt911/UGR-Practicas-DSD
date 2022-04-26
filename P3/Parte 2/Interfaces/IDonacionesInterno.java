@@ -2,8 +2,6 @@ package Interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-
 public interface IDonacionesInterno extends Remote {
     int clientesSize() throws RemoteException;
     boolean existeCliente(int id) throws RemoteException;

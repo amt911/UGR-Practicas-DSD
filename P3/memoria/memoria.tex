@@ -8,7 +8,8 @@
 \begin{document}
 %TODO: MUY IMPORTANTE COMPROBAR LOS DE LAS INSTANCIAS DEL SERVIDOR, SEGURAMENTE ESTE MALY SE REFIERA A INSTANCIAS DEL METODO REMOTO O ALGO
 %TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
-
+%TODO 3: QUIZAS PONER LOS METODOS QUE SE MENCIONAN EN LA PARTE 2 COMO UNA LISTA
+%TODO 4: EXPLICAR UN POCO MAS LA PALABRA CLAVE SYNCHRONIZED
 \maketitle
 
 \section{Primera parte, Ejemplos}
@@ -122,5 +123,65 @@ Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en l
 
 %MOSTRAR EL ERROR EXPLICADO EN EL PARRAFO ANTERIOR
 
+\section{Segunda parte, servidor de donaciones}
+\subsection{Descripción}
+En esta parte de la práctica se pide realizar un servidor de donaciones replicado y balanceado al que los clientes se conectarán para realizar donaciones. Cuando un cliente nuevo se registre en cualquiera de las réplicas le asignará la réplica correspondiente que tenga menos usuarios suscritos.
 
+Adicionalmente, se pueden añadir métodos nuevos con funcionalidad distinta o arreglar el problema de la exclusión mutua con alguno de los algoritmos vistos en clase de teoría.
+
+\subsection{Implementación parte obligatoria}
+Para implementarlo he decidido realizar dos interfaces remotas para el servidor de donaciones: una primera que servirá para la interconexión entre réplicas y otra que usarán los clientes para comunicarse con estas réplicas.
+
+%MOSTRAR DIAGRAMA DE LAS REPLICAS CON LAS INTERFACES
+
+La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz.
+
+Esta clase consta de un atributo estático (de clase) que contiene el número de réplicas que se han instanciado, ya que en mi caso he supuesto que puede haber un número arbitrario de réplicas. También contiene otro atributo estático que es el total donado por todos los clientes de todas las réplicas.
+
+Luego cada réplica tiene su propio identificador numérico y dos ``ArrayLists'': uno que indica los clientes registrados y suscritos a esa réplica y otro que indica para la posición del cliente que se encuentra en el anterior array la cantidad donada.
+
+%Mostrar ejemplo de ejecucion para mas de dos replicas
+
+Como se puede ver en las imágenes anteriores los clientes se conectan a servidores distintos para balancear la carga. Esto se realiza por medio del método ``registrarCliente'' que se conecta a cualquiera de las réplicas (en este caso siempre es a la primera) e internamente elige la réplica que menor número de clientes tenga y lo asigna, además devuelve el identificador del rmiregistry para que se pueda conectar. Cabe destacar que si el usuario está ya registrado simplemente devuelve el identificador de la réplica a la que se tiene que conectar sin añadirlo nuevamente.
+
+También existen dos métodos de donar: ``donar'' que se encarga de añadir al atributo de clase la cantidad que ha aportado el cliente, además como se explicará más adelante lo realiza en exclusión mutua garantizando la integridad de este atributo. Así mismo se encuentra el método ``donarInseguro'' que es la implementación básica de donar sin garantizar exclusión mutua.
+
+El método ``totalDonado'' simplemente muestra la cantidad total que han donado todos los clientes (además sólo se puede ver el valor si ha donado algo), mientras que el método ``totalDonadoCliente'' muestra la cantidad donada para el identificador del cliente pasado como parámetro.
+
+Otro método que pueden usar los clientes es ``getNombreReplica'' que se encarga de indicar el identificador rmiregistry de la réplica a la que están conectados.
+
+Por último, existe otro método denominado ``ponerACero'' que se encarga de poner el total donado y la cantidad donada de todos los clientes en todas las réplicas a 0.
+
+Todos los métodos anteriormente mencionados son los accesibles para los clientes, los descritos a continuación son los usados para la intercomunicación entre servidores.
+
+Existe el método ``clientesSize'' que devuelve el tamaño del array de clientes para la réplica con la que se llama a este método, ``existeCliente'' indica si existe el cliente con el identificador pasado como argumento en la réplica que lo llama. 
+
+``añadirCliente'' sirve para añadirlo en el array del servidor que lo llama (usado en registrarCliente).
+
+``getNombreReplica'' realiza la misma lógica que el método con el mismo nombre para los clientes; es más, son el mismo método.
+
+``setDonacionesClientes'' pone la cantidad del array con las donaciones de los clientes a 0. Este método no implementa ninguna lógica adicional para evitar fallos, ya que el primer parámetro no es el identificador del cliente, sino el índice del array, esto combinado con ``clientesSize'' hace que sea difícil que falle.
+
+\subsection{Implementación de la exclusión mutua}
+Un problema que surge con la implementación básica es que no se puede asegurar la integridad del atributo que almacena el total donado, ya que es compartido por todas las réplicas. 
+
+%MOSTRAR FOTO CON EL PROBLEMA
+
+Una primera aproximación para garantizar la integridad entre clientes de una misma réplica es hacer el método ``donar'' como \textit{synchronized}, esto hace que cuando varios clientes intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando su código.
+
+Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
+
+Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van pasando al siguiente realizando así un anillo. Cuando un proceso solicita realizar una sección crítica, este se queda bloqueado hasta que el proceso con el que está asociado obtiene el token el cual, dependiendo de la implementación (supongo mi caso), bloquea la ejecución de pasar el token al siguiente y desbloquea al cliente la para que pueda entrar en la sección crítica. Cuando acaba desbloquea al proceso de pasar el token y sigue moviéndose por el anillo hasta que otro proceso lo solicite.
+
+El diagrama resultante sería el siguiente (obviando stubs):
+
+%PONER DIAGRAMA CON LA ESTRUCTURA DEL ALGORITMO
+
+Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguientes imágenes:
+
+%IMAGENES DE EJEMPLO DE EJECUCION QUE ANTES DABAN FALLO
+
+
+
+\subsection{Ejecución en dos ordenadores reales}
 \end{document}
