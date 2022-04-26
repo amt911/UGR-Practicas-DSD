@@ -1,5 +1,6 @@
 package Server;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -128,12 +129,14 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
-            IAnilloInterno replica=obtenerReplicaAnillo(idServer);
+            //IAnilloInterno replica=obtenerReplicaAnillo(idServer);
 
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
     
             solicitado=true;
-            while(!token){}
+            while(!token){
+                //System.out.println("Esperando por el proceso "+idServer);
+            }
             //replica.solicitarToken();
             //Zona de exclusion mutua
             total+=cantidad;
@@ -143,20 +146,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
         }
-    }
-
-    private IAnilloInterno obtenerReplicaAnillo(int id){
-        IAnilloInterno replica=null;
-        
-        try {
-            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            replica = (IAnilloInterno) mireg.lookup("A"+id);
-        } catch (Exception e) {
-            System.err.println("Exception:");
-            e.printStackTrace();
-        }
-
-        return replica;
     }
 
     private IDonacionesInterno obtenerReplica(int id){
@@ -217,7 +206,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized void ponerACero(int id) throws RemoteException {
         if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
-            IAnilloInterno replica=obtenerReplicaAnillo(idServer);
+            //IAnilloInterno replica=obtenerReplicaAnillo(idServer);
     
             solicitado=true;
             while(!token){}
@@ -253,9 +242,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         donacionesClientes.set(id, valor);
     }
 
-    public void pasarToken(int id) {
+    public void pasarToken() {
         token=false;
-        IDonacionesInterno replica=obtenerReplica((id+1)%numReplicas);
+        IDonacionesInterno replica=obtenerReplica((idServer+1)%numReplicas);
         try {
             replica.setToken(true);
         } catch (RemoteException e) {
@@ -268,16 +257,16 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public void run() {
         while(true){
-            //System.out.println("Servidor S"+idServer+": "+token);
             if(token && !solicitado){
-                    pasarToken((idServer+1)%numReplicas);
+                    pasarToken();
             }
-            //try {
-            //    Thread.sleep(500);
-            //} catch (InterruptedException e) {
-            //    // TODO Auto-generated catch block
-            //    e.printStackTrace();
-            //}
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
     }
 

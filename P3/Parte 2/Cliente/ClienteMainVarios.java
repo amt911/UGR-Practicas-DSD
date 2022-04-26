@@ -25,6 +25,7 @@ public class ClienteMainVarios {
             replica = (IDonacionesExterno) mireg.lookup(res);
 
             for(int i=0; i<1000; i++){
+                //replica.donarInseguro(id, 1);
                 replica.donar(id, 1);
             }
 

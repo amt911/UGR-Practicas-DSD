@@ -10,4 +10,5 @@ public interface IDonacionesInterno extends Remote {
     void setDonacionesClientes(int id, int valor) throws RemoteException;
     //void pasarToken(int id) throws RemoteException;
     void setToken(boolean valor) throws RemoteException;
+    boolean getToken() throws RemoteException;
 }
