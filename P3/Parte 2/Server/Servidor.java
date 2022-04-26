@@ -9,12 +9,19 @@ import Interfaces.IAnilloInterno;
 import Interfaces.IDonacionesExterno;
 import Interfaces.IDonacionesInterno;
 
-public class Servidor implements IDonacionesExterno, IDonacionesInterno{
+public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnable{
+    
+    //Parte de los anillos
+    private volatile boolean token;
+    private volatile boolean solicitado;
+
+
+
+
     private static int numReplicas=0;
     public ArrayList<Integer> clientes;
     ArrayList<Integer> donacionesClientes;
     int idServer;
-    boolean token;
     static int total=0;
 
 
@@ -23,6 +30,16 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
         idServer=numReplicas++;
         donacionesClientes=new ArrayList<>();
         token=false;
+
+        if(idServer==0)
+            token=true;
+        else
+            token=false;
+
+        solicitado=false;
+
+        //start();
+        //run();
     }
 
     @Override
@@ -115,10 +132,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
 
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
     
-            replica.solicitarToken();
+            solicitado=true;
+            while(!token){}
+            //replica.solicitarToken();
             //Zona de exclusion mutua
             total+=cantidad;
-            replica.liberarToken();
+            //replica.liberarToken();
+            solicitado=false;
         }
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
@@ -199,7 +219,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
         if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
             IAnilloInterno replica=obtenerReplicaAnillo(idServer);
     
-            replica.solicitarToken();
+            solicitado=true;
+            while(!token){}
+            //replica.solicitarToken();
             //Zona de exclusion mutua
             total=0;
 
@@ -218,7 +240,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
                 }
             }
 
-            replica.liberarToken();            
+            //replica.liberarToken();
+            solicitado=false;            
         }
         else{
             System.out.println("No es un cliente registrado");
@@ -228,5 +251,42 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno{
     @Override
     public void setDonacionesClientes(int id, int valor) throws RemoteException {
         donacionesClientes.set(id, valor);
+    }
+
+    public void pasarToken(int id) {
+        token=false;
+        IDonacionesInterno replica=obtenerReplica((id+1)%numReplicas);
+        try {
+            replica.setToken(true);
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+
+    @Override
+    public void run() {
+        while(true){
+            //System.out.println("Servidor S"+idServer+": "+token);
+            if(token && !solicitado){
+                    pasarToken((idServer+1)%numReplicas);
+            }
+            //try {
+            //    Thread.sleep(500);
+            //} catch (InterruptedException e) {
+            //    // TODO Auto-generated catch block
+            //    e.printStackTrace();
+            //}
+        }
+    }
+
+    @Override
+    public void setToken(boolean valor) throws RemoteException {
+        token=valor;
     }    
+
+    public boolean getToken(){
+        return token;
+    }
 }

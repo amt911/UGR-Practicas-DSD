@@ -15,7 +15,7 @@ public class ServidorMain {
             System.setSecurityManager(new SecurityManager());
         }
         try {
-            ArrayList<IDonacionesExterno> replicas=new ArrayList<>();
+            ArrayList<Servidor> replicas=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
                 replicas.add(new Servidor());
@@ -32,8 +32,37 @@ public class ServidorMain {
                 registry.rebind("S"+i, stubs.get(i));
             }
 
+
+            for(int i=0; i<Integer.parseInt(args[0]); i++){
+                Thread aux=new Thread(replicas.get(i));
+                aux.start();
+            }
+
             System.out.println("Lanzados los servidores de donacion");
 
+            IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
+            String res=s.registrarCliente(-1);
+            s=(IDonacionesExterno) registry.lookup(res);
+            int contador=0;
+            while(true){
+                System.out.println("---------------------------------------------------------------");
+                for(int i=0; i<Integer.parseInt(args[0]); i++){
+                    System.out.println("Servidor "+replicas.get(i).getNombreReplica()+": "+replicas.get(i).getToken());
+                }
+
+                //contador=(contador+1)%Anillo.numInstancias;
+                //IAnilloExterno replica = (IAnilloExterno) registry.lookup("A"+contador);                
+                //replica.pasarToken();
+                
+                System.out.println("---------------------------------------------------------------");
+                System.out.println("Total donado: "+s.totalDonado(-1));
+                System.out.println("---------------------------------------------------------------");
+                
+                Thread.sleep(500);
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+/*
             ArrayList<Anillo> replicasAnillos=new ArrayList<>();
             
             for(int i=0; i<Integer.parseInt(args[0]); i++){
@@ -52,6 +81,7 @@ public class ServidorMain {
                 registry.rebind("A"+i, stubsAnillosExternos.get(i));
             }
 
+            
             System.out.println("Lanzados los servidores de anillos externos");                        
             
             IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
@@ -74,6 +104,7 @@ public class ServidorMain {
                 System.out.println("---------------------------------------------------------------");
 
             }
+            */
         } catch (Exception e) {
             System.err.println("Exception:");
             e.printStackTrace();
