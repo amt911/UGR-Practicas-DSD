@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
 \usepackage{graphicx, graphics, float}
 \usepackage[a4paper, total={6in, 10in}]{geometry}
 \title{DSD Memoria Práctica 3}
@@ -28,7 +29,7 @@ En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 
 Algo interesante que me ha ocurrido (no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces) es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos y sin usar la palabra clave \textit{synchronized}. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11, como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
 
 \bigskip
-
+%QUIZAS HAGA FALTA ELIMINAR ESTO
 Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen.
 
 %FOTO DE LO OCURRIDO
@@ -41,8 +42,17 @@ Este ejemplo lo que realiza en el lado del cliente es llamar al método remoto \
 En el lado del servidor al ejecutar el método hay dos opciones, si el identificador pasado acaba en 0 entonces duerme durante 5000 ms (5 segundos), en otro caso simplemente indica que ha recibido la petición y muestra el identificador del cliente.
 
 %FOTO CON ALGUNA EJECUCION
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{imagenes/E1S.png}
+    \caption{Salida del servidor al ejecutar los clientes}
+\end{figure}
 
+Como se puede observar el primer cliente que se lanza tiene el identificador 0, por lo que se pone a dormir y se indica en el servidor. El siguiente, que tiene identificador 3, simplemente hace que se muestre en el servidor su información, pero no se duerme.
 
+\begin{figure}[H]
+    \includegraphics[width=\textwidth]{imagenes/E1C.png}
+    \caption{Salida de los clientes}
+\end{figure}
 
 \subsubsection{Implementación}
 Para la implementación de este sistema primero es necesario realizar la interfaz remota del servidor que va a exportar los métodos a los clientes. En este caso solo se exporta el método \textit{escribir\_mensaje}.
@@ -58,11 +68,14 @@ En la parte del cliente se activa el gestor de seguridad accede al ``rmiregistry
 
 \subsubsection{Funcionamiento}
 El diagrama del sistema (sin incluir rmiregistry ni stubs, solo los propios objetos y clases) es el siguiente:
-%INSERTAR DIAGRAMA QUE EXPLIQUE MAS O MENOS COMO FUNCIONA
 
-Y ejemplos de ejecución son los siguientes:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/E1Diagrama.png}
+    \caption{Diagrama con las comunicaciones que se realizan}
+\end{figure}
 
-
+Se puede ver que el cliente llama al método escribir\_mensaje exportado por la interfaz remota del servidor, que se llama Ejemplo.
 
 \subsection{Ejemplo 2}
 \subsubsection{Descripción}
@@ -70,15 +83,41 @@ En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente la
 
 \textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede observar como se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez antes de que la primera haya mostrado el mensaje de salida y luego cuando salen muestra varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
 
-%MOSTRAR EL MENSAJE DE SALIDA DEL SERVIDOR CON EL ENTRELAZAMIENTO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E2Server1.png}
+    \caption{Entrelazamiento entre los mensajes de la hebra cliente 0 y 1}
+\end{figure}
 
-Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Puede ser porque realmente las hebras del cliente no llamen al método remoto en el mismo orden en que se crean (las hebras).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E2Server2.png}
+    \caption{Entrelazamiento entre los mensajes de las hebras 0, 2, 3 y 4.}
+\end{figure}
+
+Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Puede ser porque realmente las hebras del cliente no llamen al método remoto en el mismo orden en que se crean (las hebras). Esto se puede ver en la imagen anterior.
+
+\bigskip
 
 \textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando el mismo método concurrentemente produciendo así, como se ha dicho anteriormente, entrelazamientos.  
-Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se produjera en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (cerrojos, semáforos, monitores, etc.) entre clientes/hebras para un correcto estado del objeto que exporta el servidor.
+Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se podría producir en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (cerrojos, semáforos, monitores, etc.) entre clientes/hebras para un correcto estado del objeto que exporta el servidor.
 
 %MOSTRAR TAMBIEN UNA FOTO SOBRE ESO
 %MOSTRAR UN DIAGRAMA CON LOS POSIBLES ENTRELAZAMIENTOS, POR EJEMPLO HACER PARA EL CASO DE 3 HEBRAS
+Por ejemplo, para el caso de 2 hebras se podrían dar los siguientes entrelazamientos de mensajes (supongo que son la hebra 1 y 2 para evitar entrelazamientos especiales con el bloqueo de la hebra 0):
+
+\begin{center}
+    \centerline{
+        \begin{tabular}{ | c | c | c | c | c | c | }
+            \hline
+            Entra Hebra 1 & Entra Hebra 1 & Entra Hebra 1 & Entra Hebra 2 & Entra Hebra 2 & Entra Hebra 2 \\
+            Sale Hebra 1 & Entra Hebra 2 & Entra Hebra 2 & Entra Hebra 1 & Entra Hebra 1 & Sale Hebra 2 \\
+            Entra Hebra 2 & Sale Hebra 1 & Sale Hebra 2 & Sale Hebra 2 & Sale Hebra 1 & Entra Hebra 1 \\
+            Sale Hebra 2 & Sale Hebra 2 & Sale Hebra 1 & Sale Hebra 1 & Sale Hebra 2 & Sale Hebra 1 \\
+            \hline
+        \end{tabular}
+    }
+\end{center}
 
 \textbf{¿Qué ocurre con las hebras cuyo nombre acaba en 0?: }Las hebras que acaban en 0, al igual que en el ejemplo 1, se ponen a dormir durante 5000 ms (5 segundos) al llamar al método remoto. Durante ese tiempo, otras hebras pueden invocar al método remoto para su ejecución y este se ejecuta paralelamente a los otros, como se ha mencionado anteriormente. Esto hace que pueda haber instancias en el servidor que estén durmiendo e instancias que se estén ejecutando concurrentemente.
 
@@ -90,28 +129,62 @@ La implementación de la parte del servidor es exactamente igual que en el ejemp
 En la parte del cliente se realiza prácticamente lo mismo, pero se encapsula en el método \textit{run}, ya que son hebras, luego desde el main se crea un array de hebras y se lanzan con \textit{start}.
 
 \subsubsection{Uso de \textit{synchronized}}
-Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones al mismo método produciendo así posibles esperas innecesarias e incluso puede darse el caso de que si se produce una excepción, los demás clientes tengan que esperar infinitamente. 
+Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones al mismo método produciendo así posibles esperas innecesarias. Según la documentación, cuando más de una hebra llama a métodos que tienen \textit{synchronized}, solo entra uno de ellos y los demás se quedan bloqueados esperando a que salga el de delante. Esto implica que el bloqueo no solo se puede dar en una llamada a un método en concreto, sino también en varios métodos con esta palabra clave.
 
-%INTRODUCIR IMAGEN DE LO OCURRIDO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E2ServerSync1.png}
+    \caption{Salida por pantalla del servidor.}
+\end{figure}
+
 Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir. Esto arreglaría el entrelazamiento, pero a costa de introducir esperas innecesarias, ya que ahora el método se comporta como si fuera monohebrado.
 
-Como conclusión se puede decir que la principal diferencia entre no usar \textit{synchronized} y sí usarlo es que en el primero las hebras no necesitan esperar a que salgan las de delante para que su petición pueda ser procesada. Mientras que en el segundo caso solo una hebra puede acceder al método y las demás tienen que esperar su finalización para que puedan acceder.
+Como conclusión se puede decir que la principal diferencia entre no usar \textit{synchronized} y sí usarlo es que en el primero las hebras no necesitan esperar a que salgan las de delante para que su petición pueda ser procesada. Mientras que en el segundo caso solo una hebra puede acceder a métodos \textit{synchronized} y las demás tienen que esperar su finalización para que puedan acceder.
 
-%INSERTAR IMAGEN DE ESO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E2ServerSync2.png}
+    \caption{Otra salida por pantalla del servidor.}
+\end{figure}
 
+Por último, el diagrama de la relación entre objetos es el siguiente (como antes, obviando stubs y rmiregistry):
 
-%QUIZAS TAMBIEN SE PODRIA INSERTAR DIAGRAMAS DE LAS PETICIONES, OBVIANDO STUBS Y COSAS ASI
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/E2Diagrama.png}
+\end{figure}
+
 \subsection{Ejemplo 3}
-\subsubsection{Descripcion}
-En este ejemplo se separa el propio objeto remoto del servidor. Para ello se crea la interfaz remota como en los ejemplos anteriores pero esta vez se implementa en una clase aparte sin tener un main asociado.
+\subsubsection{Descripción}
+En este ejemplo se separa el propio objeto remoto del servidor. Para ello se crea la interfaz remota como en los ejemplos anteriores, pero esta vez se implementa en una clase aparte sin tener un main asociado.
 
-El main se encuentra en otra clase servidor que se encarga como en los demas ejemplos de crear la instancia del objeto remoto y exportarlo al \textit{rmiregistry}.
+El main se encuentra en otra clase servidor que se encarga como en los demás ejemplos de crear la instancia del objeto remoto y exportarlo al \textit{rmiregistry}.
 
 \bigskip
 
-Por la parte del cliente realiza la misma tarea que en los ejemplos anteriores, pero esta vez una vez creado el stub pone el contador a 0 ya que es posible que otros procesos hayan modificado el atributo ``suma''. Una vez realizado esto toma el tiempo de entrada y realiza 1000 llamadas al método remoto \textit{incrementar}, cuando acaba de realizar las llamadas toma el tiempo de salida y muestra por consola el tiempo que ha tardado y, haciendo una llamada al método getter remoto \textit{sumar}, obtiene el valor del atributo del objeto remoto, que en caso de no haber sido accedido por otros procesos o hebras será el mismo número que el de llamadas RMI realizadas.
+Por la parte del cliente realiza la misma tarea que en los ejemplos anteriores, pero esta vez una vez creado el stub pone el contador a 0, ya que es posible que otros procesos hayan modificado el atributo ``suma''. Una vez realizado esto toma el tiempo de entrada y realiza 1000 llamadas al método remoto \textit{incrementar}, cuando acaba de realizar las llamadas toma el tiempo de salida y muestra por consola el tiempo que ha tardado y, haciendo una llamada al método getter remoto \textit{sumar}, obtiene el valor del atributo del objeto remoto, que en caso de no haber sido accedido por otros procesos o hebras será el mismo número que el de llamadas RMI realizadas, que es 1000.
 
 %MOSTRAR IMAGEN DE ESTO Y QUIZAS AÑADIR ALGO MAS
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E3S1.png}
+    \caption{Salida por pantalla del servidor}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E3C1.png}
+    \caption{Salida por pantalla de los clientes (delimitados por ``-'')}
+\end{figure}
+
+Por último, como en los ejemplos anteriores, un diagrama con las relaciones entre objetos:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/E3Diagrama.png}
+\end{figure}
+
 \subsection{Diferencias entre los ejemplos}
 En estos 3 ejemplos se han visto varios aspectos importantes de RMI que hace que los diferencien en cierta medida. 
 

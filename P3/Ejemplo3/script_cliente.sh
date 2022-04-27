@@ -6,6 +6,7 @@ echo "Lanzando el primer cliente"
 echo
 java -cp . -Djava.security.policy=server.policy cliente localhost
 
+echo "-------------------------------------------------------------"
 echo
 echo "Lanzando el segundo cliente"
 echo

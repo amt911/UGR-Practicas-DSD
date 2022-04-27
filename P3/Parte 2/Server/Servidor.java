@@ -260,12 +260,12 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             if(token && !solicitado){
                     pasarToken();
             }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            //try {
+            //    Thread.sleep(10);
+            //} catch (InterruptedException e) {
+            //    // TODO Auto-generated catch block
+            //    e.printStackTrace();
+            //}
 
         }
     }

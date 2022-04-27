@@ -8,7 +8,7 @@ public class Ejemplo implements Ejemplo_I {
         super();
     }
 
-    public void escribir_mensaje(String mensaje) {
+    public synchronized void escribir_mensaje(String mensaje) {
         System.out.println("\nEntra Hebra " + mensaje);
         // Buscamos los procesos 0, 10, 20,...
         if (mensaje.endsWith("0")) {

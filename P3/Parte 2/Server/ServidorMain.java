@@ -45,10 +45,10 @@ public class ServidorMain {
             s=(IDonacionesExterno) registry.lookup(res);
 
             while(true){
-                System.out.println("---------------------------------------------------------------");
-                for(int i=0; i<Integer.parseInt(args[0]); i++){
-                    System.out.println("Servidor "+replicas.get(i).getNombreReplica()+": "+replicas.get(i).getToken());
-                }
+                //System.out.println("---------------------------------------------------------------");
+                //for(int i=0; i<Integer.parseInt(args[0]); i++){
+                //    System.out.println("Servidor "+replicas.get(i).getNombreReplica()+": "+replicas.get(i).getToken());
+                //}
                 
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(-1));
