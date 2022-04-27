@@ -195,6 +195,12 @@ La segunda diferencia es en la implementacion de la interfaz remota, en la que e
 Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en los ejemplos 1 y 2 supone que se ha lanzado el rmiregistry y solo se encarga en exportar el objeto remoto, mientras que en el ejemplo 3 es el propio servidor el que crea el rmiregistry y le asigna un puerto mediante el método \textit{createRegistry}, es más, si se intenta lanzar rmiregistry primero y luego este servidor va a dar error por lo que es necesario matar a todos los procesos que el sistema tenga.
 
 %MOSTRAR EL ERROR EXPLICADO EN EL PARRAFO ANTERIOR
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E3Error.png}
+    \caption{Error al lanzar el servidor si ya se está ejecutando rmiregistry previamente.}
+\end{figure}
+
 
 \section{Segunda parte, servidor de donaciones}
 \subsection{Descripción}
@@ -257,4 +263,7 @@ Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguiente
 
 
 \subsection{Ejecución en dos ordenadores reales}
+
+\section{Apéndice: Implementación antigua del servidor de donaciones}
+asdasdasdasd
 \end{document}
