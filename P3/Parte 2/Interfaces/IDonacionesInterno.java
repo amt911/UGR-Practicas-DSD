@@ -11,4 +11,5 @@ public interface IDonacionesInterno extends Remote {
     //void pasarToken(int id) throws RemoteException;
     void setToken(boolean valor) throws RemoteException;
     boolean getToken() throws RemoteException;
+    int getSubTotal() throws RemoteException;
 }

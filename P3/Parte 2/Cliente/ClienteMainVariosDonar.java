@@ -8,7 +8,7 @@ import Interfaces.IDonacionesExterno;
 import java.rmi.*;
 
 
-public class ClienteMainVarios {
+public class ClienteMainVariosDonar {
     final static int SALIDA=-1;
     public static void main(String[] args) throws InterruptedException{
         // Crea e instala el gestor de seguridad
@@ -25,8 +25,8 @@ public class ClienteMainVarios {
             replica = (IDonacionesExterno) mireg.lookup(res);
 
             for(int i=0; i<1000; i++){
-                replica.donar(id, 1);
                 //replica.donarInseguro(id, 1);
+                replica.donar(id, 1);
             }
 
             System.out.println("######################################");

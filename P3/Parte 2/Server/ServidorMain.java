@@ -4,9 +4,6 @@ import java.rmi.registry.*;
 import java.rmi.server.*;
 import java.util.ArrayList;
 
-import Anillo.Anillo;
-import Interfaces.IAnilloExterno;
-import Interfaces.IAnilloInterno;
 import Interfaces.IDonacionesExterno;
 
 public class ServidorMain {
@@ -53,7 +50,9 @@ public class ServidorMain {
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(-1));
                 System.out.println("---------------------------------------------------------------");
-                
+                System.out.println("Numero de donaciones: "+s.getNumDonacionesRealizadas());
+                System.out.println("---------------------------------------------------------------");
+
                 Thread.sleep(10);
                 //Thread.sleep(100);
                 System.out.print("\033[H\033[2J");

@@ -1,12 +1,10 @@
 package Server;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
-import Interfaces.IAnilloInterno;
 import Interfaces.IDonacionesExterno;
 import Interfaces.IDonacionesInterno;
 
@@ -23,7 +21,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     public ArrayList<Integer> clientes;
     ArrayList<Integer> donacionesClientes;
     int idServer;
-    static int total=0;
+    private int subtotal=0;
+    private static int donacionesRealizadas=0;
 
 
     Servidor(){
@@ -38,9 +37,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             token=false;
 
         solicitado=false;
-
-        //start();
-        //run();
     }
 
     @Override
@@ -129,19 +125,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
-            //IAnilloInterno replica=obtenerReplicaAnillo(idServer);
-
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
     
-            solicitado=true;
-            while(!token){
-                //System.out.println("Esperando por el proceso "+idServer);
-            }
-            //replica.solicitarToken();
+            solicitarToken();          
             //Zona de exclusion mutua
-            total+=cantidad;
-            //replica.liberarToken();
-            solicitado=false;
+            subtotal+=cantidad;
+            donacionesRealizadas++;
+            liberarToken();
         }
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
@@ -162,11 +152,31 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return replica;
     }
 
+    private void solicitarToken(){
+        solicitado=true;
+        while(!token){}
+    }
+
+    private void liberarToken(){
+        solicitado=false;
+    }
+
     @Override
-    public int totalDonado(int id) throws RemoteException {
+    public synchronized int totalDonado(int id) throws RemoteException {
         int res=-1;
-        if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1)
-            res=total;
+        if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1){
+            solicitarToken();
+            res=subtotal;
+
+            for(int i=0; i<numReplicas; i++){
+                if(i!=idServer){
+                    IDonacionesInterno aux=obtenerReplica(i);
+                    res+=aux.getSubTotal();
+                }
+            }
+            //res=total;
+            liberarToken();
+        }
         
         return res;
     }
@@ -196,7 +206,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     public void donarInseguro(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
             donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
-            total+=cantidad;
+            donacionesRealizadas++;
+            subtotal+=cantidad;
         }
         else{
             System.out.println("Lo siento, el usuario no se encuentra registrado");
@@ -206,15 +217,10 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized void ponerACero(int id) throws RemoteException {
         if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
-            //IAnilloInterno replica=obtenerReplicaAnillo(idServer);
-    
-            solicitado=true;
-            while(!token){}
-            //replica.solicitarToken();
+            solicitarToken();
+            subtotal=0;
+            donacionesRealizadas=0;
             //Zona de exclusion mutua
-            total=0;
-
-
             for(int i=0; i<donacionesClientes.size(); i++)
                 donacionesClientes.set(i, 0);
             
@@ -228,9 +234,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
                         server.setDonacionesClientes(j, 0);
                 }
             }
-
-            //replica.liberarToken();
-            solicitado=false;            
+            liberarToken();
         }
         else{
             System.out.println("No es un cliente registrado");
@@ -248,7 +252,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         try {
             replica.setToken(true);
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -258,15 +261,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     public void run() {
         while(true){
             if(token && !solicitado){
-                    pasarToken();
+                pasarToken();
             }
-            //try {
-            //    Thread.sleep(10);
-            //} catch (InterruptedException e) {
-            //    // TODO Auto-generated catch block
-            //    e.printStackTrace();
-            //}
-
         }
     }
 
@@ -277,5 +273,15 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
     public boolean getToken(){
         return token;
+    }
+
+    @Override
+    public int getSubTotal() throws RemoteException {
+        return subtotal;
+    }
+
+    @Override
+    public synchronized int getNumDonacionesRealizadas() throws RemoteException {
+        return donacionesRealizadas;
     }
 }
