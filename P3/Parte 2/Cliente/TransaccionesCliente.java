@@ -26,4 +26,17 @@ public class TransaccionesCliente {
         cantidadTransacciones.clear();
         cantidadTotal=0;
     }
+
+    public String getTransacciones(){
+        String res="";
+
+        for(int i=0; i<instanteTransacciones.size(); i++){
+            res+="######################################################\n"+
+                "Fecha de la transaccion: "+instanteTransacciones.get(i).toString()+
+                "\nCantidad donada: "+cantidadTransacciones.get(i)+"\n";
+        }
+        res+="######################################################\n";
+
+        return res;
+    }
 }

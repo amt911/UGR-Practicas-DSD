@@ -391,21 +391,19 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public void setToken(boolean valor) throws RemoteException {
         token=valor;
-    }    
-
-    /*
-    public boolean getToken(){
-        return token;
     }
-    */
 
     @Override
     public int getSubTotal() throws RemoteException {
         return subtotal;
     }
 
-    //@Override
-    //public synchronized int getNumDonacionesRealizadas() throws RemoteException {
-    //    return donacionesRealizadas;
-    //}
+    public String getTransacciones(int id) throws RemoteException{
+        String res="";
+
+        if(existeCliente(id))
+            res=datosClientes.get(id).getTransacciones();
+
+        return res;
+    }
 }

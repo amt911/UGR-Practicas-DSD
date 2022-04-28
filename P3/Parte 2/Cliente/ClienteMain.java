@@ -44,7 +44,7 @@ public class ClienteMain {
 
                 System.out.println("Opciones: ");
                 System.out.println("1.- Donar");
-                System.out.println("2.- Donar (método que no incluye exclusión mutua)");
+                System.out.println("2.- Obtener historial de transacciones");
                 System.out.println("3.- Poner a cero la cantidad donada");
                 System.out.println("4.- Cerrar la sesión del cliente actual");
                 System.out.println("-1 (\"menos uno\").- Salir del programa");
@@ -66,14 +66,8 @@ public class ClienteMain {
                     }
 
                     case 2:{
-                        do{
-                            System.out.print("Introduzca cantidad a donar: ");
-                            opcion=donacion.nextInt();
-
-                            if(opcion<0)
-                                System.out.println("Cantidad invalida");
-                        }while(opcion<0);                        
-                        //replica.donarInseguro(id, opcion);
+                        System.out.println(replica.getTransacciones(id));
+                        
                         break;
                     }
 
