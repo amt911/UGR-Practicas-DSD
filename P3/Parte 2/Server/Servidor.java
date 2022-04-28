@@ -106,6 +106,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
+
+    //POSIBILIDAD DE HACER UN REGISTRAR INSEGURO PARA COMPROBAR QUE FUNCIONA
+
     /**
      * Permite iniciar sesión de nuevo o registrar a un cliente en la réplica que menor número de clientes registrados tenga.
      * IMPORTANTE: Como es necesario saber el número de clientes registrados, valor que puede cambiar
@@ -119,6 +122,46 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public synchronized String registrarCliente(int id) throws RemoteException {
+        String res="";
+
+        solicitarToken();
+        if(!estaRegistradoCliente(id)){
+            //Obtenemos el minimo numero de clientes de las replicas y nos quedamos con su id
+            int minimo=clientesSize();
+
+            //System.out.println("clientesSize: "+minimo);
+
+            int idMinimo=idServer;
+            for(int i=0;i<numReplicas;i++){
+                if(i!=idServer){
+                    IDonacionesInterno aux=obtenerReplica(i);
+                    if(aux.clientesSize()<minimo){
+                        //System.out.println("Entro porque "+aux.clientesSize()+" es menor que "+minimo);
+                        minimo=aux.clientesSize();
+                        idMinimo=i;
+                    }
+                }
+            }
+            
+            if(idMinimo==idServer){
+                añadirCliente(id);
+                res="S"+idMinimo;
+            }
+            else{
+                IDonacionesInterno replica=obtenerReplica(idMinimo);
+                replica.añadirCliente(id);
+                res=replica.getNombreReplica();
+            }
+        }
+        else
+            res=buscarCliente(id);
+        
+        liberarToken();
+        return res;
+    }
+
+
+    public String registrarClienteInseguro(int id) throws RemoteException{
         String res="";
         /*
         solicitarToken();
@@ -137,7 +180,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 */
 
         if(!estaRegistradoCliente(id)){
-            solicitarToken();
+            //solicitarToken();
             //Obtenemos el minimo numero de clientes de las replicas y nos quedamos con su id
             int minimo=clientesSize();
             int idMinimo=idServer;
@@ -160,7 +203,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
                 replica.añadirCliente(id);
                 res=replica.getNombreReplica();
             }
-            liberarToken();
+            //liberarToken();
         }
         else
             res=buscarCliente(id);
@@ -358,9 +401,11 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         token=valor;
     }    
 
+    /*
     public boolean getToken(){
         return token;
     }
+    */
 
     @Override
     public int getSubTotal() throws RemoteException {

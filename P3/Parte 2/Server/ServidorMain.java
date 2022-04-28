@@ -38,20 +38,12 @@ public class ServidorMain {
             System.out.println("Lanzados los servidores de donacion");
 
             IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
-            String res=s.registrarCliente(-1);
-            s=(IDonacionesExterno) registry.lookup(res);
 
-            while(true){
-                //System.out.println("---------------------------------------------------------------");
-                //for(int i=0; i<Integer.parseInt(args[0]); i++){
-                //    System.out.println("Servidor "+replicas.get(i).getNombreReplica()+": "+replicas.get(i).getToken());
-                //}
-                
+            
+            while(true){                
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(-1));
                 System.out.println("---------------------------------------------------------------");
-                //System.out.println("Numero de donaciones: "+s.getNumDonacionesRealizadas());
-                //System.out.println("---------------------------------------------------------------");
 
                 Thread.sleep(10);
                 //Thread.sleep(100);

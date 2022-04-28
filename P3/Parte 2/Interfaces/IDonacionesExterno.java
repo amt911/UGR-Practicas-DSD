@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 
 public interface IDonacionesExterno extends Remote{
     String registrarCliente(int id) throws RemoteException;
+    String registrarClienteInseguro(int id) throws RemoteException;    
     void donar(int id, int cantidad) throws RemoteException;
     int totalDonado(int id) throws RemoteException;
     int totalDonadoCliente(int id) throws RemoteException;
@@ -12,3 +13,4 @@ public interface IDonacionesExterno extends Remote{
     //void donarInseguro(int id, int cantidad) throws RemoteException;
     void ponerACero(int id) throws RemoteException;
 }
+
