@@ -4,10 +4,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
 
-import Cliente.TransaccionesCliente;
 import Interfaces.IDonacionesExterno;
 import Interfaces.IDonacionesInterno;
 
@@ -21,9 +18,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
 
     private static int numReplicas=0;
-    //private ArrayList<Integer> clientes;
-    //private ArrayList<Integer> donacionesClientes;
-    private Map<Integer, TransaccionesCliente> datosClientes=new TreeMap<>();
+    private ArrayList<Integer> clientes;
+    private ArrayList<Integer> donacionesClientes;
     private int idServer;
     private int subtotal=0;
     //private static int donacionesRealizadas=0;
@@ -32,9 +28,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * Constructor de las réplicas.
      */
     Servidor(){
-        //clientes=new ArrayList<>();
+        clientes=new ArrayList<>();
         idServer=numReplicas++;
-        //donacionesClientes=new ArrayList<>();
+        donacionesClientes=new ArrayList<>();
         token=false;
 
         if(idServer==0)
@@ -52,8 +48,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public boolean existeCliente(int id) throws RemoteException {
-        //return clientes.contains(id);
-        return datosClientes.containsKey(id);
+        return clientes.contains(id);
     }
 
     /**
@@ -206,14 +201,12 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized void donar(int id, int cantidad) throws RemoteException {
         if(existeCliente(id)){
-            //donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
-
-            //Se inserta el map dentro de la seccion critica ya que almacena la hora de la transaccion
-            //y puede darse el caso de que si esta fuera no encajen las horas
+            donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
+    
             solicitarToken();          
-            datosClientes.get(id).insertarTransaccion(cantidad);
             //Zona de exclusion mutua
             subtotal+=cantidad;
+            //donacionesRealizadas++;
             liberarToken();
         }
         else{
@@ -269,8 +262,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized int totalDonado(int id) throws RemoteException {
         int res=-1;
-        //if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1){
-        if((existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
+        if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1){
             solicitarToken();
             res=subtotal;
 
@@ -292,8 +284,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public int clientesSize() throws RemoteException {
-        //return clientes.size();
-        return datosClientes.size();
+        return clientes.size();
     }
 
     /**
@@ -302,11 +293,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public void añadirCliente(int id) throws RemoteException {
-        /*
         clientes.add(id);
         donacionesClientes.add(0);
-        */
-        datosClientes.put(id, new TransaccionesCliente());
     }
 
 
@@ -317,8 +305,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public int totalDonadoCliente(int id) throws RemoteException {
-        //return donacionesClientes.get(clientes.indexOf(id));
-        return datosClientes.get(id).getCantidadTotal();
+        return donacionesClientes.get(clientes.indexOf(id));
     }
 
     /**
@@ -337,19 +324,21 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public synchronized void ponerACero(int id) throws RemoteException {
-        //if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
-        if(existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0){
+        if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
             solicitarToken();
             subtotal=0;
+            //Zona de exclusion mutua
+            for(int i=0; i<donacionesClientes.size(); i++)
+                donacionesClientes.set(i, 0);
             
-            setDonacionesClientes(0, 0);
-            
+
             //Ahora para las replicas remotas
             for(int i=0; i<numReplicas; i++){
-                if(i!=idServer){
+                if(i!=id){
                     IDonacionesInterno server=obtenerReplica(i);
 
-                    server.setDonacionesClientes(0, 0);
+                    for(int j=0; j<server.clientesSize(); j++)
+                        server.setDonacionesClientes(j, 0);
                 }
             }
             liberarToken();
@@ -359,13 +348,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
 
-    //ARREGLAR ESTE METODO PARA QUITARLE LOS PARAMETROS
     @Override
     public void setDonacionesClientes(int id, int valor) throws RemoteException {
-        //Var funciona de manera similar a auto en C++
-        for(var aux: datosClientes.entrySet()){
-            aux.getValue().reset();
-        }
+        donacionesClientes.set(id, valor);
     }
 
     public void pasarToken() {

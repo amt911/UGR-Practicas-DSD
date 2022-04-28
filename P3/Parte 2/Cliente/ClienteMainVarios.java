@@ -53,7 +53,7 @@ public class ClienteMainVarios {
             //replica = (IDonacionesExterno) mireg.lookup(res);
 
 
-        } catch (NotBoundException | RemoteException e) {
+         } catch (NotBoundException | RemoteException e) {
             System.err.println("Exception del sistema: " + e);
         }
         System.exit(0);        
