@@ -73,7 +73,7 @@ public class ClienteMain {
                             if(opcion<0)
                                 System.out.println("Cantidad invalida");
                         }while(opcion<0);                        
-                        replica.donarInseguro(id, opcion);
+                        //replica.donarInseguro(id, opcion);
                         break;
                     }
 

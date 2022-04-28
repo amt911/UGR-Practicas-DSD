@@ -50,8 +50,8 @@ public class ServidorMain {
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(-1));
                 System.out.println("---------------------------------------------------------------");
-                System.out.println("Numero de donaciones: "+s.getNumDonacionesRealizadas());
-                System.out.println("---------------------------------------------------------------");
+                //System.out.println("Numero de donaciones: "+s.getNumDonacionesRealizadas());
+                //System.out.println("---------------------------------------------------------------");
 
                 Thread.sleep(10);
                 //Thread.sleep(100);

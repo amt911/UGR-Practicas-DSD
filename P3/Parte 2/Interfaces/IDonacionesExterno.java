@@ -9,8 +9,6 @@ public interface IDonacionesExterno extends Remote{
     int totalDonado(int id) throws RemoteException;
     int totalDonadoCliente(int id) throws RemoteException;
     String getNombreReplica() throws RemoteException;
-    void donarInseguro(int id, int cantidad) throws RemoteException;
+    //void donarInseguro(int id, int cantidad) throws RemoteException;
     void ponerACero(int id) throws RemoteException;
-    //boolean getToken() throws RemoteException;
-    int getNumDonacionesRealizadas() throws RemoteException;
 }
