@@ -11,7 +11,15 @@
 %TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
 %TODO 3: QUIZAS PONER LOS METODOS QUE SE MENCIONAN EN LA PARTE 2 COMO UNA LISTA
 %TODO 4: EXPLICAR UN POCO MAS LA PALABRA CLAVE SYNCHRONIZED
+%TODO 5: EXPLICAR EL USO DE LAS VARIABLES VOLATILES
 \maketitle
+
+\section{Estructura de carpetas y explicación de distintos scripts}
+Esta sección solo sirve a modo de explicación de como estan estructuradas las carpetas de esta practica. En el directorio raiz se encuentran 4 carpetas, 3 de ellas correspondientes a los ejemplos y la ultima, denominada ``Parte 2'', destinada al ejercicio del servidor de donaciones.
+
+Dentro de la carpeta ``Parte 2'' se encuentran dos que explicaré a continuación:
+
+%HACER UNA LISTA CON SUBLISTAS CUANDO YA SE TENGA UNA ESTRUCTURA FINAL
 
 \section{Primera parte, Ejemplos}
 En esta primera parte se pide copiar los códigos de prueba que aparecen en el guión de prácticas y comentar como funcionan y qué hacen.
@@ -208,67 +216,106 @@ En esta parte de la práctica se pide realizar un servidor de donaciones replica
 
 Adicionalmente, se pueden añadir métodos nuevos con funcionalidad distinta o arreglar el problema de la exclusión mutua con alguno de los algoritmos vistos en clase de teoría.
 
-\subsection{Implementación parte obligatoria}
+En mi caso he implementado el algoritmo de exclusión mutua en anillo para solucionar diversos problemas de entrelazamiento entre distintas réplicas y el uso de la palabra clave \textit{synchronized} para el acceso concurrente entre clientes de una misma réplica que se comentarán más abajo.
+
+\subsection{Implementación}
+\subsubsection{Parte obligatoria}
+
 Para implementarlo he decidido realizar dos interfaces remotas para el servidor de donaciones: una primera denominada ``IDonacionesInterno'' que servirá para la interconexión entre réplicas y otra llamada ``IDonacionesExterno'' que usarán los clientes para comunicarse con estas réplicas.
 
 %MOSTRAR DIAGRAMA DE LAS REPLICAS CON LAS INTERFACES
 
 La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz.
 
-Esta clase consta de los siguientes atributos:
 
+Esta clase consta de los siguientes atributos:
 \begin{itemize}
     \item \textbf{numReplicas: }Atributo de instancia que contiene el número de réplicas que se han instanciado. Principalmente sirve para realizar cálculos con bucles sobre estas réplicas.
     
 
     %IMPORTANTE EXPLICAR TRANSACCIONES CLIENTES
-    \item \textbf{datosClientes: }Map de entero y TransaccionesClientes donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado.
+    \item \textbf{datosClientes: }Map de entero y TransaccionesClientes donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado (todo esto dentro de TransaccionesClientes).
     \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica cuando los clientes donan.
     \item \textbf{idServer: }Contiene el identificador de la réplica.
-    \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global. 
+    \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global donado. 
 \end{itemize}
 
-La clase ``TransaccionesClientes'' sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente.
-Esta clase se usa en el Map mencionado anteriormente (datosClientes) para poder asociar a un cliente su historial de transacciones, además de hacer más sencilla la obtención de este historial por el propio cliente.
+La clase \textbf{TransaccionesClientes} sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente. Incluye también algunos métodos que son de utilidad para las réplicas.
 
 %Mostrar ejemplo de ejecucion para mas de dos replicas
 
 
+El main del servidor crea un número de réplicas que se pasan por consola y las exporta a ``rmiregistry'' con el identificador ``S\#'' donde `\#' es el identificador de la réplica. Una vez realizado esto lo que hace es mostrar continuamente el total que tienen todas las réplicas por consola.
 
-Como se puede ver en las imágenes anteriores los clientes se conectan a servidores distintos para balancear la carga. Esto se realiza por medio del método ``registrarCliente'' que se conecta a cualquiera de las réplicas (en este caso siempre es a la primera) e internamente elige la réplica que menor número de clientes tenga y lo asigna, además devuelve el identificador del rmiregistry para que se pueda conectar. Cabe destacar que si el usuario está ya registrado simplemente devuelve el identificador de la réplica a la que se tiene que conectar sin añadirlo nuevamente.
+El funcionamiento básico cliente/réplica en el main del cliente se consigue, lo primero de todo, registrando al cliente en el sistema, se le asigna una réplica y a partir de ese momento es capaz de realizar diversos métodos que se explicarán más abajo.
 
-También existen dos métodos de donar: ``donar'' que se encarga de añadir al atributo de clase la cantidad que ha aportado el cliente, además como se explicará más adelante lo realiza en exclusión mutua garantizando la integridad de este atributo. Así mismo se encuentra el método ``donarInseguro'' que es la implementación básica de donar sin garantizar exclusión mutua.
+Además, una vez registrado en el sistema, se puede volver a iniciar sesión proporcionando el identificador del cliente y la contraseña como si de unos credenciales se tratasen.
 
-El método ``totalDonado'' simplemente muestra la cantidad total que han donado todos los clientes (además sólo se puede ver el valor si ha donado algo), mientras que el método ``totalDonadoCliente'' muestra la cantidad donada para el identificador del cliente pasado como parámetro.
+A continuación se muestran los métodos (los básicos, en la siguiente sección explicaré los demás).
 
-Otro método que pueden usar los clientes es ``getNombreReplica'' que se encarga de indicar el identificador rmiregistry de la réplica a la que están conectados.
+\begin{itemize}
+    \item \textbf{registrarCliente: }Se encarga de registrar a un cliente en la réplica con menor número de clientes suscritos y devuelve el identificador de la réplica en la que se ha registrado. Además también hace las veces de método para iniciar sesión, ya que si se llama con los credenciales de un cliente ya registrado, devuelve el identificador en el que se encuentra. También si se pasa un identificador existente, pero con una contraseña inválida, devolverá la cadena vacía para que no se pueda conectar.
+    
+    \item \textbf{donar: }Hace que un cliente registrado pueda donar la cantidad pasada como parámetro. En caso de no estar registrado o tener credenciales inválidos no se realiza ninguna acción y se muestra por la pantalla del servidor un mensaje informativo.
 
-Por último, existe otro método denominado ``ponerACero'' que se encarga de poner el total donado y la cantidad donada de todos los clientes en todas las réplicas a 0.
+    \item \textbf{totalDonado: }Permite que un cliente registrado y que haya realizado al menos una donación obtenga el total que hay en todas las réplicas. En caso de no estar registrado, tener unos credenciales inválidos o no haber donado se devuelve el valor -1.
+    
+    \item \textbf{totalDonadoCliente: }Obtiene el total que ha donado un cliente. Realiza las comprobaciones que los métodos anteriores y si fallan se devuelve -1.\
+    
+    \item \textbf{getNombreReplica: }Obtiene el nombre de la réplica tal y como se exporta en rmiregistry.
+\end{itemize}
 
-Todos los métodos anteriormente mencionados son los accesibles para los clientes, los descritos a continuación son los usados para la intercomunicación entre servidores.
+Mientras que para la intercomunicación entre réplicas (como antes, sólo lo obligatorio, en la siguiente sección explicaré los métodos del algoritmo de exclusión mutua):
 
-Existe el método ``clientesSize'' que devuelve el tamaño del array de clientes para la réplica con la que se llama a este método, ``existeCliente'' indica si existe el cliente con el identificador pasado como argumento en la réplica que lo llama. 
+\begin{itemize}
+    \item \textbf{clientesSize: }Obtiene el número de clientes conectados a la réplica que lo llama.
+    \item \textbf{existeCliente: }Comprueba si está registrado el cliente en la réplica en la que se llama.
+    \item \textbf{añadirCliente: }Añade un cliente a la réplica que llama este método. Este método no realiza comprobaciones de ningún tipo ya que se supone que se hacen en los métodos correspondientes.
+    \item \textbf{getNombreReplica: }Realiza lo mismo que el método de la interfaz de los clientes.
+    \item \textbf{getSubTotal: }Obtiene el subtotal de la réplica que lo llama.
+\end{itemize}
 
-``añadirCliente'' sirve para añadirlo en el array del servidor que lo llama (usado en registrarCliente).
+\subsubsection{Parte extra}
+Como extra he implementado algunos métodos que añaden funcionalidad al sistema y he arreglado el problema de la integridad de ciertos atributos. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
 
-``getNombreReplica'' realiza la misma lógica que el método con el mismo nombre para los clientes; es más, son el mismo método.
+\begin{itemize}
+    \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
+    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo el usuario con el identificador -1 (que en mi caso es el administrador) es capaz de retirar el dinero.
+    \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
+\end{itemize}
 
-``setDonacionesClientes'' pone la cantidad del array con las donaciones de los clientes a 0. Este método no implementa ninguna lógica adicional para evitar fallos, ya que el primer parámetro no es el identificador del cliente, sino el índice del array, esto combinado con ``clientesSize'' hace que sea difícil que falle.
+También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. No es un método como tal, sino más bien una profundización de un parámetro básico que se necesitaba. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
 
-\subsection{Implementación de la exclusión mutua}
-Un problema que surge con la implementación básica es que no se puede asegurar la integridad del atributo que almacena el total donado, ya que es compartido por todas las réplicas. 
+%MOSTRAR IMAGENES DE UN HISTORICO
+
+
+%MOSTRAR FOTOS CON LOS EJEMPLOS DE EJECUCION DE LOS METODOS
+
+
+Ahora bien, un problema que surge con la implementación básica es que no se puede asegurar la correcta asignación de réplicas a los clientes para que estén balanceados. Este problema puede surgir cuando, por ejemplo, dos clientes accedan concurrentemente al método ``registrarCliente'', pero en réplicas distintas, ya que puede darse el caso que en un momento dado una réplica tenga menos que las demás y se asigne esta réplica a ambos. Además, las estructuras de datos internas son modificadas y pueden darse estados inválidos.
 
 %MOSTRAR FOTO CON EL PROBLEMA
+%Asignación de clientes en dos réplicas de manera desequilibrada.
 
-Una primera aproximación para garantizar la integridad entre clientes de una misma réplica es hacer el método ``donar'' como \textit{synchronized}, esto hace que cuando varios clientes intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando su código.
+El resultado de la imagen anterior se puede reproducir ejecutando el script \textbf{CAMBIAME ES IMPORTANTE POR FAVOR HAY QUE PONER EL NOMBRE DEL SCRIPT ANTES DE ENTREGAR}
+
+Otro problema que, si bien no se puede demostrar con un test, existe es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valor que puede cambiar mientras se realiza la operación.
+
+Y otro problema que existe es en el método ``ponerACero'' ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización ya que puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
+
+Una primera aproximación para garantizar la integridad entre clientes de una misma réplica es hacer los métodos ``registrarCliente'', ``ponerACero'' y ``donar'' como \textit{synchronized}, esto hace que cuando varios clientes intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método.
 
 Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
 
-Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van pasando al siguiente realizando así un anillo. Cuando un proceso solicita realizar una sección crítica, este se queda bloqueado hasta que el proceso con el que está asociado obtiene el token el cual, dependiendo de la implementación (supongo mi caso), bloquea la ejecución de pasar el token al siguiente y desbloquea al cliente la para que pueda entrar en la sección crítica. Cuando acaba desbloquea al proceso de pasar el token y sigue moviéndose por el anillo hasta que otro proceso lo solicite.
+Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van circulando periódicamente al siguiente realizando así un anillo. Cuando un método necesita realizar una sección crítica, solicita el token y se bloquea hasta que el proceso recibe del anterior el token, el cual bloquea la circulación del mismo al siguiente y desbloquea al cliente para que pueda ejecutar la sección crítica, asegurando así la ejecución por un único proceso. Cuando finaliza la ejecución de la sección crítica se desbloquea la ejecución de la circulación del token y sigue moviéndose hasta que otro proceso lo solicite.
 
 El diagrama resultante sería el siguiente (obviando stubs):
 
-%PONER DIAGRAMA CON LA ESTRUCTURA DEL ALGORITMO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/diagramaAnillo.png}
+    \caption{Diagrama resultante para dos réplicas y un cliente por réplica. Las flechas negras son las comunicaciones que ya se realizaban, mientras que las azules son las del propio algoritmo.}
+\end{figure}
 
 Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguientes imágenes:
 
@@ -279,5 +326,22 @@ Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguiente
 \subsection{Ejecución en dos ordenadores reales}
 
 \section{Apéndice: Implementación antigua del servidor de donaciones}
-asdasdasdasd
+Esta sección solamente sirve para explicar mis varias implementaciones que he realizado del algoritmo en anillo hasta dar con el definitivo, que es el que se explica arriba. Esta sección solo está para una explicación, no es necesario que se tenga en cuenta.
+
+La principal diferencia entre la versión definitiva del algoritmo y esta es que separé el propio algoritmo en una clase aparte denominada ``Anillo''. Esta clase implementaba dos interfaces remotas, una primera interna que servía para obtener atributos y modificarlos como el del token y para pasar el token de manera periódica.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/diagramaAnillosSeparados.png}
+    \caption{Diagrama de interconexiones entre objetos. En azul se denota la circulación del token.}
+\end{figure}
+
+La circulación del token se realizaba desde el main del servidor, que aparte de crear y exportar las réplicas, creaba y exportaba los anillos también y a su vez con un bucle se pasaba el anillo al siguiente proceso.
+
+En esta clase implementé dos versiones distintas del algoritmo: una basada en esperas ocupadas realizadas con bucles while y otra basada en esperas bloqueadas con cerrojos y condiciones de Java.
+
+La que me convenció más al final, antes de implementar la versión definitiva fue la de espera bloqueada, ya que no se producían interbloqueos o posibles entrelazamientos incorrectos. En la versión con espera ocupada podía darse un entrelazamiento incorrecto entre el método ``solicitarToken'' y ``pasarToken''.
+
+Estas dos implementaciones se encuentran en la carpeta ``Implementaciones antiguas'', que a su vez tiene otras dos carpetas con ambas versiones.
+
 \end{document}
