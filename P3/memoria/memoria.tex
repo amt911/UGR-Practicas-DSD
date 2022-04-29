@@ -209,17 +209,31 @@ En esta parte de la práctica se pide realizar un servidor de donaciones replica
 Adicionalmente, se pueden añadir métodos nuevos con funcionalidad distinta o arreglar el problema de la exclusión mutua con alguno de los algoritmos vistos en clase de teoría.
 
 \subsection{Implementación parte obligatoria}
-Para implementarlo he decidido realizar dos interfaces remotas para el servidor de donaciones: una primera que servirá para la interconexión entre réplicas y otra que usarán los clientes para comunicarse con estas réplicas.
+Para implementarlo he decidido realizar dos interfaces remotas para el servidor de donaciones: una primera denominada ``IDonacionesInterno'' que servirá para la interconexión entre réplicas y otra llamada ``IDonacionesExterno'' que usarán los clientes para comunicarse con estas réplicas.
 
 %MOSTRAR DIAGRAMA DE LAS REPLICAS CON LAS INTERFACES
 
 La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz.
 
-Esta clase consta de un atributo estático (de clase) que contiene el número de réplicas que se han instanciado, ya que en mi caso he supuesto que puede haber un número arbitrario de réplicas. También contiene otro atributo estático que es el total donado por todos los clientes de todas las réplicas.
+Esta clase consta de los siguientes atributos:
 
-Luego cada réplica tiene su propio identificador numérico y dos ``ArrayLists'': uno que indica los clientes registrados y suscritos a esa réplica y otro que indica para la posición del cliente que se encuentra en el anterior array la cantidad donada.
+\begin{itemize}
+    \item \textbf{numReplicas: }Atributo de instancia que contiene el número de réplicas que se han instanciado. Principalmente sirve para realizar cálculos con bucles sobre estas réplicas.
+    
+
+    %IMPORTANTE EXPLICAR TRANSACCIONES CLIENTES
+    \item \textbf{datosClientes: }Map de entero y TransaccionesClientes donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado.
+    \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica cuando los clientes donan.
+    \item \textbf{idServer: }Contiene el identificador de la réplica.
+    \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global. 
+\end{itemize}
+
+La clase ``TransaccionesClientes'' sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente.
+Esta clase se usa en el Map mencionado anteriormente (datosClientes) para poder asociar a un cliente su historial de transacciones, además de hacer más sencilla la obtención de este historial por el propio cliente.
 
 %Mostrar ejemplo de ejecucion para mas de dos replicas
+
+
 
 Como se puede ver en las imágenes anteriores los clientes se conectan a servidores distintos para balancear la carga. Esto se realiza por medio del método ``registrarCliente'' que se conecta a cualquiera de las réplicas (en este caso siempre es a la primera) e internamente elige la réplica que menor número de clientes tenga y lo asigna, además devuelve el identificador del rmiregistry para que se pueda conectar. Cabe destacar que si el usuario está ya registrado simplemente devuelve el identificador de la réplica a la que se tiene que conectar sin añadirlo nuevamente.
 
