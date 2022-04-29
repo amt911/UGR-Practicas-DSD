@@ -2,9 +2,6 @@ package Cliente;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.sql.Date;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import Interfaces.IDonacionesExterno;
 
