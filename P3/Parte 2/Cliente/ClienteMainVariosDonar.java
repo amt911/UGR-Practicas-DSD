@@ -20,13 +20,13 @@ public class ClienteMainVariosDonar {
             // Crea el stub para el cliente especificando el nombre del servidor
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
             IDonacionesExterno replica = (IDonacionesExterno) mireg.lookup("S0");
-            String res=replica.registrarCliente(id);
+            String res=replica.registrarCliente(id, "123");
             System.out.println("SALIDA: "+res);
             replica = (IDonacionesExterno) mireg.lookup(res);
 
             for(int i=0; i<1000; i++){
                 //replica.donarInseguro(id, 1);
-                replica.donar(id, 1);
+                replica.donar(id, "123", 1);
             }
 
             System.out.println("######################################");

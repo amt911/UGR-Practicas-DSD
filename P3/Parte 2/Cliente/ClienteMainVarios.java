@@ -37,7 +37,7 @@ public class ClienteMainVarios {
             if(Integer.parseInt(args[2])==0){
                 for(int i=0; i<numClientes; i++){
                     String res="";
-                    res=replica.registrarCliente(i);
+                    res=replica.registrarCliente(i, "123");
     
                     if(res.equals("S0"))
                         cont0++;
@@ -48,7 +48,7 @@ public class ClienteMainVarios {
             else{
                 for(int i=numClientes; i<2*numClientes; i++){
                     String res="";
-                    res=replica.registrarClienteInseguro(i);
+                    res=replica.registrarClienteInseguro(i, "123");
     
                     if(res.equals("S0"))
                         cont0++;

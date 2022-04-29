@@ -42,7 +42,7 @@ public class ServidorMain {
             
             while(true){                
                 System.out.println("---------------------------------------------------------------");
-                System.out.println("Total donado: "+s.totalDonado(-1));
+                System.out.println("Total donado: "+s.totalDonado(-1, "123"));
                 System.out.println("---------------------------------------------------------------");
 
                 Thread.sleep(10);

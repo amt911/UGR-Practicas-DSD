@@ -24,22 +24,29 @@ public class ClienteMain {
             IDonacionesExterno replica = (IDonacionesExterno) mireg.lookup("S0");
 
             
-            int opcion;
+            int opcion=0;
             do{
             System.out.print("Introduzca identificador para registrarse/iniciar sesion (mayor o igual a 0): ");
             int id=donacion.nextInt();
+            donacion.nextLine();
+            System.out.print("Contraseña: ");
+            String passwd=donacion.nextLine();
 
             //Con este metodo se inicia sesion de nuevo y ademas dice en que replica se encuentra
-            String res=replica.registrarCliente(id);
-            
+            String res=replica.registrarCliente(id, passwd);
+
+            if(res.equals("")){
+                System.out.println("Lo sentimos, pero la contraseña no es correcta");
+            }
+            else{
             replica = (IDonacionesExterno) mireg.lookup(res);
 
             do{
                 System.out.println("----------------------------------------------------");
                 System.out.println("Cliente: "+id);
-                System.out.println("Cantidad donada: "+replica.totalDonadoCliente(id));
+                System.out.println("Cantidad donada: "+replica.totalDonadoCliente(id, passwd));
                 System.out.println("Conectado a replica: "+replica.getNombreReplica());
-                System.out.println("Cantidad total servidor: "+replica.totalDonado(id));
+                System.out.println("Cantidad total servidor: "+replica.totalDonado(id, passwd));
                 System.out.println("----------------------------------------------------");
 
                 System.out.println("Opciones: ");
@@ -61,18 +68,18 @@ public class ClienteMain {
                                 System.out.println("Cantidad invalida");
                         }while(opcion<0);
 
-                        replica.donar(id, opcion);
+                        replica.donar(id, passwd, opcion);
                         break;
                     }
 
                     case 2:{
-                        System.out.println("\n"+replica.getTransacciones(id));
+                        System.out.println("\n"+replica.getTransacciones(id, passwd));
                         
                         break;
                     }
 
                     case 3:{
-                        replica.ponerACero(id);
+                        replica.ponerACero(id, passwd);
                         break;
                     }
 
@@ -85,6 +92,7 @@ public class ClienteMain {
                     break;
                 }
             }while(opcion!=SALIDA && opcion!=4);
+        }
         }while(opcion!=SALIDA);
         } catch (NotBoundException | RemoteException e) {
             System.err.println("Exception del sistema: " + e);

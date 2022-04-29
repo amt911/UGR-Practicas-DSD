@@ -22,6 +22,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     //private static int numReplicas=0;
     private int numReplicas=0;
     private Map<Integer, TransaccionesCliente> datosClientes=new TreeMap<>();
+    private Map<Integer, String> credencialesClientes=new TreeMap<>();
     private int idServer;
     private int subtotal=0;
 
@@ -53,10 +54,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     }
 
     /**
-     * Permite comprobar si el cliente está registrado en alguna réplica
+     * Permite comprobar si el cliente está registrado en alguna réplica.
      * @param idCliente Identificador del cliente que se desea buscar
      * @return Si está registrado o no.
-     * @throws RemoteException
      */
     boolean estaRegistradoCliente(int idCliente) throws RemoteException{
         boolean res=false;
@@ -106,6 +106,30 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
+    @Override
+    public String getContraseña(int id) throws RemoteException{
+        return credencialesClientes.get(id);
+    }
+
+
+    boolean contraseñaCorrecta(int id, String passwd, String replicaId) throws RemoteException{
+        boolean res=false;
+
+        
+        if(replicaId.equals("S"+idServer)){
+            if(credencialesClientes.get(id).equals(passwd))
+                res=true;
+        }
+        else{
+            IDonacionesInterno replica=obtenerReplica(replicaId);
+
+            if(replica.getContraseña(id).equals(passwd))
+                res=true;
+        }
+
+        return res;
+    }
+
     /**
      * Permite iniciar sesión de nuevo o registrar a un cliente en la réplica que menor número de clientes registrados tenga.
      * IMPORTANTE: Como es necesario saber el número de clientes registrados, valor que puede cambiar
@@ -118,7 +142,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * iniciar sesión, devuelve el identificador donde se encontraba.
      */
     @Override
-    public synchronized String registrarCliente(int id) throws RemoteException {
+    public synchronized String registrarCliente(int id, String passwd) throws RemoteException {
         String res="";
 
         solicitarToken();
@@ -138,29 +162,35 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             }
             
             if(idMinimo==idServer){
-                añadirCliente(id);
+                añadirCliente(id, passwd);
                 res="S"+idMinimo;
             }
             else{
                 IDonacionesInterno replica=obtenerReplica(idMinimo);
-                replica.añadirCliente(id);
+                replica.añadirCliente(id, passwd);
                 res=replica.getNombreReplica();
             }
         }
-        else
+        else{// if(contraseñaCorrecta(id, passwd))
             res=buscarCliente(id);
+
+            if(!contraseñaCorrecta(id, passwd, res))
+                res="";
+        }
         
         liberarToken();
         return res;
     }
 
 
-    public synchronized String registrarClienteInseguro(int id) throws RemoteException{
+    public synchronized String registrarClienteInseguro(int id, String passwd) throws RemoteException{
         String res="";
 
+        //solicitarToken();
         if(!estaRegistradoCliente(id)){
             //Obtenemos el minimo numero de clientes de las replicas y nos quedamos con su id
             int minimo=clientesSize();
+
             int idMinimo=idServer;
             for(int i=0;i<numReplicas;i++){
                 if(i!=idServer){
@@ -173,18 +203,23 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             }
             
             if(idMinimo==idServer){
-                añadirCliente(id);
+                añadirCliente(id, passwd);
                 res="S"+idMinimo;
             }
             else{
                 IDonacionesInterno replica=obtenerReplica(idMinimo);
-                replica.añadirCliente(id);
+                replica.añadirCliente(id, passwd);
                 res=replica.getNombreReplica();
             }
         }
-        else
+        else{// if(contraseñaCorrecta(id, passwd))
             res=buscarCliente(id);
 
+            if(!contraseñaCorrecta(id, passwd, res))
+                res="";
+        }
+        
+        //liberarToken();
         return res;
     }
 
@@ -199,8 +234,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @param cantidad Cantidad que desea donar el cliente.
      */
     @Override
-    public synchronized void donar(int id, int cantidad) throws RemoteException {
-        if(existeCliente(id)){
+    public synchronized void donar(int id, String passwd, int cantidad) throws RemoteException {
+        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer)){
             //donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
 
             //Se inserta el map dentro de la seccion critica ya que almacena la hora de la transaccion
@@ -235,6 +270,20 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
         return replica;
     }
+    
+    private IDonacionesInterno obtenerReplica(String id){
+        IDonacionesInterno replica=null;
+        
+        try {
+            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            replica = (IDonacionesInterno) mireg.lookup(id);
+        } catch (Exception e) {
+            System.err.println("Exception:");
+            e.printStackTrace();
+        }
+
+        return replica;
+    }
 
     /**
      * Solicitud del token por un cliente para acceder a la sección crítica
@@ -262,10 +311,10 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @return El total donado por todos los clientes de todas las réplicas.
      */
     @Override
-    public synchronized int totalDonado(int id) throws RemoteException {
+    public synchronized int totalDonado(int id, String passwd) throws RemoteException {
         int res=-1;
 
-        if((existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
+        if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
             solicitarToken();
             res=subtotal;
 
@@ -295,8 +344,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @param id Identificador del cliente
      */
     @Override
-    public void añadirCliente(int id) throws RemoteException {
+    public void añadirCliente(int id, String passwd) throws RemoteException {
         datosClientes.put(id, new TransaccionesCliente());
+        credencialesClientes.put(id, passwd);
     }
 
 
@@ -306,8 +356,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @return Entero con la cantidad que ha donado el cliente.
      */
     @Override
-    public int totalDonadoCliente(int id) throws RemoteException {
-        return datosClientes.get(id).getCantidadTotal();
+    public int totalDonadoCliente(int id, String passwd) throws RemoteException {
+        int res=-1;
+
+        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer))
+            res=datosClientes.get(id).getCantidadTotal();
+
+        return res;
     }
 
     /**
@@ -325,8 +380,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @param id Identificador del cliente que solicita la llamada
      */
     @Override
-    public synchronized void ponerACero(int id) throws RemoteException {
-        if(existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0){
+    public synchronized void ponerACero(int id, String passwd) throws RemoteException {
+        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0){
             solicitarToken();
             subtotal=0;
             
@@ -411,10 +466,10 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * @return En caso de no existir el cliente se devuelve una cadena vacía, en otro caso
      * se devuelve el historial de transacciones.
      */
-    public String getTransacciones(int id) throws RemoteException{
+    public String getTransacciones(int id, String passwd) throws RemoteException{
         String res="";
 
-        if(existeCliente(id))
+        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer))
             res=datosClientes.get(id).getTransacciones();
 
         return res;
