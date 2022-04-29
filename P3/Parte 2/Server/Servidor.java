@@ -106,6 +106,11 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
+    /**
+     * Obtiene la contraseña de un cliente registrado
+     * @param id Identificador del cliente.
+     * @return La contraseña del cliente pasado como parámetro.
+     */
     @Override
     public String getContraseña(int id) throws RemoteException{
         return credencialesClientes.get(id);
@@ -137,9 +142,11 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * Además es necesario que sea synchronized para clientes de una misma réplica.
      * 
      * @param id Identificador del cliente.
+     * @param passwd Contraseña con la que se quiere registrar o credencial para iniciar sesion si esta registrado.
      * 
      * @return Devuelve el identificador de la réplica que ha sido asignada o en caso de solo
-     * iniciar sesión, devuelve el identificador donde se encontraba.
+     * iniciar sesión, devuelve el identificador donde se encontraba. En caso de ser credenciales incorrectos se devuelve la 
+     * cadena vacía
      */
     @Override
     public synchronized String registrarCliente(int id, String passwd) throws RemoteException {
@@ -171,7 +178,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
                 res=replica.getNombreReplica();
             }
         }
-        else{// if(contraseñaCorrecta(id, passwd))
+        //En caso de estar registrado ya, simplemente se comprueba que los credenciales sean validos
+        //En caso de serlos se devuelve a la replica en la que esta registrado
+        else{
             res=buscarCliente(id);
 
             if(!contraseñaCorrecta(id, passwd, res))
@@ -182,7 +191,17 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-
+    /**
+     * Version insegura de registrar cliente, realiza exactamente lo mismo que la version segura,
+     * pero es necesaria para realizar la comprobacion de que el algoritmo de los anillos funciona.
+     * 
+     * @param id Identificador del cliente que se quiere registrar/iniciar sesion
+     * @param passwd Contraseña del cliente que, en caso de no estar registrado, es con la que se va
+     * a registrar, en caso de iniciar sesion solo es un credencial mas
+     * 
+     * @return En caso de registro o de inicio de sesion valido, se devuelve el identificador de rmiregistry
+     * de la replica a la que se debe conectar. En otro caso se devuelve la cadena vacia.
+     */
     public synchronized String registrarClienteInseguro(int id, String passwd) throws RemoteException{
         String res="";
 
@@ -271,6 +290,12 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return replica;
     }
     
+
+    /**
+     * Permite obtener la réplica con el identificador rmiregistry pasado por parámetro.
+     * @param id Identificador rmiregistry de la réplica.
+     * @return Una referencia al objeto remoto de la réplica correspondiente.
+     */
     private IDonacionesInterno obtenerReplica(String id){
         IDonacionesInterno replica=null;
         
@@ -308,7 +333,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      * clientes para una misma réplica con synchronized.
      * 
      * @param id Identificador del cliente que lo llama
-     * @return El total donado por todos los clientes de todas las réplicas.
+     * @param passwd Contraseña del cliente
+     * @return El total donado por todos los clientes de todas las réplicas. En caso de no estar
+     * registrado, poner una contraseña incorrecta o no haber donado, se devuelve -1.
      */
     @Override
     public synchronized int totalDonado(int id, String passwd) throws RemoteException {
@@ -342,6 +369,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     /**
      * Permite añadir un cliente a la réplica que lo llama
      * @param id Identificador del cliente
+     * @param passwd Contraseña del cliente
      */
     @Override
     public void añadirCliente(int id, String passwd) throws RemoteException {
@@ -463,8 +491,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     /**
      * Obtiene las transacciones del cliente identificado por el parámetro
      * @param id Identificador del cliente
-     * @return En caso de no existir el cliente se devuelve una cadena vacía, en otro caso
-     * se devuelve el historial de transacciones.
+     * @param passwd Contraseña del cliente.
+     * @return En caso de no existir el cliente o tener los credenciales incorrectos
+     * se devuelve una cadena vacía, en otro caso se devuelve el historial de transacciones.
      */
     public String getTransacciones(int id, String passwd) throws RemoteException{
         String res="";
