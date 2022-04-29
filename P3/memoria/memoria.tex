@@ -212,12 +212,11 @@ Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en l
 
 \section{Segunda parte, servidor de donaciones}
 \subsection{Descripción}
-En esta parte de la práctica se pide realizar un servidor de donaciones replicado y balanceado al que los clientes se conectarán para realizar donaciones. Cuando un cliente nuevo se registre en cualquiera de las réplicas le asignará la réplica correspondiente que tenga menos usuarios suscritos.
+En esta parte de la práctica se pide realizar un servidor de donaciones replicado y balanceado al que los clientes se conectarán para realizar donaciones. Cuando un cliente nuevo se registre en cualquiera de las réplicas, este le registrará en la réplica correspondiente que tenga menos usuarios suscritos.
 
 Adicionalmente, se pueden añadir métodos nuevos con funcionalidad distinta o arreglar el problema de la exclusión mutua con alguno de los algoritmos vistos en clase de teoría.
 
-En mi caso he implementado el algoritmo de exclusión mutua en anillo para solucionar diversos problemas de entrelazamiento entre distintas réplicas y el uso de la palabra clave \textit{synchronized} para el acceso concurrente entre clientes de una misma réplica que se comentarán más abajo.
-
+En mi caso he implementado el algoritmo de exclusión mutua en anillo para solucionar diversos problemas de entrelazamiento entre distintas réplicas y el uso de la palabra clave \textit{synchronized} para el acceso concurrente entre clientes de una misma réplica que se comentarán más abajo. También he añadido dos métodos nuevos al servidor.
 \subsection{Implementación}
 \subsubsection{Parte obligatoria}
 
@@ -232,15 +231,15 @@ Esta clase consta de los siguientes atributos:
 \begin{itemize}
     \item \textbf{numReplicas: }Atributo de instancia que contiene el número de réplicas que se han instanciado. Principalmente sirve para realizar cálculos con bucles sobre estas réplicas.
     
-
+    %IMPORTANTE LINKAR A LA EXPLICACION MAS ABAJO
     %IMPORTANTE EXPLICAR TRANSACCIONES CLIENTES
-    \item \textbf{datosClientes: }Map de entero y TransaccionesClientes donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado (todo esto dentro de TransaccionesClientes).
-    \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica cuando los clientes donan.
+    \item \textbf{datosClientes: }Map de entero y \textbf{TransaccionesClientes} (explicación en la sección de la parte extra) donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado (todo esto dentro de TransaccionesClientes).
+    \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica dando la sensación de existir un login.
     \item \textbf{idServer: }Contiene el identificador de la réplica.
     \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global donado. 
 \end{itemize}
 
-La clase \textbf{TransaccionesClientes} sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente. Incluye también algunos métodos que son de utilidad para las réplicas.
+%La clase \textbf{TransaccionesClientes} sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente. Incluye también algunos métodos que son de utilidad para las réplicas.
 
 %Mostrar ejemplo de ejecucion para mas de dos replicas
 
@@ -308,6 +307,29 @@ Una primera aproximación para garantizar la integridad entre clientes de una mi
 Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
 
 Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van circulando periódicamente al siguiente realizando así un anillo. Cuando un método necesita realizar una sección crítica, solicita el token y se bloquea hasta que el proceso recibe del anterior el token, el cual bloquea la circulación del mismo al siguiente y desbloquea al cliente para que pueda ejecutar la sección crítica, asegurando así la ejecución por un único proceso. Cuando finaliza la ejecución de la sección crítica se desbloquea la ejecución de la circulación del token y sigue moviéndose hasta que otro proceso lo solicite.
+
+Lo que he hecho ha sido crear los siguientes métodos \textbf{volátiles}:
+
+\begin{itemize}
+    \item \textbf{token: }Variable booleana que indica si el token se encuentra en la instancia de la réplica.
+    \item \textbf{solicitado: }Variable que permite que un proceso solicite la entrada a una sección crítica para que posteriormente se le conceda cuando tenga el token.
+\end{itemize}
+
+Cabe destacar que las variables tienen que ser volátiles ya que si no se pone el bucle de las esperas ocupadas no funcionan. Esto es debido a que el compilador genera una optimización incorrecta:
+
+%MOSTRAR UNA IMAGEN CON LA OPTIMIZACION INCORRECTA
+
+
+También ha sido necesario implementar los siguientes métodos:
+
+\begin{itemize}
+    \item \textbf{setToken: }Método remoto que pone el valor del token de la réplica que lo llama al pasado por parámetro.
+    \item \textbf{solicitarToken: }Pone la variable ``solicitado'' a true y espera hasta que su réplica tenga el token.
+    \item \textbf{liberarToken: }Pone ``solicitado'' a false para que su réplica pueda finalmente pasar el token.
+    \item \textbf{pasarToken: }Pasa el token a la siguiente réplica.
+\end{itemize}
+
+La acción de circular el token se implementa medienta hebras en Java. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instruccion mas.
 
 El diagrama resultante sería el siguiente (obviando stubs):
 
