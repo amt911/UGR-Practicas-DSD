@@ -15,7 +15,7 @@ public class ServidorMain {
             ArrayList<Servidor> replicas=new ArrayList<>();
 
             for(int i=0; i<Integer.parseInt(args[0]); i++){
-                replicas.add(new Servidor());
+                replicas.add(new Servidor(i, Integer.parseInt(args[0])));
             }
 
             Registry registry = LocateRegistry.getRegistry();

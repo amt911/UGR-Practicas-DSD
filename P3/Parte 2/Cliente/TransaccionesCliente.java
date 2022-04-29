@@ -1,13 +1,14 @@
 package Cliente;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class TransaccionesCliente {
     private int cantidadTotal=0;
-    //private Instant fecha;
+
     //Supongo que pueden darse dos transacciones en el mismo instante, por lo que tiene mas sentido un pair en vez de map
-    private ArrayList<Instant> instanteTransacciones=new ArrayList<>();
+    private ArrayList<ZonedDateTime> instanteTransacciones=new ArrayList<>();
     private ArrayList<Integer> cantidadTransacciones=new ArrayList<>();
 
     public int getCantidadTotal(){
@@ -15,7 +16,7 @@ public class TransaccionesCliente {
     }
 
     public void insertarTransaccion(int cantidad){
-        instanteTransacciones.add(Instant.now());
+        instanteTransacciones.add(ZonedDateTime.now());
         cantidadTransacciones.add(cantidad);
 
         cantidadTotal+=cantidad;
@@ -30,9 +31,11 @@ public class TransaccionesCliente {
     public String getTransacciones(){
         String res="";
 
+        DateTimeFormatter f=DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss");
+        
         for(int i=0; i<instanteTransacciones.size(); i++){
             res+="######################################################\n"+
-                "Fecha de la transaccion: "+instanteTransacciones.get(i).toString()+
+                "Fecha de la transaccion: "+instanteTransacciones.get(i).format(f)+
                 "\nCantidad donada: "+cantidadTransacciones.get(i)+"\n";
         }
         res+="######################################################\n";

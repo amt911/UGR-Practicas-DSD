@@ -3,7 +3,6 @@ package Server;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,21 +19,18 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
 
 
-    private static int numReplicas=0;
-    //private ArrayList<Integer> clientes;
-    //private ArrayList<Integer> donacionesClientes;
+    //private static int numReplicas=0;
+    private int numReplicas=0;
     private Map<Integer, TransaccionesCliente> datosClientes=new TreeMap<>();
     private int idServer;
     private int subtotal=0;
-    //private static int donacionesRealizadas=0;
 
     /**
      * Constructor de las réplicas.
      */
-    Servidor(){
-        //clientes=new ArrayList<>();
-        idServer=numReplicas++;
-        //donacionesClientes=new ArrayList<>();
+    Servidor(int id, int numReplicas){
+        idServer=id;
+        this.numReplicas=numReplicas;
         token=false;
 
         if(idServer==0)
@@ -98,7 +94,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             for(int i=0; i<numReplicas && !encontrado; i++){
                 if(i!=idServer){
                     IDonacionesInterno aux=obtenerReplica(i);
-                    //encontrado=aux.existeCliente(id);
 
                     //Es solo un igual para que se asigne y se compruebe en una sola instruccion
                     if(encontrado=aux.existeCliente(id)){
@@ -160,7 +155,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     }
 
 
-    public String registrarClienteInseguro(int id) throws RemoteException{
+    public synchronized String registrarClienteInseguro(int id) throws RemoteException{
         String res="";
 
         if(!estaRegistradoCliente(id)){
@@ -269,7 +264,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     @Override
     public synchronized int totalDonado(int id) throws RemoteException {
         int res=-1;
-        //if((existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0) || id==-1){
+
         if((existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
             solicitarToken();
             res=subtotal;
@@ -292,7 +287,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public int clientesSize() throws RemoteException {
-        //return clientes.size();
         return datosClientes.size();
     }
 
@@ -302,10 +296,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public void añadirCliente(int id) throws RemoteException {
-        /*
-        clientes.add(id);
-        donacionesClientes.add(0);
-        */
         datosClientes.put(id, new TransaccionesCliente());
     }
 
@@ -317,7 +307,6 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public int totalDonadoCliente(int id) throws RemoteException {
-        //return donacionesClientes.get(clientes.indexOf(id));
         return datosClientes.get(id).getCantidadTotal();
     }
 
@@ -337,19 +326,18 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
      */
     @Override
     public synchronized void ponerACero(int id) throws RemoteException {
-        //if(existeCliente(id) && donacionesClientes.get(clientes.indexOf(id))>0){
         if(existeCliente(id) && datosClientes.get(id).getCantidadTotal()>0){
             solicitarToken();
             subtotal=0;
             
-            setDonacionesClientes(0, 0);
+            resetDonaciones();
             
             //Ahora para las replicas remotas
             for(int i=0; i<numReplicas; i++){
                 if(i!=idServer){
                     IDonacionesInterno server=obtenerReplica(i);
 
-                    server.setDonacionesClientes(0, 0);
+                    server.resetDonaciones();
                 }
             }
             liberarToken();
@@ -359,15 +347,22 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
 
-    //ARREGLAR ESTE METODO PARA QUITARLE LOS PARAMETROS
+    /**
+     * Pone las donaciones de los clientes y el subtotal de la réplica a cero.
+     * @throws RemoteException
+     */
     @Override
-    public void setDonacionesClientes(int id, int valor) throws RemoteException {
+    public void resetDonaciones() throws RemoteException {
         //Var funciona de manera similar a auto en C++
         for(var aux: datosClientes.entrySet()){
             aux.getValue().reset();
         }
+        subtotal=0;
     }
 
+    /**
+     * Pasa el token a la réplica siguiente
+     */
     public void pasarToken() {
         token=false;
         IDonacionesInterno replica=obtenerReplica((idServer+1)%numReplicas);
@@ -378,7 +373,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
     
-
+    /**
+     * Método usado para pasar el token en el algoritmo de exclusión mutua
+     */
     @Override
     public void run() {
         while(true){
@@ -388,16 +385,32 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
 
+    /**
+     * Modifica el valor del token al pasado por parámetro.
+     * @param valor Valor que se pondrá en el token
+     * @throws RemoteException
+     */
     @Override
     public void setToken(boolean valor) throws RemoteException {
         token=valor;
     }
 
+    /**
+     * Obtiene el subtotal de la réplica.
+     * @return Entero con el subtotal.
+     * @throws RemoteException
+     */
     @Override
     public int getSubTotal() throws RemoteException {
         return subtotal;
     }
 
+    /**
+     * Obtiene las transacciones del cliente identificado por el parámetro
+     * @param id Identificador del cliente
+     * @return En caso de no existir el cliente se devuelve una cadena vacía, en otro caso
+     * se devuelve el historial de transacciones.
+     */
     public String getTransacciones(int id) throws RemoteException{
         String res="";
 

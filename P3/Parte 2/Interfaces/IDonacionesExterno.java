@@ -3,8 +3,6 @@ package Interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import Cliente.TransaccionesCliente;
-
 public interface IDonacionesExterno extends Remote{
     String registrarCliente(int id) throws RemoteException;
     String registrarClienteInseguro(int id) throws RemoteException;    

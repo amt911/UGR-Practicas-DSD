@@ -66,7 +66,7 @@ public class ClienteMain {
                     }
 
                     case 2:{
-                        System.out.println(replica.getTransacciones(id));
+                        System.out.println("\n"+replica.getTransacciones(id));
                         
                         break;
                     }
