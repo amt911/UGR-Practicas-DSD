@@ -54,7 +54,7 @@ public class ClienteMain {
                 System.out.println("2.- Obtener historial de transacciones");
                 System.out.println("3.- Poner a cero la cantidad donada");
                 System.out.println("4.- Cerrar la sesión del cliente actual");
-                System.out.println("-1 (\"menos uno\").- Salir del programa");
+                System.out.println(SALIDA+" .- Salir del programa");
                 System.out.print("Seleccione una opcion: ");
                 opcion=donacion.nextInt();
 
