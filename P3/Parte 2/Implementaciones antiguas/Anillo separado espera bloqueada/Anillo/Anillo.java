@@ -7,10 +7,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import Interfaces.IAnilloExterno;
 import Interfaces.IAnilloInterno;
+import Interfaces.IAnilloExterno;
 
-public class Anillo implements IAnilloExterno, IAnilloInterno{
+public class Anillo implements IAnilloInterno, IAnilloExterno{
     public static int numInstancias=0;
     public volatile boolean token;
     public volatile boolean solicitado=false;
@@ -76,7 +76,7 @@ public class Anillo implements IAnilloExterno, IAnilloInterno{
                 }
                 token = false;
 
-                IAnilloExterno replica = obtenerReplica((idAnillo + 1) % numInstancias);
+                IAnilloInterno replica = obtenerReplica((idAnillo + 1) % numInstancias);
                 replica.setToken(true);
             }
         } finally {
@@ -84,48 +84,18 @@ public class Anillo implements IAnilloExterno, IAnilloInterno{
         }
     }
 
-/* Version espera ocupada
-    **
-     * Problema: se puede producir una interfoliacion con pasartoken en el cual 
-     * el cuerpo de este metodo se ejecute entre el while y el token
-     *
-    @Override
-    public void solicitarToken() throws RemoteException {
-        solicitado=true;
-        while(!token){}
-    }
-
-    @Override
-    public void liberarToken() throws RemoteException {
-        solicitado=false;
-    }
-
-    @Override
-    public void pasarToken() throws RemoteException {
-        if(token){
-            while(solicitado){}
-            token=false;
-
-            AnilloI replica=obtenerReplica((idAnillo+1)%numInstancias);
-            replica.setToken(true);
-        }
-    }
-*/
-
-
-
 
     @Override
     public void setToken(boolean valor) throws RemoteException {
         token=valor;
     }
 
-    private IAnilloExterno obtenerReplica(int id){
-        IAnilloExterno replica=null;
+    private IAnilloInterno obtenerReplica(int id){
+        IAnilloInterno replica=null;
 
         try {
             Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
-            replica = (IAnilloExterno) mireg.lookup("A"+id);
+            replica = (IAnilloInterno) mireg.lookup("A"+id);
 
         } catch (Exception e) {
             System.err.println("Ejemplo exception:");

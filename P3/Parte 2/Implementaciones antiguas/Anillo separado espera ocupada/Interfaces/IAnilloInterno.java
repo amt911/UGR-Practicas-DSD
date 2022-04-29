@@ -1,0 +1,11 @@
+package Interfaces;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+public interface IAnilloInterno extends Remote{
+    void pasarToken() throws RemoteException;
+    void setToken(boolean valor) throws RemoteException;
+    int getID() throws RemoteException;
+    boolean getToken() throws RemoteException;
+}
