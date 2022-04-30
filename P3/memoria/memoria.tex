@@ -11,7 +11,7 @@
 \maketitle
 
 \section{Estructura de carpetas y explicación de distintos scripts}
-Esta sección solo sirve a modo de explicación de como estan estructuradas las carpetas de esta practica. En el directorio raiz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
+Esta sección solo sirve a modo de explicación de como están estructuradas las carpetas de esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
 
 Dentro de la carpeta ``Parte 2'' se encuentran los siguientes archivos:
 
@@ -20,7 +20,7 @@ Dentro de la carpeta ``Parte 2'' se encuentran los siguientes archivos:
 
     \begin{itemize}
         \item \textbf{ClienteMain.java: }Versión \textbf{interactiva} del programa cliente. Es el que pide la práctica obligatoriamente.
-        \item \textbf{ClienteMainVarios.java: }Versión que pone a prueba la sincronización del servidores realizando múltiples registros consecutivos.
+        \item \textbf{ClienteMainVarios.java: }Versión que pone a prueba la sincronización de los servidores realizando múltiples registros consecutivos.
         \item \textbf{ClienteMainVariosDonar.java: }Versión que permite donar múltiples veces de manera consecutiva. También para poner a prueba el sistema.
         \item \textbf{TransaccionesClientes.java: }Clase que implementa el histórico de transacciones de los clientes, se usa dentro de las réplicas.
     \end{itemize}
@@ -53,7 +53,7 @@ De manera general, para ejecutar todos los ejemplos, incluido el servidor de don
 
 
 \section{Primera parte, Ejemplos}
-En esta primera parte se pide copiar los códigos de prueba que aparecen en el guión de prácticas y comentar como funcionan y qué hacen.
+En esta primera parte se pide copiar los códigos de prueba que aparecen en el guion de prácticas y comentar como funcionan y qué hacen.
 
 \bigskip
 
@@ -82,14 +82,16 @@ En el lado del servidor al ejecutar el método hay dos opciones, si el identific
 
 %FOTO CON ALGUNA EJECUCION
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{imagenes/E1S.png}
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E1S.png}
     \caption{Salida del servidor al ejecutar los clientes}
 \end{figure}
 
 Como se puede observar el primer cliente que se lanza tiene el identificador 0, por lo que se pone a dormir y se indica en el servidor. El siguiente, que tiene identificador 3, simplemente hace que se muestre en el servidor su información, pero no se duerme.
 
 \begin{figure}[H]
-    \includegraphics[width=\textwidth]{imagenes/E1C.png}
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/E1C.png}
     \caption{Salida de los clientes}
 \end{figure}
 
@@ -134,15 +136,13 @@ En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente la
     \caption{Entrelazamiento entre los mensajes de las hebras 0, 2, 3 y 4.}
 \end{figure}
 
-Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Puede ser porque realmente las hebras del cliente no llamen al método remoto en el mismo orden en que se crean (las hebras). Esto se puede ver en la imagen anterior.
+Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Esto es algo esperable porque realmente las hebras del cliente no llamen al método remoto en el mismo orden en que se crean (las hebras). Esto se puede ver en la imagen anterior.
 
 \bigskip
 
 \textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando el mismo método concurrentemente produciendo así, como se ha dicho anteriormente, entrelazamientos.  
-Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se podría producir en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (cerrojos, semáforos, monitores, etc.) entre clientes/hebras para un correcto estado del objeto que exporta el servidor.
+Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se podría producir en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (synchronized, cerrojos, semáforos, monitores, etc.) entre clientes/hebras para un correcto estado del objeto que exporta el servidor.
 
-%MOSTRAR TAMBIEN UNA FOTO SOBRE ESO
-%MOSTRAR UN DIAGRAMA CON LOS POSIBLES ENTRELAZAMIENTOS, POR EJEMPLO HACER PARA EL CASO DE 3 HEBRAS
 Por ejemplo, para el caso de 2 hebras se podrían dar los siguientes entrelazamientos de mensajes (supongo que son la hebra 1 y 2 para evitar entrelazamientos especiales con el bloqueo de la hebra 0):
 
 \begin{center}
@@ -163,12 +163,10 @@ Por ejemplo, para el caso de 2 hebras se podrían dar los siguientes entrelazami
 \subsubsection{Implementación}
 La implementación de la parte del servidor es exactamente igual que en el ejemplo 1, salvo por algún ligero cambio del mensaje que se muestra por pantalla.
 
-
-%ESTA ULTIMA PARTE ES NECESARIA COMPROBARLA
 En la parte del cliente se realiza prácticamente lo mismo, pero se encapsula en el método \textit{run}, ya que son hebras, luego desde el main se crea un array de hebras y se lanzan con \textit{start}.
 
 \subsubsection{Uso de \textit{synchronized}}
-Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones al mismo método produciendo así posibles esperas innecesarias. Según la documentación, cuando más de una hebra llama a métodos que tienen \textit{synchronized}, solo entra uno de ellos y los demás se quedan bloqueados esperando a que salga el de delante. Esto implica que el bloqueo no solo se puede dar en una llamada a un método en concreto, sino también en varios métodos con esta palabra clave.
+Cuando se añade la palabra clave \textit{synchronized} al método remoto del servidor ya no se produce entrelazamientos. Sin embargo las hebras que acaban en 0 se ponen a dormir y bloquea al servidor para recibir más peticiones a métodos \textit{synchronized} produciendo así posibles esperas innecesarias. Según la documentación, cuando más de una hebra llama a métodos que tienen \textit{synchronized}, solo entra uno de ellos y los demás se quedan bloqueados esperando a que salga el de delante. Esto implica que el bloqueo no solo se puede dar en una llamada a un método en concreto, sino también en varios métodos con esta palabra clave.
 
 \begin{figure}[H]
     \centering
@@ -176,7 +174,7 @@ Cuando se añade la palabra clave \textit{synchronized} al método remoto del se
     \caption{Salida por pantalla del servidor.}
 \end{figure}
 
-Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir. Esto arreglaría el entrelazamiento, pero a costa de introducir esperas innecesarias, ya que ahora el método se comporta como si fuera monohebrado.
+Como se puede observar, la hebra 0 empieza a dormir y las demás hebras no pueden ejecutar el método hasta que se cumpla el periodo de dormir. Esto arreglaría el entrelazamiento, pero a costa de introducir esperas, ya que ahora las demás hebras tienen que esperar a la ejecución del método remoto.
 
 Como conclusión se puede decir que la principal diferencia entre no usar \textit{synchronized} y sí usarlo es que en el primero las hebras no necesitan esperar a que salgan las de delante para que su petición pueda ser procesada. Mientras que en el segundo caso solo una hebra puede acceder a métodos \textit{synchronized} y las demás tienen que esperar su finalización para que puedan acceder.
 
@@ -229,11 +227,10 @@ En estos 3 ejemplos se han visto varios aspectos importantes de RMI que hace que
 
 La primera diferencia es que en los ejemplos 1 y 3 se usan solamente los procesos como tal en los que no existen hebras, sino los propios procesos (JVM). Mientras que en el ejemplo 2 el cliente lanza varias hebras que acceden concurrentemente a un método remoto.
 
-La segunda diferencia es en la implementacion de la interfaz remota, en la que en los ejemplos 1 y 2 se realiza en la propia clase del servidor mientras que en el ejemplo 3 se realiza en una clase aparte, haciendo que el servidor solo se encargue de crear la instancia remota y exportarla. Esto permite separar la implementación del objeto remoto del propio código del servidor.
+La segunda diferencia es en la implementación de la interfaz remota, en la que en los ejemplos 1 y 2 se realiza en la propia clase del servidor mientras que en el ejemplo 3 se realiza en una clase aparte, haciendo que el servidor solo se encargue de crear la instancia remota y exportarla. Esto permite separar la implementación del objeto remoto del propio código del servidor.
 
 Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en los ejemplos 1 y 2 supone que se ha lanzado el rmiregistry y solo se encarga en exportar el objeto remoto, mientras que en el ejemplo 3 es el propio servidor el que crea el rmiregistry y le asigna un puerto mediante el método \textit{createRegistry}, es más, si se intenta lanzar rmiregistry primero y luego este servidor va a dar error por lo que es necesario matar a todos los procesos que el sistema tenga.
 
-%MOSTRAR EL ERROR EXPLICADO EN EL PARRAFO ANTERIOR
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{imagenes/E3Error.png}
@@ -253,7 +250,13 @@ En mi caso he implementado el algoritmo de exclusión mutua en anillo para soluc
 
 Para implementarlo he decidido realizar dos interfaces remotas para el servidor de donaciones: una primera denominada ``IDonacionesInterno'' que servirá para la interconexión entre réplicas y otra llamada ``IDonacionesExterno'' que usarán los clientes para comunicarse con estas réplicas.
 
-%MOSTRAR DIAGRAMA DE LAS REPLICAS CON LAS INTERFACES
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/Parte 2 basico.png}
+    \caption{Diagrama básico con 4 clientes. Se puede ver que deben estar balanceados.}
+\end{figure}
+
 
 La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz.
 
@@ -272,7 +275,23 @@ Esta clase consta de los siguientes atributos:
 \end{itemize}
 
 %Mostrar ejemplo de ejecucion para mas de dos replicas
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/donObligatorioServer.png}
+    \caption{Salida del servidor.}
+\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/donObligatorioC1.png}
+    \caption{Salida del cliente 1. Se puede ver que ha donado 50.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/donObligatorioC2.png}
+    \caption{Salida del cliente 1. Se puede ver que ha donado 100.}
+\end{figure}
 
 El main del servidor crea un número de réplicas que se pasan por consola y las exporta a ``rmiregistry'' con el identificador ``S\#'' donde `\#' es el identificador de la réplica. Una vez realizado esto lo que hace es mostrar continuamente el total que tienen todas las réplicas por consola.
 
@@ -305,28 +324,52 @@ Mientras que para la intercomunicación entre réplicas (como antes, sólo lo ob
 \end{itemize}
 
 \subsubsection{Parte extra}
-Como extra he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
+Como extra he hecho que se puedan lanzar un número arbitrario de réplicas y que se balanceen, tambien he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. 
+
+El balanceo de los clientes se realiza obteniendo la réplica que en ese momento tenga menos clientes y hace que dicho cliente se registre alli. Todo esto lo explico en los metodos basicos de arriba, mas concretamente en ``registrarCliente''.
+
+Por ejemplo, para 3 réplicas y 3 clientes se obtiene lo siguiente:
+%CAMBIAR LAS FOTOS QUE SON TODAS LA MISMA Y NO TIENEN NADA QUE VER
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/3replicasS0.png}
+    \caption{Cliente 1 conectado a la réplica 0.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/3replicasS1.png}
+    \caption{Cliente 2 conectado a la réplica 1.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/3replicasS2.png}
+    \caption{Cliente 3 conectado a la réplica 2.}
+\end{figure}
 
 
-%AÑADIR EL METODO QUE FALTA
+Los métodos que he añadido, accesibles para los clientes, son los siguientes:
+
 \begin{itemize}
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
     \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los adminsitradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
-    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas. Sólo los administradores pueden bloquear a usuarios.
-    \item \textbf{desbloquearUsuario: }Permite que un administrador desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas. Sólo los \textbf{administradores} pueden bloquear a usuarios.
+    \item \textbf{desbloquearUsuario: }Permite que un \textbf{administrador} desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
 \end{itemize}
 
 También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. No es un método como tal, sino más bien una profundización de un parámetro básico que se necesitaba. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/historico.png}
+    \caption{Histórico de donaciones de un cliente.}
+\end{figure}
+
 Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'', ``bloquearUsuario'' y ``desbloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
 
 %MOSTRAR IMAGENES DE BLOQUEO DE USUARIOS TANTO POR EL ADMIN COMO MOSTRAR CUANDO ESTA BLOQUEADO QUE SALE
-
-%MOSTRAR IMAGENES DE UN HISTORICO
-
-
-%MOSTRAR FOTOS CON LOS EJEMPLOS DE EJECUCION DE LOS METODOS
 
 
 Ahora bien, un problema que surge con la implementación básica es que no se puede asegurar la correcta asignación de réplicas a los clientes para que estén balanceados. Este problema puede surgir cuando, por ejemplo, dos clientes accedan concurrentemente al método ``registrarCliente'', pero en réplicas distintas, ya que puede darse el caso que en un momento dado una réplica tenga menos que las demás y se asigne esta réplica a ambos. Además, las estructuras de datos internas son modificadas y pueden darse estados inválidos.
@@ -334,7 +377,7 @@ Ahora bien, un problema que surge con la implementación básica es que no se pu
 %MOSTRAR FOTO CON EL PROBLEMA
 %Asignación de clientes en dos réplicas de manera desequilibrada.
 
-El resultado de la imagen anterior se puede reproducir ejecutando el script \textbf{CAMBIAME ES IMPORTANTE POR FAVOR HAY QUE PONER EL NOMBRE DEL SCRIPT ANTES DE ENTREGAR}
+El resultado de la imagen anterior se puede reproducir ejecutando \textbf{script\_cliente\_varios.sh}.
 
 Otro problema que, si bien no se puede demostrar con un test, existe es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valor que puede cambiar mientras se realiza la operación.
 
