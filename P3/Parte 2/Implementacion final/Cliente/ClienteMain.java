@@ -97,10 +97,16 @@ public class ClienteMain {
 
                         boolean salida=replica.bloquearUsuario(id, passwd, idBan);
 
-                        if(salida)
+                        if(salida){
+                            System.out.println("***********************************************");
                             System.out.println("Operacion realizada con exito");
-                        else
+                            System.out.println("***********************************************\n");
+                        }
+                        else{
+                            System.out.println("****************************************************************************************************************");
                             System.out.println("Operacion no realizada, puede que sea un administrador, que el usuario no exista o que este ya bloqueado");
+                            System.out.println("****************************************************************************************************************\n");
+                        }
 
                         break;
                     }
@@ -112,16 +118,24 @@ public class ClienteMain {
 
                         boolean salida=replica.desbloquearUsuario(id, passwd, idUnban);
 
-                        if(salida)
+                        if(salida){
+                            System.out.println("***********************************************");
                             System.out.println("Operacion realizada con exito");
-                        else
+                            System.out.println("***********************************************\n");
+                        }
+                        else{
+                            System.out.println("****************************************************************************************************************");
                             System.out.println("Operacion no realizada, puede que sea un administrador, que el usuario no exista o que este ya desbloqueado");
+                            System.out.println("****************************************************************************************************************\n");
+                        }
 
                         break;                    
                     }
 
                     case SALIDA_LOGIN:{
-                        System.out.println("Cerrando la sesion del usuario "+id);
+                        System.out.println("Cerrando la sesion del usuario "+id+"\n");
+                        System.out.println("----------------------------------------------------");
+
                         break;
                     }
 

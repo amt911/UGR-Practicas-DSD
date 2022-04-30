@@ -14,6 +14,8 @@ public interface IDonacionesExterno extends Remote{
      * @return Devuelve el identificador de la réplica que ha sido asignada o en caso de solo
      * iniciar sesión, devuelve el identificador donde se encontraba. En caso de ser credenciales incorrectos se devuelve la 
      * cadena vacía
+     * 
+     * @throws RemoteException
      */    
     String registrarCliente(int id, String passwd) throws RemoteException;
 
@@ -28,6 +30,8 @@ public interface IDonacionesExterno extends Remote{
      * 
      * @return En caso de registro o de inicio de sesion valido, se devuelve el identificador de rmiregistry
      * de la replica a la que se debe conectar. En otro caso se devuelve la cadena vacia.
+     * 
+     * @throws RemoteException
      */    
     String registrarClienteInseguro(int id, String passwd) throws RemoteException; 
 
@@ -38,6 +42,7 @@ public interface IDonacionesExterno extends Remote{
      * 
      * @param id Identificador del cliente, debe existir en la reṕlica
      * @param cantidad Cantidad que desea donar el cliente.
+     * @throws RemoteException
      */
     void donar(int id, String passwd, double cantidad) throws RemoteException;
 
@@ -50,6 +55,7 @@ public interface IDonacionesExterno extends Remote{
      * @param passwd Contraseña del cliente
      * @return El total donado por todos los clientes de todas las réplicas. En caso de no estar
      * registrado, poner una contraseña incorrecta o no haber donado, se devuelve -1.
+     * @throws RemoteException
      */    
     double totalDonado(int id, String passwd) throws RemoteException;
 
@@ -59,6 +65,7 @@ public interface IDonacionesExterno extends Remote{
      * @param id Identificador del cliente.
      * @param passwd Contraseña del cliente.
      * @return Entero con la cantidad que ha donado el cliente.
+     * @throws RemoteException
      */    
     double totalDonadoCliente(int id, String passwd) throws RemoteException;
 
@@ -66,6 +73,7 @@ public interface IDonacionesExterno extends Remote{
     /**
      * Obtiene el nombre de la réplica que lo llama tal y como aparece en rmiregistry
      * @return String con dicho identificador.
+     * @throws RemoteException
      */    
     String getNombreReplica() throws RemoteException;
 
@@ -75,6 +83,7 @@ public interface IDonacionesExterno extends Remote{
      * Es segura para varios clientes concurrentes.
      * 
      * @param id Identificador del cliente que solicita la llamada
+     * @throws RemoteException
      */    
     void ponerACero(int id, String passwd) throws RemoteException;
 
@@ -84,6 +93,7 @@ public interface IDonacionesExterno extends Remote{
      * @param passwd Contraseña del cliente.
      * @return En caso de no existir el cliente o tener los credenciales incorrectos
      * se devuelve una cadena vacía, en otro caso se devuelve el historial de transacciones.
+     * @throws RemoteException
      */
     String getTransacciones(int id, String passwd) throws RemoteException;
 
