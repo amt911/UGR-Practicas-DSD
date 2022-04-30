@@ -459,7 +459,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     }
 
     @Override
-    public synchronized boolean bloquearUsario(int idAdmin, String passwd, int id) throws RemoteException {
+    public synchronized boolean bloquearUsuario(int idAdmin, String passwd, int id) throws RemoteException {
         boolean res=false;
 
         solicitarToken();
@@ -486,8 +486,44 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
+
     @Override
     public void addClienteBloqueado(int id) throws RemoteException{
         clientesBloqueados.add(id);
+    }
+
+
+    @Override
+    public void deleteClienteBloqueado(int id) throws RemoteException{
+        clientesBloqueados.remove(Integer.valueOf(id));
+    }
+
+
+    @Override
+    public synchronized boolean desbloquearUsuario(int idAdmin, String passwd, int id) throws RemoteException{
+        boolean res=false;
+
+        solicitarToken();
+        if(idAdmin<0 && id>=0 && existeCliente(idAdmin) && contraseñaCorrecta(idAdmin, passwd, "S"+idServer) && estaBloqueadoTodasReplicas(id)){
+            if(existeCliente(id)){
+                deleteClienteBloqueado(id);
+                res=true;
+            }
+            else{
+                for(int i=0; i<numReplicas && !res; i++){
+                    if(i!=idServer){
+                        IDonacionesInterno replica=obtenerReplica(i);
+
+                        if(replica.existeCliente(id)){
+                            res=true;
+                            replica.deleteClienteBloqueado(id);
+                        }
+                    }
+                }
+            }
+        }
+        liberarToken();
+
+        return res;
     }
 }

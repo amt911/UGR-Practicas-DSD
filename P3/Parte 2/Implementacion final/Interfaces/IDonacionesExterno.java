@@ -98,6 +98,18 @@ public interface IDonacionesExterno extends Remote{
      * @return True si la operación ha tenido éxito y false en otro caso.
      * @throws RemoteException
      */
-    boolean bloquearUsario(int idAdmin, String passwd, int id) throws RemoteException;
+    boolean bloquearUsuario(int idAdmin, String passwd, int id) throws RemoteException;
+
+
+    /**
+     * Permite desbloquear a un usuario que se habia bloqueado previamente.
+     * Esta accion solo la puede realizar un administrador.
+     * @param idAdmin Identificador del administrador
+     * @param passwd Contraseña del administrador
+     * @param id Identificador del usuario a desbloquear.
+     * @return True si la operacion ha tenido exito, false en otro caso.
+     * @throws RemoteException
+     */
+    boolean desbloquearUsuario(int idAdmin, String passwd, int id) throws RemoteException;
 }
 

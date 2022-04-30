@@ -77,4 +77,11 @@ public interface IDonacionesInterno extends Remote {
      * @throws RemoteException
      */
     boolean estaBloqueado(int id) throws RemoteException;
+
+    /**
+     * Elimina del ArrayList al cliente bloqueado.
+     * @param id Identificador del cliente
+     * @throws RemoteException
+     */
+    void deleteClienteBloqueado(int id) throws RemoteException;
 }

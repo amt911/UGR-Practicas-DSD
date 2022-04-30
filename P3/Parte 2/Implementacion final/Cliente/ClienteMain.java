@@ -11,7 +11,7 @@ import java.rmi.*;
 
 public class ClienteMain {
     final static int SALIDA=-1;
-    final static int SALIDA_LOGIN=5;
+    final static int SALIDA_LOGIN=6;
     public static void main(String[] args) throws InterruptedException{
         // Crea e instala el gestor de seguridad
         if (System.getSecurityManager() == null) {
@@ -55,7 +55,8 @@ public class ClienteMain {
                 System.out.println("2.- Obtener historial de transacciones");
                 System.out.println("3.- Poner a cero la cantidad donada (solo por usuarios con id<0)");
                 System.out.println("4.- Bloquear usuario (solo por usuarios con id<0)");
-                System.out.println("5.- Cerrar la sesión del cliente actual");
+                System.out.println("5.- Desbloquear usuario (solo por usuarios con id<0)");
+                System.out.println("6.- Cerrar la sesión del cliente actual");
                 System.out.println(SALIDA+" .- Salir del programa");
                 System.out.print("Seleccione una opcion: ");
                 opcion=donacion.nextInt();
@@ -92,14 +93,32 @@ public class ClienteMain {
                         int idBan=donacion.nextInt();
                         donacion.nextLine();
 
-                        boolean salida=replica.bloquearUsario(id, passwd, idBan);
+                        boolean salida=replica.bloquearUsuario(id, passwd, idBan);
 
                         if(salida)
                             System.out.println("Operacion realizada con exito");
                         else
                             System.out.println("Operacion no realizada, puede que sea un administrador, que el usuario no exista o que este ya bloqueado");
+
+                        break;
                     }
+                    
                     case 5:{
+                        System.out.print("Introduzca id usuario: ");
+                        int idUnban=donacion.nextInt();
+                        donacion.nextLine();
+
+                        boolean salida=replica.desbloquearUsuario(id, passwd, idUnban);
+
+                        if(salida)
+                            System.out.println("Operacion realizada con exito");
+                        else
+                            System.out.println("Operacion no realizada, puede que sea un administrador, que el usuario no exista o que este ya desbloqueado");
+
+                        break;                    
+                    }
+
+                    case SALIDA_LOGIN:{
                         System.out.println("Cerrando la sesion del usuario "+id);
                         break;
                     }
