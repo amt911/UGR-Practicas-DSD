@@ -9,8 +9,8 @@ then
     echo "Ejemplo para 3 clientes: ./script 3"
     echo "Fin del script"
 else
-for i in `seq 0 $(($1-1))`
-do
-java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVariosDonar $i &
-done
+    for i in `seq 0 $(($1-1))`
+    do
+        java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVariosDonar $i &
+    done
 fi

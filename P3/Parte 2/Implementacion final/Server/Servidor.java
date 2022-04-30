@@ -182,7 +182,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-
+    
+    @Override
     public synchronized String registrarClienteInseguro(int id, String passwd) throws RemoteException{
         String res="";
 

@@ -17,8 +17,11 @@ public class ClienteMainVarios {
         }
         try {
             int numClientes=Integer.parseInt(args[0]);
+
+            String dir=(args.length==4)? args[3]:"localhost";
+
             // Crea el stub para el cliente especificando el nombre del servidor
-            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            Registry mireg = LocateRegistry.getRegistry(dir, 1099);
             
             IDonacionesExterno replica;
 
@@ -58,12 +61,6 @@ public class ClienteMainVarios {
             System.out.println("Registros en S0: "+cont0);
             System.out.println("Registros en S1: "+cont1);
             System.out.println("#####################################");
-
-
-
-            //ZonedDateTime t=ZonedDateTime.now();
-            //DateTimeFormatter f=DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss");
-            //System.out.println(t.format(f));
 
          } catch (NotBoundException | RemoteException e) {
             System.err.println("Exception del sistema: " + e);

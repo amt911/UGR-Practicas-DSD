@@ -2,22 +2,26 @@
 # ejecutar = Macro para compilacion y ejecucion del programa ejemplo
 # en una sola maquina Unix de nombre localhost.
 
-
-#for i in `seq 1 $1`
-#do
-#    java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $i &
-#done
-
-if [[ "$#" -ne 2 ]] 
+if [[ "$#" -lt 2 ]] 
 then
-    echo "./script <numero de clientes> <variable-entre-0-y-1>"
+    echo "./script <numero de clientes> <variable-entre-0-y-1> <direccion-ip>"
+    echo
     echo "Segundo argumento:"
-    echo "0: modo seguro"
-    echo "1: modo inseguro"
-    echo "Ejemplo para modo seguro con 2 clientes: ./script 2 0"
-    echo "Ejemplo para modo inseguro con 3 clientes: ./script 3 1"
+    echo "  0: modo seguro"
+    echo "  1: modo inseguro"
+    echo
+    echo "Tercer argumento (opcional): direccion IP"
+    echo "Ejemplo para modo seguro con 2 clientes: ./script 2 0 localhost"
+    echo "Ejemplo para modo inseguro con 3 clientes: ./script 3 1 localhost"
     echo "Fin del script"
+
+elif [[ "$#" -lt 3 ]]
+then
+    dir=localhost
+
 else
-java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 0 $2 &
-java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 1 $2 &
+    dir=$3
 fi
+
+java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 0 $2 $3 &
+java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 1 $2 $3 &

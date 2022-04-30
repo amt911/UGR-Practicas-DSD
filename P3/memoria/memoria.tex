@@ -243,9 +243,8 @@ Esta clase consta de los siguientes atributos:
     \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica dando la sensación de existir un login.
     \item \textbf{idServer: }Contiene el identificador de la réplica.
     \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global donado. 
+    \item \textbf{direccion: }Contiene la dirección que se va a utilizar, por defecto es ``localhost''.
 \end{itemize}
-
-%La clase \textbf{TransaccionesClientes} sirve para almacenar, para un cliente dado, todas las donaciones junto con la fecha en la que se realizan. Además almacena el subtotal donado para ese cliente. Incluye también algunos métodos que son de utilidad para las réplicas.
 
 %Mostrar ejemplo de ejecucion para mas de dos replicas
 
@@ -254,9 +253,9 @@ El main del servidor crea un número de réplicas que se pasan por consola y las
 
 El funcionamiento básico cliente/réplica en el main del cliente se consigue, lo primero de todo, registrando al cliente en el sistema, se le asigna una réplica y a partir de ese momento es capaz de realizar diversos métodos que se explicarán más abajo.
 
-Además, una vez registrado en el sistema, se puede volver a iniciar sesión proporcionando el identificador del cliente y la contraseña como si de unos credenciales se tratasen.
+Además, una vez registrado en el sistema, se puede volver a iniciar sesión proporcionando el identificador del cliente y la contraseña como si de unos credenciales se tratasen y, en caso de ser incorrectos, no se puede realizar ninguna operación.
 
-A continuación se muestran los métodos (los básicos, en la siguiente sección explicaré los demás).
+A continuación se muestran los métodos que pueden usar los clientes (los básicos, en la siguiente sección explicaré los demás).
 
 \begin{itemize}
     \item \textbf{registrarCliente: }Se encarga de registrar a un cliente en la réplica con menor número de clientes suscritos y devuelve el identificador de la réplica en la que se ha registrado. Además también hace las veces de método para iniciar sesión, ya que si se llama con los credenciales de un cliente ya registrado, devuelve el identificador en el que se encuentra. También si se pasa un identificador existente, pero con una contraseña inválida, devolverá la cadena vacía para que no se pueda conectar.
@@ -281,7 +280,7 @@ Mientras que para la intercomunicación entre réplicas (como antes, sólo lo ob
 \end{itemize}
 
 \subsubsection{Parte extra}
-Como extra he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
+Como extra he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
 
 
 %AÑADIR EL METODO QUE FALTA
@@ -289,14 +288,15 @@ Como extra he implementado algunos métodos que añaden funcionalidad al sistema
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
     \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los adminsitradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
-    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones). Sólo los administradores pueden bloquear a usuarios.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas. Sólo los administradores pueden bloquear a usuarios.
+    \item \textbf{desbloquearUsuario: }Permite que un administrador desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
 \end{itemize}
 
 También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. No es un método como tal, sino más bien una profundización de un parámetro básico que se necesitaba. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
 
-Además he añadido un nuevo rol al sistema, el administrador. Los administradores tienen un identificador menor que 0 pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'' y ``bloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
+Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'', ``bloquearUsuario'' y ``desbloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
 
-
+%MOSTRAR IMAGENES DE BLOQUEO DE USUARIOS TANTO POR EL ADMIN COMO MOSTRAR CUANDO ESTA BLOQUEADO QUE SALE
 
 %MOSTRAR IMAGENES DE UN HISTORICO
 
@@ -313,11 +313,13 @@ El resultado de la imagen anterior se puede reproducir ejecutando el script \tex
 
 Otro problema que, si bien no se puede demostrar con un test, existe es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valor que puede cambiar mientras se realiza la operación.
 
-Y otro problema que existe es en el método ``ponerACero'' ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización ya que puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
+También hay otro en el método ``ponerACero'' ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización ya que puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
 
-Una primera aproximación para garantizar la integridad entre clientes de una misma réplica es hacer los métodos ``registrarCliente'', ``ponerACero'' y ``donar'' como \textit{synchronized}, esto hace que cuando varios clientes intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método.
+Y uno último que he descubierto es en los métodos de administrador ``bloquearUsuario'' y ``desbloquearUsuario'', los cuales modifican estructuras de datos para llevar el recuento, por lo que es necesario una sincronización.
 
-Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
+Una primera aproximación para garantizar la integridad entre clientes/administradores de una misma réplica es hacer los métodos ``registrarCliente'', ``ponerACero'', ``donar'', ``bloquearUsuario'' y ``desbloquearUsuario'' como \textit{synchronized}, esto hace que cuando varios clientes/administradores intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método.
+
+Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes/administradores de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
 
 Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van circulando periódicamente al siguiente realizando así un anillo. Cuando un método necesita realizar una sección crítica, solicita el token y se bloquea hasta que el proceso recibe del anterior el token, el cual bloquea la circulación del mismo al siguiente y desbloquea al cliente para que pueda ejecutar la sección crítica, asegurando así la ejecución por un único proceso. Cuando finaliza la ejecución de la sección crítica se desbloquea la ejecución de la circulación del token y sigue moviéndose hasta que otro proceso lo solicite.
 
@@ -328,7 +330,7 @@ Lo que he hecho ha sido crear los siguientes métodos \textbf{volátiles}:
     \item \textbf{solicitado: }Variable que permite que un proceso solicite la entrada a una sección crítica para que posteriormente se le conceda cuando tenga el token.
 \end{itemize}
 
-Cabe destacar que las variables tienen que ser volátiles ya que si no se pone el bucle de las esperas ocupadas no funcionan. Esto es debido a que el compilador genera una optimización incorrecta:
+Cabe destacar que las variables tienen que ser volátiles ya que si no lo son el bucle de las esperas ocupadas no funcionan. Esto es debido a que el compilador genera una optimización incorrecta:
 
 %MOSTRAR UNA IMAGEN CON LA OPTIMIZACION INCORRECTA
 
@@ -336,13 +338,13 @@ Cabe destacar que las variables tienen que ser volátiles ya que si no se pone e
 También ha sido necesario implementar los siguientes métodos:
 
 \begin{itemize}
-    \item \textbf{setToken: }Método remoto que pone el valor del token de la réplica que lo llama al pasado por parámetro.
+    \item \textbf{setToken: }Método remoto que pone el valor del token de la réplica que lo llama al valor pasado por parámetro.
     \item \textbf{solicitarToken: }Pone la variable ``solicitado'' a true y espera hasta que su réplica tenga el token.
     \item \textbf{liberarToken: }Pone ``solicitado'' a false para que su réplica pueda finalmente pasar el token.
     \item \textbf{pasarToken: }Pasa el token a la siguiente réplica.
 \end{itemize}
 
-La acción de circular el token se implementa medienta hebras en Java. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instruccion mas.
+La acción de circular el token se implementa medienta hebras en las réplicas. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instruccion mas.
 
 El diagrama resultante sería el siguiente (obviando stubs):
 
@@ -356,12 +358,27 @@ Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguiente
 
 %IMAGENES DE EJEMPLO DE EJECUCION QUE ANTES DABAN FALLO
 
-
-
 \subsection{Ejecución en dos ordenadores reales}
+En esta parte voy a realizar la ejecución de todo el sistema en dos ordenadores. Para ello, voy a usar dos ordenadores físicos: para las réplicas del servidor voy a usar una torre (con hostname `TorreAMD') porque es más potente, mientras que para los clientes voy a usar el portátil que me llevo a la facultad (con hostname `MSI').
+
+Para que todo esto funcione es necesario modificar el comando de ejecución del servidor por ``-Djava.rmi.server.hostname=IP'' donde \textit{IP} tiene que ser la dirección IP donde se va a encontrar, no localhost.
+
+Tambien es necesario cambiar el programa main del cliente para que en el metodo \textit{getRegistry} se pase la dirección IP donde se encuentra el servidor de réplicas.
+
+RMIRegistry se va a encontrar también en TorreAMD para simplificarlo.
+
+Por tanto, el diagrama de interconexiones seria el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/variosOrdenadores.png}
+    \caption{Ejemplo de dos clientes en el portátil y dos réplicas en la torre.}
+\end{figure}
+
+
 
 \section{Apéndice: Implementación antigua del servidor de donaciones}
-Esta sección solamente sirve para explicar mis varias implementaciones que he realizado del algoritmo en anillo hasta dar con el definitivo, que es el que se explica arriba. Esta sección solo está para una explicación, no es necesario que se tenga en cuenta.
+Esta sección solamente sirve para explicar mis varias implementaciones que he realizado del algoritmo en anillo hasta dar con el definitivo, que es el que se explica arriba. Esta parte solo está para una explicación, no es necesario que se tenga en cuenta.
 
 La principal diferencia entre la versión definitiva del algoritmo y esta es que separé el propio algoritmo en una clase aparte denominada ``Anillo''. Esta clase implementaba dos interfaces remotas, una primera interna que servía para obtener atributos y modificarlos como el del token y para pasar el token de manera periódica.
 
@@ -371,12 +388,12 @@ La principal diferencia entre la versión definitiva del algoritmo y esta es que
     \caption{Diagrama de interconexiones entre objetos. En azul se denota la circulación del token.}
 \end{figure}
 
-La circulación del token se realizaba desde el main del servidor, que aparte de crear y exportar las réplicas, creaba y exportaba los anillos también y a su vez con un bucle se pasaba el anillo al siguiente proceso.
+La circulación del token se realizaba desde el main del servidor, que aparte de crear y exportar las réplicas, creaba y exportaba los anillos también y a su vez con un bucle se pasaba el token al siguiente proceso.
 
 En esta clase implementé dos versiones distintas del algoritmo: una basada en esperas ocupadas realizadas con bucles while y otra basada en esperas bloqueadas con cerrojos y condiciones de Java.
 
 La que me convenció más al final, antes de implementar la versión definitiva fue la de espera bloqueada, ya que no se producían interbloqueos o posibles entrelazamientos incorrectos. En la versión con espera ocupada podía darse un entrelazamiento incorrecto entre el método ``solicitarToken'' y ``pasarToken''.
 
-Estas dos implementaciones se encuentran en la carpeta ``Implementaciones antiguas'', que a su vez tiene otras dos carpetas con ambas versiones.
+Estas dos implementaciones se encuentran en la carpeta ``Implementaciones antiguas'', que a su vez tiene otras dos carpetas con ambas versiones (la estructura de las prácticas se explican en la primera sección).
 
 \end{document}
