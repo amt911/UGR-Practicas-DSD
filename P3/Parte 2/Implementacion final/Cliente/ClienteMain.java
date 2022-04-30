@@ -11,6 +11,7 @@ import java.rmi.*;
 
 public class ClienteMain {
     final static int SALIDA=-1;
+    final static int SALIDA_LOGIN=5;
     public static void main(String[] args) throws InterruptedException{
         // Crea e instala el gestor de seguridad
         if (System.getSecurityManager() == null) {
@@ -52,8 +53,9 @@ public class ClienteMain {
                 System.out.println("Opciones: ");
                 System.out.println("1.- Donar");
                 System.out.println("2.- Obtener historial de transacciones");
-                System.out.println("3.- Poner a cero la cantidad donada");
-                System.out.println("4.- Cerrar la sesión del cliente actual");
+                System.out.println("3.- Poner a cero la cantidad donada (solo por usuarios con id<0)");
+                System.out.println("4.- Bloquear usuario (solo por usuarios con id<0)");
+                System.out.println("5.- Cerrar la sesión del cliente actual");
                 System.out.println(SALIDA+" .- Salir del programa");
                 System.out.print("Seleccione una opcion: ");
                 opcion=donacion.nextInt();
@@ -64,6 +66,7 @@ public class ClienteMain {
                         do{
                             System.out.print("Introduzca cantidad a donar: ");
                             cantidad=donacion.nextDouble();
+                            donacion.nextLine();
 
                             if(cantidad<0)
                                 System.out.println("Cantidad invalida");
@@ -85,6 +88,18 @@ public class ClienteMain {
                     }
 
                     case 4:{
+                        System.out.print("Introduzca id usuario: ");
+                        int idBan=donacion.nextInt();
+                        donacion.nextLine();
+
+                        boolean salida=replica.bloquearUsario(id, passwd, idBan);
+
+                        if(salida)
+                            System.out.println("Operacion realizada con exito");
+                        else
+                            System.out.println("Operacion no realizada, puede que sea un administrador, que el usuario no exista o que este ya bloqueado");
+                    }
+                    case 5:{
                         System.out.println("Cerrando la sesion del usuario "+id);
                         break;
                     }
@@ -92,7 +107,7 @@ public class ClienteMain {
                     default:
                     break;
                 }
-            }while(opcion!=SALIDA && opcion!=4);
+            }while(opcion!=SALIDA && opcion!=SALIDA_LOGIN);
         }
         }while(opcion!=SALIDA);
         } catch (NotBoundException | RemoteException e) {

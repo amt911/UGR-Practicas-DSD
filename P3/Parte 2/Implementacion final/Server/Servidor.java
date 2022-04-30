@@ -3,6 +3,7 @@ package Server;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,6 +21,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     private int numReplicas=0;
     private Map<Integer, TransaccionesCliente> datosClientes=new TreeMap<>();
     private Map<Integer, String> credencialesClientes=new TreeMap<>();
+    private ArrayList<Integer> clientesBloqueados=new ArrayList<>();
+
     private int idServer;
     private double subtotal=0;
 
@@ -215,7 +218,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
     @Override
     public synchronized void donar(int id, String passwd, double cantidad) throws RemoteException {
-        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer)){
+        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && !estaBloqueadoTodasReplicas(id)){
             //donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
 
             //Se inserta el map dentro de la seccion critica ya que almacena la hora de la transaccion
@@ -294,7 +297,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     public synchronized double totalDonado(int id, String passwd) throws RemoteException {
         double res=-1;
 
-        if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
+        if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0 && !estaBloqueadoTodasReplicas(id)) || id==-1){            
             solicitarToken();
             res=subtotal;
 
@@ -343,7 +346,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
     @Override
     public synchronized void ponerACero(int id, String passwd) throws RemoteException {
-        if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0){
+        if(id<0 && existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer)){
             solicitarToken();
             subtotal=0;
             
@@ -412,6 +415,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     }
 
 
+    @Override
     public String getTransacciones(int id, String passwd) throws RemoteException{
         String res="";
 
@@ -419,5 +423,71 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             res=datosClientes.get(id).getTransacciones();
 
         return res;
+    }
+
+
+    @Override
+    public boolean estaBloqueado(int id) throws RemoteException{
+        return clientesBloqueados.contains(id);
+    }
+
+    /**
+     * Comprueba si el usuario esta bloqueado en alguna de las replicas.
+     * Este metodo es seguro ya que se llama desde otros que ya son seguros.
+     * @param id Identificador del cliente a buscar
+     * @return True si esta bloqueado, false en otro caso.
+     * @throws RemoteException
+     */
+    private boolean estaBloqueadoTodasReplicas(int id) throws RemoteException{
+        boolean res=false;
+
+        if(existeCliente(id)){
+            res=estaBloqueado(id);
+        }
+        else{
+            for(int i=0; i<numReplicas && !res; i++){
+                if(i!=idServer){
+                    IDonacionesInterno replica=obtenerReplica(i);
+
+                    if(replica.estaBloqueado(id))
+                        res=true;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    @Override
+    public synchronized boolean bloquearUsario(int idAdmin, String passwd, int id) throws RemoteException {
+        boolean res=false;
+
+        solicitarToken();
+        if(idAdmin<0 && id>=0 && existeCliente(idAdmin) && contraseñaCorrecta(idAdmin, passwd, "S"+idServer) && estaRegistradoCliente(id) && !estaBloqueadoTodasReplicas(id)){
+            if(existeCliente(id)){
+                addClienteBloqueado(id);
+                res=true;
+            }
+            else{
+                for(int i=0; i<numReplicas && !res; i++){
+                    if(i!=idServer){
+                        IDonacionesInterno replica=obtenerReplica(i);
+                        
+                        if(replica.existeCliente(id)){
+                            replica.addClienteBloqueado(id);
+                            res=true;
+                        }
+                    }
+                }
+            }
+        }
+        liberarToken();
+
+        return res;
+    }
+
+    @Override
+    public void addClienteBloqueado(int id) throws RemoteException{
+        clientesBloqueados.add(id);
     }
 }

@@ -86,5 +86,18 @@ public interface IDonacionesExterno extends Remote{
      * se devuelve una cadena vacía, en otro caso se devuelve el historial de transacciones.
      */
     String getTransacciones(int id, String passwd) throws RemoteException;
+
+
+    /**
+     * Permite bloquear a un usuario por mala conducto (o por otros motivos).
+     * Esta operación solo la pueden realizar los administradores que estén 
+     * registrados en el sistema (aquellos con identificador menor que 0).
+     * @param idAdmin Identificador del administrador que va a bloquear
+     * @param passwd Contraseña del administrador
+     * @param id Identificador del usuario a bloquear
+     * @return True si la operación ha tenido éxito y false en otro caso.
+     * @throws RemoteException
+     */
+    boolean bloquearUsario(int idAdmin, String passwd, int id) throws RemoteException;
 }
 

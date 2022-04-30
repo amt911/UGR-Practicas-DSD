@@ -62,4 +62,19 @@ public interface IDonacionesInterno extends Remote {
      * @return La contraseña del cliente pasado como parámetro.
      */
     String getContraseña(int id) throws RemoteException;
+
+    /**
+     * Añade un cliente a la lista de usuarios bloqueados
+     * @param id Identificador del cliente
+     * @throws RemoteException
+     */
+    void addClienteBloqueado(int id) throws RemoteException;
+
+    /**
+     * Comprueba si el usuario esta bloqueado en la replica en la que se llama.
+     * @param id Identificador del cliente a buscar
+     * @return True si esta bloqueado, false si no lo esta.
+     * @throws RemoteException
+     */
+    boolean estaBloqueado(int id) throws RemoteException;
 }

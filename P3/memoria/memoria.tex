@@ -281,15 +281,22 @@ Mientras que para la intercomunicación entre réplicas (como antes, sólo lo ob
 \end{itemize}
 
 \subsubsection{Parte extra}
-Como extra he implementado algunos métodos que añaden funcionalidad al sistema y he arreglado el problema de la integridad de ciertos atributos. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
+Como extra he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema. Los métodos que he añadido, accesibles para los clientes, son los siguientes:
 
+
+%AÑADIR EL METODO QUE FALTA
 \begin{itemize}
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
-    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo el usuario con el identificador -1 (que en mi caso es el administrador) es capaz de retirar el dinero.
+    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los adminsitradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones). Sólo los administradores pueden bloquear a usuarios.
 \end{itemize}
 
 También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. No es un método como tal, sino más bien una profundización de un parámetro básico que se necesitaba. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
+
+Además he añadido un nuevo rol al sistema, el administrador. Los administradores tienen un identificador menor que 0 pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'' y ``bloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
+
+
 
 %MOSTRAR IMAGENES DE UN HISTORICO
 

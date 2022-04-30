@@ -39,17 +39,18 @@ public class ServidorMain {
 
             IDonacionesExterno s=(IDonacionesExterno) registry.lookup("S0");
 
-            
+            /*
             while(true){                
                 System.out.println("---------------------------------------------------------------");
                 System.out.println("Total donado: "+s.totalDonado(-1, "123"));
                 System.out.println("---------------------------------------------------------------");
 
-                Thread.sleep(10);
-                //Thread.sleep(100);
+                Thread.sleep(100);
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
             }
+            */
+            
          
 
         } catch (Exception e) {
