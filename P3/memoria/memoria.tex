@@ -375,6 +375,28 @@ Por tanto, el diagrama de interconexiones seria el siguiente:
     \caption{Ejemplo de dos clientes en el portátil y dos réplicas en la torre.}
 \end{figure}
 
+Para la ejecucion en el servidor he modificado el script original para que ahora acepte como parametro, aparte del numero de replicas, la direccion IP (es de manera opcional, si no se pone el parametro se usa localhost por defecto).
+
+Mientras que para la ejecucion en el cliente he realizado algo similar que para el servidor y he hecho que en el script se pase como parametro la direccion IP donde se encuentra el servidor (por defecto tambien a localhost).
+
+%MOSTRAR FOTO DE IP A
+
+Por tanto el comando de ejecucion en el servidor es el siguiente: 
+%PONER EL COMANDO
+
+MIentras que en el cliente es el siguiente: 
+%PONER EL COMANDO
+
+%MOSTRAR FOTO DE AMBOS FUNCIONANDO
+
+Y ahora con el siguiente comando en el cliente se comprueba si sigue funcionando el algoritmo en anillo: %PONER COMANDO PARA VARIOS CLIENTES
+
+%FOTO EN MODO INSEGURO
+%FOTO EN MODO SEGURO
+
+
+Como se puede ver funciona exactamente igual que todo en local, además al estar en la misma subred ambos ordenadores la latencia ha sido muy similar también.
+
 
 
 \section{Apéndice: Implementación antigua del servidor de donaciones}
