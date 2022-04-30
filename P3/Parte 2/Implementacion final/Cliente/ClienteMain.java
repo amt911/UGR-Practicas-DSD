@@ -18,10 +18,12 @@ public class ClienteMain {
             System.setSecurityManager(new SecurityManager());
         }
         try {
+            String direccion=(args.length==0)? "localhost" : args[0];
             Scanner donacion=new Scanner(System.in);
 
             // Crea el stub para el cliente especificando el nombre del servidor
-            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+
+            Registry mireg = LocateRegistry.getRegistry(direccion, 1099);
             IDonacionesExterno replica = (IDonacionesExterno) mireg.lookup("S0");
 
             

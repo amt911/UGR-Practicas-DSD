@@ -25,12 +25,18 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
     private int idServer;
     private double subtotal=0;
+    private String direccion;
 
 
     /**
      * Constructor de las réplicas.
      */
     Servidor(int id, int numReplicas){
+        this(id, numReplicas, "localhost");
+    }
+
+    
+    Servidor(int id, int numReplicas, String dir){
         idServer=id;
         this.numReplicas=numReplicas;
         token=false;
@@ -41,6 +47,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             token=false;
 
         solicitado=false;
+
+        direccion=dir;
     }
 
 
@@ -245,7 +253,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         IDonacionesInterno replica=null;
         
         try {
-            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            Registry mireg = LocateRegistry.getRegistry(direccion, 1099);
             replica = (IDonacionesInterno) mireg.lookup("S"+id);
         } catch (Exception e) {
             System.err.println("Exception:");
@@ -265,7 +273,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         IDonacionesInterno replica=null;
         
         try {
-            Registry mireg = LocateRegistry.getRegistry("localhost", 1099);
+            Registry mireg = LocateRegistry.getRegistry(direccion, 1099);
             replica = (IDonacionesInterno) mireg.lookup(id);
         } catch (Exception e) {
             System.err.println("Exception:");
@@ -297,7 +305,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     public synchronized double totalDonado(int id, String passwd) throws RemoteException {
         double res=-1;
 
-        if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0 && !estaBloqueadoTodasReplicas(id)) || id==-1){            
+        if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0 && !estaBloqueadoTodasReplicas(id)) || id<0){            
             solicitarToken();
             res=subtotal;
 
@@ -431,6 +439,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return clientesBloqueados.contains(id);
     }
 
+
     /**
      * Comprueba si el usuario esta bloqueado en alguna de las replicas.
      * Este metodo es seguro ya que se llama desde otros que ya son seguros.
@@ -457,6 +466,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
         return res;
     }
+
 
     @Override
     public synchronized boolean bloquearUsuario(int idAdmin, String passwd, int id) throws RemoteException {
