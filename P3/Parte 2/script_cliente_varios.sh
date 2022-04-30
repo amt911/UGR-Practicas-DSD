@@ -4,7 +4,7 @@
 
 if [[ "$#" -lt 2 ]] 
 then
-    echo "./script <numero de clientes> <variable-entre-0-y-1> <direccion-ip>"
+    echo "./script <numero de clientes> <variable-0-ó-1> [direccion-ip]"
     echo
     echo "Segundo argumento:"
     echo "  0: modo seguro"

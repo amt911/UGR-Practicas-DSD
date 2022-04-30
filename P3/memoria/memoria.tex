@@ -7,23 +7,48 @@
 \author{Andrés Merlo Trujillo}
 \date{}
 \begin{document}
-%TODO: MUY IMPORTANTE COMPROBAR LOS DE LAS INSTANCIAS DEL SERVIDOR, SEGURAMENTE ESTE MALY SE REFIERA A INSTANCIAS DEL METODO REMOTO O ALGO
 %TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
-%TODO 3: QUIZAS PONER LOS METODOS QUE SE MENCIONAN EN LA PARTE 2 COMO UNA LISTA
-%TODO 4: EXPLICAR UN POCO MAS LA PALABRA CLAVE SYNCHRONIZED
-%TODO 5: EXPLICAR EL USO DE LAS VARIABLES VOLATILES
 \maketitle
 
 \section{Estructura de carpetas y explicación de distintos scripts}
-Esta sección solo sirve a modo de explicación de como estan estructuradas las carpetas de esta practica. En el directorio raiz se encuentran 4 carpetas, 3 de ellas correspondientes a los ejemplos y la ultima, denominada ``Parte 2'', destinada al ejercicio del servidor de donaciones.
+Esta sección solo sirve a modo de explicación de como estan estructuradas las carpetas de esta practica. En el directorio raiz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
 
-Dentro de la carpeta ``Parte 2'' se encuentran dos que explicaré a continuación:
+Dentro de la carpeta ``Parte 2'' se encuentran los siguientes archivos:
 
-%PONER LA ESTRUCTURA EN CARPETAS
-%HACER UNA LISTA CON SUBLISTAS CUANDO YA SE TENGA UNA ESTRUCTURA FINAL
+\begin{itemize}
+    \item \textbf{Cliente: }Contiene la clase que almacena el histórico y las distintas versiones del main para hacer las pruebas.
+
+    \begin{itemize}
+        \item \textbf{ClienteMain.java: }Versión \textbf{interactiva} del programa cliente. Es el que pide la práctica obligatoriamente.
+        \item \textbf{ClienteMainVarios.java: }Versión que pone a prueba la sincronización del servidores realizando múltiples registros consecutivos.
+        \item \textbf{ClienteMainVariosDonar.java: }Versión que permite donar múltiples veces de manera consecutiva. También para poner a prueba el sistema.
+        \item \textbf{TransaccionesClientes.java: }Clase que implementa el histórico de transacciones de los clientes, se usa dentro de las réplicas.
+    \end{itemize}
+
+    \item \textbf{Interfaces: }Contiene las interfaces remotas del servidor de donaciones, tanto la externa como la interna.
+    
+    \item \textbf{Server: }Contiene la clase Servidor, que es la implementación de la réplica, y ServidorMain es el main que lanza estas réplicas.
+    
+    \item \textbf{script\_server.sh: }Compila los archivos y ejecuta el main del servidor. Su sintaxis es la siguiente: ``./script\_server.sh $<$numero-replicas$>$ [direccion-IP]''
+    
+    \begin{itemize}
+        \item \textbf{numero-replicas: }Parámetro obligatorio que indica el número de réplicas que va a tener el servidor.
+        \item \textbf{direccion-IP: }Parámetro opcional que indica la dirección IP en el que se va a alojar. Por defecto es \textbf{localhost}.
+    \end{itemize}
+
+    \item \textbf{script\_cliente\_varios.sh: }Sirve para probar que funciona correctamente el algoritmo en anillo. Lanza dos procesos con un número de clientes pasados por parámetro. Además incluye una versión insegura para ver como fallaría. Su sintaxis es la siguiente: ``./script\_cliente\_varios.sh $<$numero-clientes$>$ $<$var-0-ó-1$>$ [direccion-IP]''
+    
+    \begin{itemize}
+        \item \textbf{numero-clientes: }El número de clientes que se van a registrar. Hay que tener en cuenta que al lanzarse dos procesos el número de clientes va a ser el doble que el pasado.
+        \item \textbf{var-0-ó-1: }Valor que si está puesto a 0 indica modo seguro, sincronizado con el algoritmo, mientras que si está a 1 no.
+        \item \textbf{direccion-IP: }Parámetro opcional que indica la dirección IP a la que se deben conectar.
+    \end{itemize}
+
+    \item \textbf{script\_cliente\_varios\_donar.sh: }Versión que también pone a prueba el algoritmo, pero que usa el método donar. Su sintaxis es: ``./script\_cliente\_varios\_donar.sh $<$num-clientes$>$''
+\end{itemize}
 
 
-De manera general, para ejecutar todos los ejemplos, incluido el servidor de donaciones, es necesario siempre lanzar el script ``script\_server.sh'' y luego lanzar alguna de las variaciones del ``script\_cliente.sh''.
+De manera general, para ejecutar todos los ejemplos, incluido el servidor de donaciones, \textbf{es necesario siempre primero lanzar el script ``script\_server.sh'' y luego lanzar alguna de las variaciones del ``script\_cliente.sh''}.
 
 
 
