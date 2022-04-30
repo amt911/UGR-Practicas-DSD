@@ -60,15 +60,16 @@ public class ClienteMain {
 
                 switch(opcion){
                     case 1:{
+                        double cantidad;
                         do{
                             System.out.print("Introduzca cantidad a donar: ");
-                            opcion=donacion.nextInt();
+                            cantidad=donacion.nextDouble();
 
-                            if(opcion<0)
+                            if(cantidad<0)
                                 System.out.println("Cantidad invalida");
                         }while(opcion<0);
 
-                        replica.donar(id, passwd, opcion);
+                        replica.donar(id, passwd, cantidad);
                         break;
                     }
 

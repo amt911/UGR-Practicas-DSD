@@ -5,17 +5,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class TransaccionesCliente {
-    private int cantidadTotal=0;
+    private double cantidadTotal=0;
 
-    //Supongo que pueden darse dos transacciones en el mismo instante, por lo que tiene mas sentido un pair en vez de map
+    //Como supongo que puede haber dos transacciones en el mismo instante (aunque sea casi imposible),
+    //necesito usar un multimap, pero como no esta implementado lo hago con dos arrays.
     private ArrayList<ZonedDateTime> instanteTransacciones=new ArrayList<>();
-    private ArrayList<Integer> cantidadTransacciones=new ArrayList<>();
+    private ArrayList<Double> cantidadTransacciones=new ArrayList<>();
 
     /**
      * Obtiene la cantidad donada total por un cliente
      * @return La cantidad donada
      */
-    public int getCantidadTotal(){
+    public double getCantidadTotal(){
         return cantidadTotal;
     }
 
@@ -23,7 +24,7 @@ public class TransaccionesCliente {
      * Crea una transacción nueva con la cantidad donada.
      * @param cantidad La cantidad a donar.
      */
-    public void insertarTransaccion(int cantidad){
+    public void insertarTransaccion(double cantidad){
         instanteTransacciones.add(ZonedDateTime.now());
         cantidadTransacciones.add(cantidad);
 

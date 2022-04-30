@@ -16,15 +16,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     private volatile boolean token;
     private volatile boolean solicitado;
 
-
-
-
-    //private static int numReplicas=0;
+    //Parte básica junto con historial de transacciones
     private int numReplicas=0;
     private Map<Integer, TransaccionesCliente> datosClientes=new TreeMap<>();
     private Map<Integer, String> credencialesClientes=new TreeMap<>();
     private int idServer;
-    private int subtotal=0;
+    private double subtotal=0;
+
 
     /**
      * Constructor de las réplicas.
@@ -42,16 +40,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         solicitado=false;
     }
 
-    /**
-     * Comprueba si el cliente está registrado en la réplica en la que se llama.
-     * @param id Identificador del cliente
-     * @return Si está registrado el cliente o no.
-     */
+
     @Override
     public boolean existeCliente(int id) throws RemoteException {
         //return clientes.contains(id);
         return datosClientes.containsKey(id);
     }
+
 
     /**
      * Permite comprobar si el cliente está registrado en alguna réplica.
@@ -75,6 +70,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
 
         return res;
     }
+
 
     /**
      * Busca al cliente dado por el identificador en todas las réplicas.
@@ -106,11 +102,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Obtiene la contraseña de un cliente registrado
-     * @param id Identificador del cliente.
-     * @return La contraseña del cliente pasado como parámetro.
-     */
+
     @Override
     public String getContraseña(int id) throws RemoteException{
         return credencialesClientes.get(id);
@@ -135,19 +127,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Permite iniciar sesión de nuevo o registrar a un cliente en la réplica que menor número de clientes registrados tenga.
-     * IMPORTANTE: Como es necesario saber el número de clientes registrados, valor que puede cambiar
-     * concurrentemente, es necesario que sólo una réplica de todas ejecute este método a la vez.
-     * Además es necesario que sea synchronized para clientes de una misma réplica.
-     * 
-     * @param id Identificador del cliente.
-     * @param passwd Contraseña con la que se quiere registrar o credencial para iniciar sesion si esta registrado.
-     * 
-     * @return Devuelve el identificador de la réplica que ha sido asignada o en caso de solo
-     * iniciar sesión, devuelve el identificador donde se encontraba. En caso de ser credenciales incorrectos se devuelve la 
-     * cadena vacía
-     */
+
     @Override
     public synchronized String registrarCliente(int id, String passwd) throws RemoteException {
         String res="";
@@ -191,17 +171,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Version insegura de registrar cliente, realiza exactamente lo mismo que la version segura,
-     * pero es necesaria para realizar la comprobacion de que el algoritmo de los anillos funciona.
-     * 
-     * @param id Identificador del cliente que se quiere registrar/iniciar sesion
-     * @param passwd Contraseña del cliente que, en caso de no estar registrado, es con la que se va
-     * a registrar, en caso de iniciar sesion solo es un credencial mas
-     * 
-     * @return En caso de registro o de inicio de sesion valido, se devuelve el identificador de rmiregistry
-     * de la replica a la que se debe conectar. En otro caso se devuelve la cadena vacia.
-     */
+
     public synchronized String registrarClienteInseguro(int id, String passwd) throws RemoteException{
         String res="";
 
@@ -242,18 +212,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Permite donar una cantidad a la réplica en la que el cliente está suscrito
-     * IMPORTANTE: Es necesario sincronizar el acceso a esta variable ya que pueden estar
-     * intentando acceder desde otro objeto concurrentemente, por lo que es necesario 
-     * usar el algoritmo en anillo. También es necesario hacerlo synchronized para garantizar
-     * la integridad entre varias donaciones a una misma réplica.
-     * 
-     * @param id Identificador del cliente, debe existir en la reṕlica
-     * @param cantidad Cantidad que desea donar el cliente.
-     */
+
     @Override
-    public synchronized void donar(int id, String passwd, int cantidad) throws RemoteException {
+    public synchronized void donar(int id, String passwd, double cantidad) throws RemoteException {
         if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer)){
             //donacionesClientes.set(clientes.indexOf(id), donacionesClientes.get(clientes.indexOf(id))+cantidad);
 
@@ -269,6 +230,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
             System.out.println("Lo siento, el usuario no se encuentra registrado");
         }
     }
+
 
     /**
      * Permite obtener la réplica remota con el identificador pasado por parámetro.
@@ -310,6 +272,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return replica;
     }
 
+
     /**
      * Solicitud del token por un cliente para acceder a la sección crítica
      */
@@ -318,6 +281,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         while(!token){}
     }
 
+
     /**
      * Liberación del token por parte de un cliente
      */
@@ -325,21 +289,10 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         solicitado=false;
     }
 
-    /**
-     * Obtiene el total donado en todas las réplicas.
-     * IMPORTANTE: Como este método tiene que acceder a atributos de otras réplicas 
-     * que se pueden modificar concurrentemente, es necesario usar el algoritmo de 
-     * sincronización en anillo. Además es necesario sincronizar la entrada de los 
-     * clientes para una misma réplica con synchronized.
-     * 
-     * @param id Identificador del cliente que lo llama
-     * @param passwd Contraseña del cliente
-     * @return El total donado por todos los clientes de todas las réplicas. En caso de no estar
-     * registrado, poner una contraseña incorrecta o no haber donado, se devuelve -1.
-     */
+
     @Override
-    public synchronized int totalDonado(int id, String passwd) throws RemoteException {
-        int res=-1;
+    public synchronized double totalDonado(int id, String passwd) throws RemoteException {
+        double res=-1;
 
         if((existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0) || id==-1){            
             solicitarToken();
@@ -357,20 +310,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Obtiene el número de clientes registrados en esa réplica
-     * @return Entero con dicha cantidad.
-     */
+
     @Override
     public int clientesSize() throws RemoteException {
         return datosClientes.size();
     }
 
-    /**
-     * Permite añadir un cliente a la réplica que lo llama
-     * @param id Identificador del cliente
-     * @param passwd Contraseña del cliente
-     */
+
     @Override
     public void añadirCliente(int id, String passwd) throws RemoteException {
         datosClientes.put(id, new TransaccionesCliente());
@@ -378,14 +324,9 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
     }
 
 
-    /**
-     * Obtiene el total donado por el cliente que se pasa por parámetro.
-     * @param id Identificador del cliente.
-     * @return Entero con la cantidad que ha donado el cliente.
-     */
     @Override
-    public int totalDonadoCliente(int id, String passwd) throws RemoteException {
-        int res=-1;
+    public double totalDonadoCliente(int id, String passwd) throws RemoteException {
+        double res=-1;
 
         if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer))
             res=datosClientes.get(id).getCantidadTotal();
@@ -393,20 +334,13 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         return res;
     }
 
-    /**
-     * Obtiene el nombre de la réplica que lo llama tal y como aparece en rmiregistry
-     * @return String con dicho identificador.
-     */
+
     @Override
     public String getNombreReplica() throws RemoteException {
         return "S"+idServer;
     }
 
-    /**
-     * Pone a cero todas las réplicas del servidor de donaciones.
-     * IMPORTANTE: Como debe acceder a distintos atributos de otras replicas, es necesario usar el algoritmo en anillo para asegurar la integridad.
-     * @param id Identificador del cliente que solicita la llamada
-     */
+
     @Override
     public synchronized void ponerACero(int id, String passwd) throws RemoteException {
         if(existeCliente(id) && contraseñaCorrecta(id, passwd, "S"+idServer) && datosClientes.get(id).getCantidadTotal()>0){
@@ -430,10 +364,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
 
-    /**
-     * Pone las donaciones de los clientes y el subtotal de la réplica a cero.
-     * @throws RemoteException
-     */
+
     @Override
     public void resetDonaciones() throws RemoteException {
         //Var funciona de manera similar a auto en C++
@@ -442,6 +373,7 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
         subtotal=0;
     }
+
 
     /**
      * Pasa el token a la réplica siguiente
@@ -456,9 +388,8 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
     
-    /**
-     * Método usado para pasar el token en el algoritmo de exclusión mutua
-     */
+
+    //Método usado para pasar el token en el algoritmo de exclusión mutua
     @Override
     public void run() {
         while(true){
@@ -468,33 +399,19 @@ public class Servidor implements IDonacionesExterno, IDonacionesInterno, Runnabl
         }
     }
 
-    /**
-     * Modifica el valor del token al pasado por parámetro.
-     * @param valor Valor que se pondrá en el token
-     * @throws RemoteException
-     */
+
     @Override
     public void setToken(boolean valor) throws RemoteException {
         token=valor;
     }
 
-    /**
-     * Obtiene el subtotal de la réplica.
-     * @return Entero con el subtotal.
-     * @throws RemoteException
-     */
+
     @Override
-    public int getSubTotal() throws RemoteException {
+    public double getSubTotal() throws RemoteException {
         return subtotal;
     }
 
-    /**
-     * Obtiene las transacciones del cliente identificado por el parámetro
-     * @param id Identificador del cliente
-     * @param passwd Contraseña del cliente.
-     * @return En caso de no existir el cliente o tener los credenciales incorrectos
-     * se devuelve una cadena vacía, en otro caso se devuelve el historial de transacciones.
-     */
+
     public String getTransacciones(int id, String passwd) throws RemoteException{
         String res="";
 
