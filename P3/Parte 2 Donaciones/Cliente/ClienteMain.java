@@ -58,7 +58,7 @@ public class ClienteMain {
                 System.out.println("3.- Poner a cero la cantidad donada (solo por usuarios con id<0)");
                 System.out.println("4.- Bloquear usuario (solo por usuarios con id<0)");
                 System.out.println("5.- Desbloquear usuario (solo por usuarios con id<0)");
-                System.out.println("6.- Cerrar la sesión del cliente actual");
+                System.out.println(SALIDA_LOGIN+".- Cerrar la sesión del cliente actual");
                 System.out.println(SALIDA+" .- Salir del programa");
                 System.out.print("Seleccione una opcion: ");
                 opcion=donacion.nextInt();

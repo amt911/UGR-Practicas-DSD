@@ -29,9 +29,10 @@ public class ServidorMain {
                 registry.rebind("S"+i, stubs.get(i));
             }
 
-
+            ArrayList<Thread> hebras=new ArrayList<>();
             for(int i=0; i<Integer.parseInt(args[0]); i++){
                 Thread aux=new Thread(replicas.get(i));
+                hebras.add(aux);
                 aux.start();
             }
 
