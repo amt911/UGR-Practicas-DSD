@@ -274,7 +274,6 @@ Esta clase consta de los siguientes atributos:
     \item \textbf{direccion: }Contiene la dirección que se va a utilizar, por defecto es ``localhost''.
 \end{itemize}
 
-%Mostrar ejemplo de ejecucion para mas de dos replicas
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{imagenes/donObligatorioServer.png}
@@ -326,26 +325,26 @@ Mientras que para la intercomunicación entre réplicas (como antes, sólo lo ob
 \subsubsection{Parte extra}
 Como extra he hecho que se puedan lanzar un número arbitrario de réplicas y que se balanceen, tambien he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. 
 
-El balanceo de los clientes se realiza obteniendo la réplica que en ese momento tenga menos clientes y hace que dicho cliente se registre alli. Todo esto lo explico en los metodos basicos de arriba, mas concretamente en ``registrarCliente''.
+El balanceo de los clientes se realiza obteniendo la réplica que en ese momento tenga menos clientes y hace que el nuevo cliente se registre alli. Todo esto lo explico en los metodos basicos de arriba, mas concretamente en ``registrarCliente''.
 
 Por ejemplo, para 3 réplicas y 3 clientes se obtiene lo siguiente:
 %CAMBIAR LAS FOTOS QUE SON TODAS LA MISMA Y NO TIENEN NADA QUE VER
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{imagenes/3replicasS0.png}
-    \caption{Cliente 1 conectado a la réplica 0.}
+    \caption{Cliente 1 conectado a la réplica 0 (S0).}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{imagenes/3replicasS1.png}
-    \caption{Cliente 2 conectado a la réplica 1.}
+    \caption{Cliente 2 conectado a la réplica 1 (S1).}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{imagenes/3replicasS2.png}
-    \caption{Cliente 3 conectado a la réplica 2.}
+    \caption{Cliente 3 conectado a la réplica 2 (S2).}
 \end{figure}
 
 
@@ -355,11 +354,11 @@ Los métodos que he añadido, accesibles para los clientes, son los siguientes:
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
     \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los adminsitradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
-    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas. Sólo los \textbf{administradores} pueden bloquear a usuarios.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas, aun habiendo donado. Sólo los \textbf{administradores} pueden bloquear a usuarios.
     \item \textbf{desbloquearUsuario: }Permite que un \textbf{administrador} desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
 \end{itemize}
 
-También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. No es un método como tal, sino más bien una profundización de un parámetro básico que se necesitaba. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
+También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método ``getTransacciones'' permite mostrar en el modo interactivo esta información. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
 
 \begin{figure}[H]
     \centering
@@ -369,15 +368,66 @@ También, como mencioné en la sección anterior, he creado una clase ``Transacc
 
 Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'', ``bloquearUsuario'' y ``desbloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
 
-%MOSTRAR IMAGENES DE BLOQUEO DE USUARIOS TANTO POR EL ADMIN COMO MOSTRAR CUANDO ESTA BLOQUEADO QUE SALE
+También hay que tener en cuenta que el usuario notará que ha sido bloqueado cuando haga alguna transacción, ya que el menu justo antes de haber sido bloqueado seguirá saliendo bien, pero con totales ya desactualizados.
+
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/bloqueo/1.png}
+        \caption{Cliente normal, se puede ver que ha donado 1070.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/bloqueo/2.png}
+        \caption{Bloqueo del cliente 1 por un administrador (se puede ver que tiene el ID a -1.)}
+    \end{minipage}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/bloqueo/3.png}
+        \caption{Intento de donar algo, se puede ver que no ha subido la donación y que no se puede ver el total.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/bloqueo/4.png}
+        \caption{Desbloqueo del cliente 1.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/bloqueo/5.png}
+    \caption{Donacion correctamente realizada de nuevo por el cliente 1.}
+\end{figure}
+
+Ahora, si se intenta bloquear o desbloquear un cliente inexistente, sale el siguiente mensaje:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imagenes/bloqueo/6.png}
+    \caption{Error debido a que no existe el cliente especificado.}
+\end{figure}
 
 
 Ahora bien, un problema que surge con la implementación básica es que no se puede asegurar la correcta asignación de réplicas a los clientes para que estén balanceados. Este problema puede surgir cuando, por ejemplo, dos clientes accedan concurrentemente al método ``registrarCliente'', pero en réplicas distintas, ya que puede darse el caso que en un momento dado una réplica tenga menos que las demás y se asigne esta réplica a ambos. Además, las estructuras de datos internas son modificadas y pueden darse estados inválidos.
 
+Por ejemplo, para 240 clientes (120 en dos procesos que se conectan a replicas distintas):
 %MOSTRAR FOTO CON EL PROBLEMA
 %Asignación de clientes en dos réplicas de manera desequilibrada.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imagenes/varios/incorrecto.png}
+    \caption{Asignación desequilibrada de los clientes.}
+\end{figure}
 
-El resultado de la imagen anterior se puede reproducir ejecutando \textbf{script\_cliente\_varios.sh}.
+El resultado de la imagen anterior se puede reproducir ejecutando \textbf{./script\_cliente\_varios.sh 120 1}.
 
 Otro problema que, si bien no se puede demostrar con un test, existe es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valor que puede cambiar mientras se realiza la operación.
 
@@ -424,7 +474,11 @@ El diagrama resultante sería el siguiente (obviando stubs):
 
 Con esto ya sí se garantiza exclusión mutua como se puede ver en las siguientes imágenes:
 
-%IMAGENES DE EJEMPLO DE EJECUCION QUE ANTES DABAN FALLO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imagenes/varios/correcto.png}
+    \caption{Asignación equilibrada a 240 clientes.}
+\end{figure}
 
 \subsection{Ejecución en dos ordenadores reales}
 En esta parte voy a realizar la ejecución de todo el sistema en dos ordenadores. Para ello, voy a usar dos ordenadores físicos: para las réplicas del servidor voy a usar una torre (con hostname `TorreAMD') porque es más potente, mientras que para los clientes voy a usar el portátil que me llevo a la facultad (con hostname `MSI').
@@ -439,7 +493,7 @@ Por tanto, el diagrama de interconexiones seria el siguiente:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/variosOrdenadores.png}
+    \includegraphics[width=0.5\textwidth]{imagenes/variosOrdenadores.png}
     \caption{Ejemplo de dos clientes en el portátil y dos réplicas en la torre.}
 \end{figure}
 
@@ -447,17 +501,19 @@ Para la ejecucion en el servidor he modificado el script original para que ahora
 
 Mientras que para la ejecucion en el cliente he realizado algo similar que para el servidor y he hecho que en el script se pase como parametro la direccion IP donde se encuentra el servidor (por defecto tambien a localhost).
 
-%MOSTRAR FOTO DE IP A
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/multiples ordenadores/IP.png}
+    \caption{Dirección IPv4 a usar.}
+\end{figure}
 
-Por tanto el comando de ejecucion en el servidor es el siguiente: 
-%PONER EL COMANDO
+Por tanto el comando de ejecucion en el servidor es el siguiente: \textbf{./script\_server.sh 192.168.5.227}
 
-MIentras que en el cliente es el siguiente: 
-%PONER EL COMANDO
+MIentras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168.5.227}
 
 %MOSTRAR FOTO DE AMBOS FUNCIONANDO
 
-Y ahora con el siguiente comando en el cliente se comprueba si sigue funcionando el algoritmo en anillo: %PONER COMANDO PARA VARIOS CLIENTES
+Y ahora con el siguiente script en el cliente se comprueba si sigue funcionando el algoritmo en anillo: \textbf{script\_cliente\_varios.sh}
 
 %FOTO EN MODO INSEGURO
 %FOTO EN MODO SEGURO

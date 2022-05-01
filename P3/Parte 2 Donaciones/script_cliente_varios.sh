@@ -14,7 +14,8 @@ then
     echo "Ejemplo para modo seguro con 2 clientes: ./script 2 0 localhost"
     echo "Ejemplo para modo inseguro con 3 clientes: ./script 3 1 localhost"
     echo "Fin del script"
-
+    
+    exit -1
 elif [[ "$#" -lt 3 ]]
 then
     dir=localhost
