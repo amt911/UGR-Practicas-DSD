@@ -24,5 +24,5 @@ else
     dir=$3
 fi
 
-java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 0 $2 $3 &
-java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 1 $2 $3 &
+java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 0 $2 $dir &
+java -cp . -Djava.security.policy=server.policy Cliente/ClienteMainVarios $1 1 $2 $dir &

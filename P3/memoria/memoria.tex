@@ -10,8 +10,8 @@
 %TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
 \maketitle
 
-\section{Estructura de carpetas y explicación de distintos scripts}
-Esta sección solo sirve a modo de explicación de como están estructuradas las carpetas de esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
+\section{Estructura de archivos y como compilar}
+Esta sección solo sirve a modo de explicación de como están estructuradas las carpetas y como se compila esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
 
 Dentro de la carpeta ``Parte 2'' se encuentran los siguientes archivos:
 
@@ -47,8 +47,7 @@ Dentro de la carpeta ``Parte 2'' se encuentran los siguientes archivos:
     \item \textbf{script\_cliente\_varios\_donar.sh: }Versión que también pone a prueba el algoritmo, pero que usa el método donar. Su sintaxis es: ``./script\_cliente\_varios\_donar.sh $<$num-clientes$>$''
 \end{itemize}
 
-
-De manera general, para ejecutar todos los ejemplos, incluido el servidor de donaciones, \textbf{es necesario siempre primero lanzar el script ``script\_server.sh'' y luego lanzar alguna de las variaciones del ``script\_cliente.sh''}.
+Por tanto, para los ejemplos solo es necesario ejecutar primero \textbf{script\_server.sh} y luego la versión del cliente que se desee. Mientras que para el servidor de donaciones, primero hay que ejecutar \textbf{compilar.sh} y luego ya los demás scripts (normalmente se comienza con el del servidor para lanzarlo).
 
 
 
@@ -511,12 +510,132 @@ Por tanto el comando de ejecucion en el servidor es el siguiente: \textbf{./scri
 
 MIentras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168.5.227}
 
-%MOSTRAR FOTO DE AMBOS FUNCIONANDO
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-29-01.png}
+        \caption{Registro de un cliente en el portátil.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-29-01.png}
+        \caption{El servidor (la torre) no tiene cambios en el total.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-29-21.png}
+        \caption{Donación del cliente del portatil a la torre.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-29-21.png}
+        \caption{Aparece reflejado en la torre.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-31-13.png}
+        \caption{Segunda donación y mostrando el historial.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-31-13.png}
+        \caption{El servidor refleja el total.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-32-08.png}
+        \caption{Usuario bloqueado. Al intentar donar 12 uds no lo consigue.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-32-09.png}
+        \caption{El servidor no almacena ese resultado.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-32-38.png}
+        \caption{Segundo cliente en el portátil que realiza una donación.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-32-38.png}
+        \caption{El resultado se refleja en el servidor.}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-33-44.png}
+        \caption{El segundo cliente en el portatil vuelve a realizar una donacion.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-33-44.png}
+        \caption{Tambien se refleja correctamente.}
+    \end{minipage}
+\end{figure}
 
 Y ahora con el siguiente script en el cliente se comprueba si sigue funcionando el algoritmo en anillo: \textbf{script\_cliente\_varios.sh}
 
-%FOTO EN MODO INSEGURO
 %FOTO EN MODO SEGURO
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-52-21.png}
+        %\caption{Se ve que la asignacion no esta equilibrada.}
+        \caption{Se ha realizado una asignación equilibrada.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-52-21.png}
+        \caption{Servidor de la torre en ejecución.}
+    \end{minipage}
+    \caption{Modo seguro.}
+\end{figure}
+%FOTO EN MODO INSEGURO
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 12-04-50.png}
+        \caption{Se ve que la asignacion no esta equilibrada.}
+        %\caption{Se ha realizado una asignación equilibrada.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 12-04-50.png}
+        \caption{Servidor de la torre en ejecución.}
+    \end{minipage}
+    \caption{Modo inseguro.}
+\end{figure}
 
 
 Como se puede ver funciona exactamente igual que todo en local, además al estar en la misma subred ambos ordenadores la latencia ha sido muy similar también.

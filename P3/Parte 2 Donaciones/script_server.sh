@@ -4,10 +4,6 @@
 
 rmiregistry &
 
-echo
-echo "Compilando con javac ..."
-javac **/*.java
-
 if [[ "$#" -lt 1 ]]
 then
     replicas=2
