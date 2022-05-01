@@ -1,14 +1,49 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
-\usepackage{graphicx, graphics, float}
+\usepackage{graphicx, graphics, float, hyperref}
+\usepackage{listings, xcolor}
 \usepackage[a4paper, total={6in, 10in}]{geometry}
 \title{DSD Memoria Práctica 3}
 \author{Andrés Merlo Trujillo}
 \date{}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
 \begin{document}
 %TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
 \maketitle
+
+\tableofcontents
 
 \section{Estructura de archivos y como compilar}
 Esta sección solo sirve a modo de explicación de como están estructuradas las carpetas y como se compila esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
@@ -311,7 +346,7 @@ A continuación se muestran los métodos que pueden usar los clientes (los bási
     \item \textbf{getNombreReplica: }Obtiene el nombre de la réplica tal y como se exporta en rmiregistry.
 \end{itemize}
 
-Mientras que para la intercomunicación entre réplicas (como antes, sólo lo obligatorio, en la siguiente sección explicaré los métodos del algoritmo de exclusión mutua):
+Mientras que para la intercomunicación entre réplicas (como antes, solo lo obligatorio, en la siguiente sección explicaré los métodos del algoritmo de exclusión mutua):
 
 \begin{itemize}
     \item \textbf{clientesSize: }Obtiene el número de clientes conectados a la réplica que lo llama.
@@ -322,9 +357,9 @@ Mientras que para la intercomunicación entre réplicas (como antes, sólo lo ob
 \end{itemize}
 
 \subsubsection{Parte extra}
-Como extra he hecho que se puedan lanzar un número arbitrario de réplicas y que se balanceen, tambien he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. 
+Como extra he hecho que se puedan lanzar un número arbitrario de réplicas y que se balanceen, también he implementado algunos métodos que añaden funcionalidad al sistema, he arreglado el problema de la exclusión mutua de ciertos atributos y también he añadido un rol más al sistema, el administrador. 
 
-El balanceo de los clientes se realiza obteniendo la réplica que en ese momento tenga menos clientes y hace que el nuevo cliente se registre alli. Todo esto lo explico en los metodos basicos de arriba, mas concretamente en ``registrarCliente''.
+El balanceo de los clientes se realiza obteniendo la réplica que en ese momento tenga menos clientes y hace que el nuevo cliente se registre allí. Todo esto lo explico en los métodos básicos de arriba, más concretamente en ``registrarCliente''.
 
 Por ejemplo, para 3 réplicas y 3 clientes se obtiene lo siguiente:
 %CAMBIAR LAS FOTOS QUE SON TODAS LA MISMA Y NO TIENEN NADA QUE VER
@@ -351,9 +386,9 @@ Los métodos que he añadido, accesibles para los clientes, son los siguientes:
 
 \begin{itemize}
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones, en el main interactivo no se usa.
-    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donadaen todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los adminsitradores son capaces de retirar el dinero.
+    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donada en todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los administradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
-    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (nisiquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas, aun habiendo donado. Sólo los \textbf{administradores} pueden bloquear a usuarios.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (ni siquiera consultar su historial de donaciones), esto incluye también no poder ver el total que hay en todas las réplicas, aun habiendo donado. Solo los \textbf{administradores} pueden bloquear a usuarios.
     \item \textbf{desbloquearUsuario: }Permite que un \textbf{administrador} desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
 \end{itemize}
 
@@ -365,9 +400,9 @@ También, como mencioné en la sección anterior, he creado una clase ``Transacc
     \caption{Histórico de donaciones de un cliente.}
 \end{figure}
 
-Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'', ``bloquearUsuario'' y ``desbloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo ya que cualquiera podría crearse una cuenta de administrador.
+Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: ``ponerACero'', ``bloquearUsuario'' y ``desbloquearUsuario''. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo, ya que cualquiera podría crearse una cuenta de administrador.
 
-También hay que tener en cuenta que el usuario notará que ha sido bloqueado cuando haga alguna transacción, ya que el menu justo antes de haber sido bloqueado seguirá saliendo bien, pero con totales ya desactualizados.
+También hay que tener en cuenta que el usuario notará que ha sido bloqueado cuando haga alguna transacción, ya que el menú justo antes de haber sido bloqueado seguirá saliendo bien, pero con totales ya desactualizados.
 
 
 \begin{figure}[H]
@@ -404,7 +439,7 @@ También hay que tener en cuenta que el usuario notará que ha sido bloqueado cu
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{imagenes/bloqueo/5.png}
-    \caption{Donacion correctamente realizada de nuevo por el cliente 1.}
+    \caption{Donación correctamente realizada de nuevo por el cliente 1.}
 \end{figure}
 
 Ahora, si se intenta bloquear o desbloquear un cliente inexistente, sale el siguiente mensaje:
@@ -417,9 +452,8 @@ Ahora, si se intenta bloquear o desbloquear un cliente inexistente, sale el sigu
 
 Ahora bien, un problema que surge con la implementación básica es que no se puede asegurar la correcta asignación de réplicas a los clientes para que estén balanceados. Este problema puede surgir cuando, por ejemplo, dos clientes accedan concurrentemente al método ``registrarCliente'', pero en réplicas distintas, ya que puede darse el caso que en un momento dado una réplica tenga menos que las demás y se asigne esta réplica a ambos. Además, las estructuras de datos internas son modificadas y pueden darse estados inválidos.
 
-Por ejemplo, para 240 clientes (120 en dos procesos que se conectan a replicas distintas):
-%MOSTRAR FOTO CON EL PROBLEMA
-%Asignación de clientes en dos réplicas de manera desequilibrada.
+Por ejemplo, para 240 clientes (120 en dos procesos que se conectan a réplicas distintas):
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{imagenes/varios/incorrecto.png}
@@ -430,13 +464,13 @@ El resultado de la imagen anterior se puede reproducir ejecutando \textbf{./scri
 
 Otro problema que, si bien no se puede demostrar con un test, existe es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valor que puede cambiar mientras se realiza la operación.
 
-También hay otro en el método ``ponerACero'' ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización ya que puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
+También hay otro en el método ``ponerACero'', ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización porque puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
 
 Y uno último que he descubierto es en los métodos de administrador ``bloquearUsuario'' y ``desbloquearUsuario'', los cuales modifican estructuras de datos para llevar el recuento, por lo que es necesario una sincronización.
 
-Una primera aproximación para garantizar la integridad entre clientes/administradores de una misma réplica es hacer los métodos ``registrarCliente'', ``ponerACero'', ``donar'', ``bloquearUsuario'' y ``desbloquearUsuario'' como \textit{synchronized}, esto hace que cuando varios clientes/administradores intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método.
+Una primera aproximación para garantizar la integridad entre clientes/administradores de una misma réplica es hacer los métodos ``registralmente'', ``ponerACero'', ``donar'', ``bloquearUsuario'' y ``desbloquearUsuario'' como \textit{synchronized}, esto hace que cuando varios clientes/administradores intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método.
 
-Sin embargo esta solucion no sirve cuando hay mas de una replica ya que pueden acceder varios clientes/administradores de replicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
+Sin embargo esta solución no sirve cuando hay más de una réplica, ya que pueden acceder varios clientes/administradores de réplicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el algoritmo en anillo.
 
 Este algoritmo consiste en un conjunto de procesos que tienen solo un token que van circulando periódicamente al siguiente realizando así un anillo. Cuando un método necesita realizar una sección crítica, solicita el token y se bloquea hasta que el proceso recibe del anterior el token, el cual bloquea la circulación del mismo al siguiente y desbloquea al cliente para que pueda ejecutar la sección crítica, asegurando así la ejecución por un único proceso. Cuando finaliza la ejecución de la sección crítica se desbloquea la ejecución de la circulación del token y sigue moviéndose hasta que otro proceso lo solicite.
 
@@ -447,9 +481,27 @@ Lo que he hecho ha sido crear los siguientes métodos \textbf{volátiles}:
     \item \textbf{solicitado: }Variable que permite que un proceso solicite la entrada a una sección crítica para que posteriormente se le conceda cuando tenga el token.
 \end{itemize}
 
-Cabe destacar que las variables tienen que ser volátiles ya que si no lo son el bucle de las esperas ocupadas no funcionan. Esto es debido a que el compilador genera una optimización incorrecta:
+Cabe destacar que las variables tienen que ser volátiles, ya que si no lo son el bucle de las esperas ocupadas no funcionan. Esto es debido a que el compilador genera una optimización incorrecta.
 
-%MOSTRAR UNA IMAGEN CON LA OPTIMIZACION INCORRECTA
+El código original es el siguiente:
+
+\begin{lstlisting}[language=Java]
+//Servidor.java
+...
+while(!token){}
+...
+\end{lstlisting}
+
+Y si no se usa volatile compila lo siguiente:
+
+\begin{lstlisting}[language=Java]
+//Lo que realmente compila si no se usa volatile
+...
+if(!token){
+    while(true){}
+}
+...
+\end{lstlisting} 
 
 
 También ha sido necesario implementar los siguientes métodos:
@@ -461,7 +513,7 @@ También ha sido necesario implementar los siguientes métodos:
     \item \textbf{pasarToken: }Pasa el token a la siguiente réplica.
 \end{itemize}
 
-La acción de circular el token se implementa medienta hebras en las réplicas. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instruccion mas.
+La acción de circular el token se implementa mediante hebras en las réplicas. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instrucción más.
 
 El diagrama resultante sería el siguiente (obviando stubs):
 
@@ -484,11 +536,11 @@ En esta parte voy a realizar la ejecución de todo el sistema en dos ordenadores
 
 Para que todo esto funcione es necesario modificar el comando de ejecución del servidor por ``-Djava.rmi.server.hostname=IP'' donde \textit{IP} tiene que ser la dirección IP donde se va a encontrar, no localhost.
 
-Tambien es necesario cambiar el programa main del cliente para que en el metodo \textit{getRegistry} se pase la dirección IP donde se encuentra el servidor de réplicas.
+También es necesario cambiar el programa main del cliente para que en el método \textit{getRegistry} se pase la dirección IP donde se encuentra el servidor de réplicas.
 
 RMIRegistry se va a encontrar también en TorreAMD para simplificarlo.
 
-Por tanto, el diagrama de interconexiones seria el siguiente:
+Por tanto, el diagrama de interconexiones sería el siguiente:
 
 \begin{figure}[H]
     \centering
@@ -496,9 +548,9 @@ Por tanto, el diagrama de interconexiones seria el siguiente:
     \caption{Ejemplo de dos clientes en el portátil y dos réplicas en la torre.}
 \end{figure}
 
-Para la ejecucion en el servidor he modificado el script original para que ahora acepte como parametro, aparte del numero de replicas, la direccion IP (es de manera opcional, si no se pone el parametro se usa localhost por defecto).
+Para la ejecución en el servidor he modificado el script original para que ahora acepte como parámetro, aparte del número de réplicas, la dirección IP (es de manera opcional, si no se pone el parámetro se usa localhost por defecto).
 
-Mientras que para la ejecucion en el cliente he realizado algo similar que para el servidor y he hecho que en el script se pase como parametro la direccion IP donde se encuentra el servidor (por defecto tambien a localhost).
+Mientras que para la ejecución en el cliente he realizado algo similar que para el servidor y he hecho que en el script se pase como parámetro la dirección IP donde se encuentra el servidor (por defecto también a localhost).
 
 \begin{figure}[H]
     \centering
@@ -506,9 +558,9 @@ Mientras que para la ejecucion en el cliente he realizado algo similar que para 
     \caption{Dirección IPv4 a usar.}
 \end{figure}
 
-Por tanto el comando de ejecucion en el servidor es el siguiente: \textbf{./script\_server.sh 192.168.5.227}
+Por tanto el comando de ejecución en el servidor es el siguiente: \textbf{./script\_server.sh 192.168.5.227}
 
-MIentras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168.5.227}
+Mientras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168.5.227}
 
 \begin{figure}[H]
     \centering
@@ -530,7 +582,7 @@ MIentras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168
     \begin{minipage}[H]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-29-21.png}
-        \caption{Donación del cliente del portatil a la torre.}
+        \caption{Donación del cliente del portátil a la torre.}
     \end{minipage}
     \hfill
     \begin{minipage}[H]{0.45\textwidth}
@@ -590,13 +642,13 @@ MIentras que en el cliente es el siguiente: \textbf{./script\_cliente.sh 192.168
     \begin{minipage}[H]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 11-33-44.png}
-        \caption{El segundo cliente en el portatil vuelve a realizar una donacion.}
+        \caption{El segundo cliente en el portátil vuelve a realizar una donación.}
     \end{minipage}
     \hfill
     \begin{minipage}[H]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Servidor/Screenshot from 2022-05-01 11-33-44.png}
-        \caption{Tambien se refleja correctamente.}
+        \caption{También se refleja correctamente.}
     \end{minipage}
 \end{figure}
 
@@ -625,7 +677,7 @@ Y ahora con el siguiente script en el cliente se comprueba si sigue funcionando 
     \begin{minipage}[H]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{imagenes/multiples ordenadores/Cliente/Screenshot from 2022-05-01 12-04-50.png}
-        \caption{Se ve que la asignacion no esta equilibrada.}
+        \caption{Se ve que la asignación no está equilibrada.}
         %\caption{Se ha realizado una asignación equilibrada.}
     \end{minipage}
     \hfill
