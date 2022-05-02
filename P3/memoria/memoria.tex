@@ -48,8 +48,8 @@
 
 \newpage
 
-\section{Estructura de archivos y como compilar}
-Esta sección solo sirve a modo de explicación de como están estructuradas las carpetas y como se compila esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
+\section{Estructura de archivos y cómo compilar}
+Esta sección solo sirve a modo de explicación de cómo están estructuradas las carpetas y cómo se compila esta práctica. En el directorio raíz se encuentran 5 carpetas, 3 de ellas correspondientes a los ejemplos, otra denominada ``Parte 2 Donaciones'', destinada al ejercicio del servidor de donaciones, y una última con las implementaciones anteriores de la segunda parte.
 
 \bigskip
 
@@ -76,13 +76,13 @@ Dentro de la carpeta ``Parte 2 Donaciones'' se encuentran los siguientes archivo
         \item \textbf{direccion-IP: }Parámetro opcional que indica la dirección IP en el que se va a alojar. Por defecto es \textbf{localhost}.
     \end{itemize}
 
-    \item \textbf{script\_cliente\_varios.sh: }Sirve para probar que funciona correctamente el algoritmo en anillo. Lanza dos procesos con un número de clientes pasados por parámetro. Además incluye una versión insegura para ver como fallaría. 
+    \item \textbf{script\_cliente\_varios.sh: }Sirve para probar que funciona correctamente el algoritmo en anillo. Lanza dos procesos con un número de clientes pasados por parámetro. Además, incluye una versión insegura para ver cómo fallaría. 
     
     Su sintaxis es la siguiente: \verb|./script_cliente_varios.sh <numero-clientes> <0-1> [IP]|
     
     \begin{itemize}
         \item \textbf{numero-clientes: }El número de clientes que se van a registrar. Hay que tener en cuenta que al lanzarse dos procesos el número de clientes va a ser el doble que el pasado.
-        \item \textbf{0-1: }Valor que si está puesto a 0 indica modo seguro, sincronizado con el algoritmo, mientras que si está a 1 no.
+        \item \textbf{0-1: }Valor que si está puesto a 0 indica modo seguro, sincronizado con el algoritmo, mientras que si está a 1, no.
         \item \textbf{IP: }Parámetro opcional que indica la dirección IP a la que se deben conectar.
     \end{itemize}
 
@@ -95,8 +95,8 @@ Por tanto, para los \textbf{ejemplos} solo es necesario ejecutar primero \textbf
 
 En cambio, para ejecutar los programas de la carpeta ``Implementaciones antiguas'' es necesario primero ejecutar \verb|script_server.sh <numero-replicas>| que compila y ejecuta el servidor y luego cualquiera de los otros scripts para el cliente.
 
-\section{Primera parte, Ejemplos}
-En esta primera parte se pide copiar los códigos de prueba que aparecen en el guion de prácticas y comentar como funcionan y qué hacen.
+\section{Primera parte. Ejemplos}
+En esta primera parte se pide copiar los códigos de prueba que aparecen en el guion de prácticas y comentar cómo funcionan y qué hacen.
 
 \bigskip
 
@@ -112,11 +112,11 @@ En mi caso tenía la versión 18 de JDK y he tenido que descargarme la versión 
 
 \bigskip
 
-Algo interesante que me ha ocurrido (no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces) es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos y sin usar la palabra clave \textit{synchronized}. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11, como he dicho anteriormente. Con la versión 11 si se producen entrelazamientos, por lo que supongo que es problema de la versión.
+Algo interesante que me ha ocurrido (no sé si ha sido mucha casualidad, pero he probado la ejecución varias veces) es que estaba usando la versión de JDK 8 y en la primera parte del ejemplo 2 se daba bien la ejecución de las hebras sin haber entrelazamientos y sin usar la palabra clave \textit{synchronized}. Como me extrañaba, probé la última versión que tenía disponible mi distribución antes de dar error de compilación, que en este caso es la versión 11, como he dicho anteriormente. Con la versión 11 sí se producen entrelazamientos, por lo que supongo que es problema de la versión.
 
 \bigskip
 %QUIZAS HAGA FALTA ELIMINAR ESTO
-Otro problema que he tenido esa la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen. Para ello he separado la parte de la invocación de los clientes en otro script para poder lanzar ambos en dos terminales distintas.
+Otro problema que he tenido es a la hora de usar el script, ya que dentro del mismo se lanzan secuencialmente el servidor y los clientes, esto produce que se lancen nada más que el servidor y que los clientes no se lancen. Para ello he separado la parte de la invocación de los clientes en otro script para poder lanzar ambos en dos terminales distintas.
 
 \subsection{Ejemplo 1}
 \subsubsection{Descripción}
@@ -153,7 +153,7 @@ En la parte del servidor se crea una clase que implementa los métodos de la int
 
 \bigskip
 
-El método imprime por la pantalla del servidor (remota) que ha recibido la petición del proceso. Además comprueba si el número de proceso es 0, en caso afirmativo se manda el cliente que ha llamado al método remoto a dormir durante 5 segundos y luego, con independencia de que sea el proceso 0 ó no, se indica el identificador del cliente en la pantalla remota.
+El método imprime por la pantalla del servidor que ha recibido la petición del proceso. Además, comprueba si el número de proceso es 0, en caso afirmativo se manda el cliente que ha llamado al método remoto a dormir durante 5 segundos y luego, con independencia de que sea el proceso 0 ó no, se indica el identificador del cliente en la pantalla remota.
 
 \bigskip
 
@@ -161,7 +161,7 @@ En el main del servidor se activa el gestor de seguridad, que es exactamente igu
 
 \bigskip
 
-En cliente se activa el gestor de seguridad también, obtiene el ``rmiregistry'' que se encuentra en la dirección pasada por consola, y obtiene a partir del registro el stub del objeto remoto para poder lanzar el método anteriormente mencionado.
+En el  main del cliente se activa el gestor de seguridad también, obtiene el ``rmiregistry'' que se encuentra en la dirección pasada por consola, y obtiene a partir del registro el stub del objeto remoto para poder lanzar el método anteriormente mencionado.
 
 
 \subsubsection{Funcionamiento}
@@ -181,7 +181,7 @@ En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente la
 
 \bigskip
 
-\textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede observar como se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez al método antes de que la primera haya mostrado el mensaje de salida y luego cuando salen muestra varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
+\textbf{¿Se entrelazan los mensajes?: }Sí existe entrelazamiento. Tras varias ejecuciones se puede observar cómo se produce un entrelazamiento de mensajes de salida en el servidor en el que se muestra que entran varias hebras a la vez al método antes de que la primera haya mostrado el mensaje de salida y luego cuando salen muestra varias veces también el mensaje de salida. Puede que esto sea algo no deseado y que siempre se desee que las hebras siguientes esperen a que la hebra que va delante reciba la respuesta del servidor para que siempre haya como mucho una hebra en el método remoto.
 
 
 \begin{figure}[H]
@@ -199,13 +199,13 @@ En este ejemplo se realiza algo similar al anterior, pero esta vez el cliente la
     \end{minipage}
 \end{figure}
 
-Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor; es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Esto es algo esperable porque realmente las hebras del cliente no llaman al método remoto en el mismo orden en que se crean (las hebras). Esto se puede ver en la imagen anterior.
+Otro entrelazamiento menor que ocurre es que las hebras no realizan las peticiones de manera ordenada al servidor. Es decir, en la impresión que realiza el servidor por consola se puede observar que no siguen un orden ascendente los identificadores de los clientes. Esto es algo esperable porque realmente las hebras del cliente no llaman al método remoto en el mismo orden en que se crean (las hebras). Esto se puede ver en la imagen anterior.
 
 \bigskip
 
 \textbf{¿Qué hacen las demás hebras?: }Las demás hebras no esperan a que la hebra de delante reciba la respuesta del método remoto haciendo que el servidor esté ejecutando el mismo método concurrentemente produciendo así, como se ha dicho anteriormente, entrelazamientos.  
 
-Esto implica que si el método tuviera una sección crítica, por ejemplo una escritura a una variable, se podría producir en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (synchronized, cerrojos, semáforos, monitores, etc.) entre clientes o hebras para un correcto estado del objeto que exporta el servidor.
+Esto implica que si el método tuviera una sección crítica, por ejemplo, una escritura a una variable, se podría producir en algún entrelazamiento una condición de carrera invalidando el valor de la variable, que debería haber sido atómica. Es por eso que es necesario aplicar técnicas de sincronización (synchronized, cerrojos, semáforos, monitores, etc.) entre clientes o hebras para un correcto estado del objeto que exporta el servidor.
 
 \bigskip
 
@@ -315,7 +315,7 @@ La segunda diferencia es en la implementación de la interfaz remota, en la que 
 
 \bigskip
 
-Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en los ejemplos 1 y 2 supone que se ha lanzado el rmiregistry en la terminal y solo se encarga en exportar el objeto remoto, mientras que en el ejemplo 3 es el propio servidor el que crea el rmiregistry y le asigna un puerto mediante el método \textit{createRegistry}, es más, si se intenta lanzar \textit{rmiregistry} primero y luego este servidor va a dar error por lo que es necesario matar a todos los procesos \textit{rmiregistry} que el sistema tenga.
+Otra diferencia se encuentra en el uso de \textit{rmiregistry}, el servidor en los ejemplos 1 y 2 supone que se ha lanzado el rmiregistry en la terminal y solo se encarga en exportar el objeto remoto, mientras que en el ejemplo 3 es el propio servidor el que crea el rmiregistry y le asigna un puerto mediante el método \textit{createRegistry}. Es más, si se intenta lanzar \textit{rmiregistry} primero y luego este servidor, va a dar error, por lo que es necesario matar a todos los procesos \textit{rmiregistry} que el sistema tenga.
 
 \begin{figure}[H]
     \centering
@@ -348,7 +348,7 @@ Para implementarlo he decidido realizar dos interfaces remotas para el servidor 
 \end{figure}
 
 
-La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz. La comunicación entre las mismas se realiza mediante la interfaz interna y los atributos ``idServer'' y ``numReplicas'' que se explican más abajo. Por ejemplo, para acceder a la siguiente réplica solo tienen que usar el ID  ``(idServer+1) mod numReplicas'' (y añadirle S para obtenerlo del \textit{rmiregistry}), ya que se puede querer acceder a la primera.
+La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz. La comunicación entre las mismas se realiza mediante la interfaz interna y los atributos ``idServer'' y ``numReplicas'', que se explican más abajo. Por ejemplo, para acceder a la siguiente réplica solo tienen que usar el ID  ``(idServer+1) mod numReplicas'' (y añadirle S para obtenerlo del \textit{rmiregistry}), ya que se puede querer acceder a la primera.
 
 \bigskip
 
@@ -359,7 +359,7 @@ Esta clase consta de los siguientes atributos para la funcionalidad obligatoria 
     %IMPORTANTE LINKAR A LA EXPLICACION MAS ABAJO
     %IMPORTANTE EXPLICAR TRANSACCIONES CLIENTES
     \item \textbf{datosClientes: }Map de entero y \textbf{TransaccionesClientes} (explicación en la sección de la parte extra) donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado (todo esto dentro de TransaccionesClientes).
-    \item \textbf{idServer: }Contiene el identificador de la réplica. Si se le añade ``S'' al principio se obtiene el identificar de \textit{rmiregistry}.
+    \item \textbf{idServer: }Contiene el identificador de la réplica. Si se le añade ``S'' al principio, se obtiene el identificar de \textit{rmiregistry}.
     \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global donado. 
     \item \textbf{direccion: }Contiene la dirección IP que se va a utilizar, por defecto es ``localhost''.
     \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica dando la sensación de existir un login.    
@@ -401,13 +401,13 @@ Además, una vez registrado en el sistema, se puede volver a iniciar sesión pro
 A continuación se muestran los métodos que pueden usar los clientes (los básicos, en la siguiente subsección explicaré los demás).
 
 \begin{itemize}
-    \item \textbf{registrarCliente: }Se encarga de registrar a un cliente en la réplica con menor número de clientes suscritos y devuelve el identificador de la réplica en la que se ha registrado. Además también hace las veces de método para iniciar sesión, ya que si se llama con los credenciales de un cliente ya registrado, devuelve el identificador en el que se encuentra. También si se pasa un identificador existente, pero con una contraseña inválida, devolverá la cadena vacía para que no se pueda conectar.
+    \item \textbf{registrarCliente: }Se encarga de registrar a un cliente en la réplica con menor número de clientes suscritos y devuelve el identificador de la réplica en la que se ha registrado. Además, también hace las veces de método para iniciar sesión, ya que si se llama con los credenciales de un cliente ya registrado, devuelve el identificador en el que se encuentra. También si se pasa un identificador existente, pero con una contraseña inválida, devolverá la cadena vacía para que no se pueda conectar.
     
     \item \textbf{donar: }Hace que un cliente registrado pueda donar la cantidad pasada como parámetro. En caso de no estar registrado o tener credenciales inválidos no se realiza ninguna acción y se muestra por la pantalla del servidor un mensaje informativo.
 
     \item \textbf{totalDonado: }Permite que un cliente registrado y que haya realizado al menos una donación obtenga el total que hay en todas las réplicas. En caso de no estar registrado, tener unos credenciales inválidos o no haber donado se devuelve el valor -1.
     
-    \item \textbf{totalDonadoCliente: }Obtiene el total que ha donado un cliente. Realiza las comprobaciones que los métodos anteriores y si fallan se devuelve -1.
+    \item \textbf{totalDonadoCliente: }Obtiene el total que ha donado un cliente. Realiza las comprobaciones que los métodos anteriores y si fallan, se devuelve -1.
     
     \item \textbf{getNombreReplica: }Obtiene el nombre de la réplica tal y como se exporta en rmiregistry.
 \end{itemize}
@@ -419,7 +419,7 @@ Mientras que para la intercomunicación entre réplicas (como antes, solo lo obl
 \begin{itemize}
     \item \textbf{clientesSize: }Obtiene el número de clientes conectados a la réplica que lo llama.
     \item \textbf{existeCliente: }Comprueba si está registrado el cliente en la réplica en la que se llama.
-    \item \textbf{añadirCliente: }Añade un cliente a la réplica que llama este método. Este método no realiza comprobaciones de ningún tipo ya que se supone que se hacen en los métodos correspondientes.
+    \item \textbf{añadirCliente: }Añade un cliente a la réplica que llama este método. Este método no realiza comprobaciones de ningún tipo, ya que se supone que se hacen en los métodos correspondientes.
     \item \textbf{getNombreReplica: }Realiza lo mismo que el método de la interfaz de los clientes.
     \item \textbf{getSubTotal: }Obtiene el subtotal de la réplica que lo llama.
 \end{itemize}
@@ -468,13 +468,13 @@ Los métodos que he añadido, accesibles para los clientes, son los siguientes:
 
 \begin{itemize}
     \item \textbf{registrarClienteInseguro: }Realiza la misma funcionalidad que el método ``registrarCliente'', pero se le quita la parte del algoritmo en anillo para la solicitud de acceso a la sección crítica. Se usa principalmente para denotar las diferencias entre ambas versiones en ``ClienteMainVarios'', en el main interactivo no se usa y en ningún otro sitio, ya que funciona mal.
-    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donada en todas las réplicas además de limpiar el historial de transacciones de todos los clientes registrados. Solo los administradores son capaces de retirar el dinero.
+    \item \textbf{ponerACero: }Permite poner a cero la cantidad total donada en todas las réplicas, además de limpiar el historial de transacciones de todos los clientes registrados. Solo los administradores son capaces de retirar el dinero.
     \item \textbf{getTransacciones: }Permite obtener el histórico de donaciones (cantidad y fecha) para el cliente con los credenciales pasados por parámetro. En caso de ser incorrectos se devuelve la cadena vacía.
-    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (excepto mirar su historial y el total que ha donado ese cliente), esto incluye también no poder ver el total que hay en todas las réplicas, aun habiendo donado. Solo los \textbf{administradores} pueden bloquear a usuarios.
+    \item \textbf{bloquearUsuario: }Permite bloquear a un usuario del servidor de donaciones para que no pueda realizar más acciones (excepto mirar su historial y el total que ha donado ese cliente). Esto incluye también no poder ver el total que hay en todas las réplicas, aun habiendo donado. Solo los \textbf{administradores} pueden bloquear a usuarios.
     \item \textbf{desbloquearUsuario: }Permite que un \textbf{administrador} desbloquee a un usuario, haciendo que este pueda realizar operaciones de nuevo con el servidor.
 \end{itemize}
 
-También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método \textit{getTransacciones} permite mostrar en el modo interactivo esta información. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
+También, como mencioné en la sección anterior, he creado una clase ``TransaccionesClientes'' que almacena todas las operaciones que realiza un cliente, tanto la fecha y hora como la cantidad. Esto, unido con el método \textit{getTransacciones}, permite mostrar en el modo interactivo esta información. Cabe recalcar que el histórico se almacena de manera independiente para todos los clientes, por lo que cada uno va a tener un historial único.
 
 \begin{figure}[H]
     \centering
@@ -482,7 +482,7 @@ También, como mencioné en la sección anterior, he creado una clase ``Transacc
     \caption{Histórico de donaciones de un cliente.}
 \end{figure}
 
-Además he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: \textit{ponerACero}, \textit{bloquearUsuario} y \textit{desbloquearUsuario}. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo, ya que cualquiera podría crearse una cuenta de administrador.
+Además, he añadido el rol del administrador. Los administradores tienen un identificador menor que 0 y pueden realizar acciones que los usuarios normales no pueden. Los métodos que pueden usar (que están explicados arriba) son: \textit{ponerACero}, \textit{bloquearUsuario} y \textit{desbloquearUsuario}. Por razones de evitar complicar demasiado la corrección he puesto para que en el main de los clientes se puedan crear también administradores, esto en la vida real habría que limitarlo, ya que cualquiera podría crearse una cuenta de administrador.
 
 \bigskip
 
@@ -552,13 +552,13 @@ El resultado se puede reproducir ejecutando \verb|./script_cliente_varios.sh 120
 
 Otro problema que existe, pero no se puede demostrar con un test, es el del acceso al total donado, ya que para calcularlo es necesario acceder a los subtotales de todas las réplicas, valores que pueden cambiar mientras se realiza la operación.
 
-También hay otro en el método \textit{ponerACero}, ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es necesario una sincronización porque puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
+También hay otro en el método \textit{ponerACero}, ya que tiene que modificar la variable del subtotal en todas las réplicas y la estructura de datos con el histórico de los clientes. Por tanto es, necesario una sincronización porque puede darse el caso de accesos concurrentes a este método, o un entrelazamiento con el método ``donar''.
 
 Y uno último que he descubierto es en los métodos de administrador \textit{bloquearUsuario} y \textit{desbloquearUsuario}, los cuales modifican estructuras de datos para llevar el recuento, por lo que es necesario una sincronización.
 
 \bigskip
 
-Una primera aproximación para garantizar la integridad entre clientes/administradores de una misma réplica es hacer los métodos \textit{registrarCliente}, \textit{ponerACero}, \textit{donar}, \textit{bloquearUsuario} y \textit{desbloquearUsuario} como \textit{synchronized}, esto hace que cuando varios clientes/administradores registrados en una misma réplica intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método. Sin embargo, esta solución no sirve cuando hay más de una réplica, ya que pueden acceder varios clientes/administradores de réplicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el \textbf{algoritmo en anillo}.
+Una primera aproximación para garantizar la integridad entre clientes/administradores de una misma réplica es hacer los métodos \textit{registrarCliente}, \textit{ponerACero}, \textit{donar}, \textit{bloquearUsuario} y \textit{desbloquearUsuario} como \textit{synchronized}. Esto hace que cuando varios clientes/administradores registrados en una misma réplica intenten llamar a la vez a algún método con esta palabra clave se bloqueen hasta que no salga el que está ejecutando el método. Sin embargo, esta solución no sirve cuando hay más de una réplica, ya que pueden acceder varios clientes/administradores de réplicas distintas a la vez. Para ello es necesario implementar un algoritmo que garantice la exclusión mutua, en mi caso he realizado el \textbf{algoritmo en anillo}.
 
 \bigskip
 
@@ -608,7 +608,7 @@ También ha sido necesario implementar los siguientes métodos:
     \item \textbf{pasarToken: }Pasa el token a la siguiente réplica.
 \end{itemize}
 
-La acción de circular el token se implementa mediante hebras en las réplicas. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado, en otro caso no realiza ninguna instrucción más.
+La acción de circular el token se implementa mediante hebras en las réplicas. Estas hebras lo que realizan es un bucle infinito donde se pasa el token solo si lo tiene y nadie lo ha solicitado. En otro caso no realiza ninguna instrucción más.
 
 \bigskip
 
@@ -794,12 +794,12 @@ Y ahora con \verb|script_cliente_varios.sh| en el portátil se comprueba si sigu
 \end{figure}
 
 
-Como se puede ver funciona exactamente igual que todo en local, además al estar en la misma subred ambos ordenadores la latencia ha sido muy similar también.
+Como se puede ver funciona exactamente igual que todo en local. Además, al estar en la misma subred ambos ordenadores la latencia ha sido muy similar también.
 
 \newpage
 
 \section{Apéndice: Implementación antigua del servidor de donaciones}
-Esta sección solamente sirve para explicar mis varias implementaciones que he realizado del algoritmo en anillo hasta dar con el definitivo, que es el que se explica en toda la memoria. Esta parte solo está para una explicación, no es necesario que se tenga en cuenta.
+Esta sección solamente sirve para explicar varias implementaciones que he realizado del algoritmo en anillo hasta dar con el definitivo, que es el que se explica en toda la memoria. Esta parte solo está para una explicación, no es necesario que se tenga en cuenta.
 
 \bigskip
 
@@ -819,7 +819,7 @@ En la clase Anillo implementé dos versiones distintas del algoritmo: una basada
 
 \bigskip
 
-La que me convenció más al final, antes de implementar la versión definitiva fue la de espera bloqueada, ya que no se producían interbloqueos o posibles entrelazamientos incorrectos. En la versión con espera ocupada podía darse un entrelazamiento incorrecto entre el método \textit{solicitarToken} y \textit{pasarToken}.
+La que me convenció más al final, antes de implementar la versión definitiva, fue la de espera bloqueada, ya que no se producían interbloqueos o posibles entrelazamientos incorrectos. En la versión con espera ocupada podía darse un entrelazamiento incorrecto entre el método \textit{solicitarToken} y \textit{pasarToken}.
 
 Estas dos implementaciones se encuentran en la carpeta ``Implementaciones antiguas'', que contiene otras dos carpetas con ambas versiones (la estructura de las prácticas se explican en la primera sección).
 
