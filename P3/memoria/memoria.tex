@@ -348,7 +348,7 @@ Para implementarlo he decidido realizar dos interfaces remotas para el servidor 
 \end{figure}
 
 
-La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz.
+La clase ``Servidor'' (la réplica) implementa estas dos interfaces más algunos métodos internos que no son necesarios ser exportados por ninguna interfaz. La comunicación entre las mismas se realiza mediante la interfaz interna y los atributos ``idServer'' y ``numReplicas'' que se explican más abajo. Por ejemplo, para acceder a la siguiente réplica solo tienen que usar el ID  ``(idServer+1) mod numReplicas'' (y añadirle S para obtenerlo del \textit{rmiregistry}), ya que se puede querer acceder a la primera.
 
 \bigskip
 
@@ -359,9 +359,9 @@ Esta clase consta de los siguientes atributos para la funcionalidad obligatoria 
     %IMPORTANTE LINKAR A LA EXPLICACION MAS ABAJO
     %IMPORTANTE EXPLICAR TRANSACCIONES CLIENTES
     \item \textbf{datosClientes: }Map de entero y \textbf{TransaccionesClientes} (explicación en la sección de la parte extra) donde se almacenan para cada cliente el historial de donaciones junto con la fecha en la que se ha realizado (todo esto dentro de TransaccionesClientes).
-    \item \textbf{idServer: }Contiene el identificador de la réplica.
+    \item \textbf{idServer: }Contiene el identificador de la réplica. Si se le añade ``S'' al principio se obtiene el identificar de \textit{rmiregistry}.
     \item \textbf{subTotal: }Contiene el subtotal donado por los clientes en esa réplica. Este atributo luego se usa para obtener el total global donado. 
-    \item \textbf{direccion: }Contiene la dirección que se va a utilizar, por defecto es ``localhost''.
+    \item \textbf{direccion: }Contiene la dirección IP que se va a utilizar, por defecto es ``localhost''.
     \item \textbf{credencialesClientes: }Otro Map en el que se almacena para cada cliente su contraseña. Esto se usa para darle más realismo a la práctica dando la sensación de existir un login.    
 \end{itemize}
 
