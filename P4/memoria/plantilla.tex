@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx, graphics, float, hyperref}
+\usepackage{listings}
+\usepackage[a4paper, total={6in, 10in}]{geometry}
+
+\title{DSD Memoria Práctica 4}
+\author{Andrés Merlo Trujillo}
+\date{}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+}
+
+\begin{document}
+%TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Introducción}
+En esta práctica se pide implementar un ... \textbf{IMPORTANTE PONER AQUI LO QUE SE PIDE}.
+
+Para ello, es necesario tener instalado Node.js y MongoDB. También es necesario instalar npm para poder instalar los módulos de Socket.io y el de MongoDB (driver para la conexion con la BB.DD.).
+
+Un problema que he tenido ha sido que no podía ejecutar el archivo de prueba \textit{mongo-test.js}. Mostraba el mensaje de que el servidor se había iniciado, pero al intentar acceder con la URL ponía que la conexión había sido rechazada. Tras pasar un periodo de tiempo de unos 40 segundos, el programa mostraba un mensaje de error.
+
+%MOSTRAR MENSAJE DE ERROR
+
+Tras depurar el programa en busca del mensaje de error, me di cuenta que localhost se resolvía a \textit{::1}, que es la versión IPv6. Además al hacer ping a localhost obtenía lo siguiente:
+
+%MOSTRAR PING CON IPV6
+
+Por tanto siempre se estaba resolviendo a la dirección IPv6.
+
+MongoDB por defecto no usa IPv6, por lo que hay dos opciones para que funcione:
+
+\begin{itemize}
+    \item Permitir a MongoDB que use también las direcciones IPv6 o.
+    
+    \item Modificar el archivo \textit{/etc/hosts} para que use otro nombre distinto.
+\end{itemize}
+
+AL final opté por la segunda opción. Para ello llamé a ``localhost'' en IPv6 como ``localhost6''. Ahora al hacer ping sí se obtiene la dirección loopback de IPv4:
+
+%MOSTRAR FOTO DEL PING CORRECTO
+
+%QUIZAS SI DA MAS FALLOS MONGO PONERLOS
+
+\section{Primera parte. Ejemplos}
+\subsection{helloworld.js}
+\subsubsection{Descripción}
+Este ejemplo lo único que realiza es mostrar por pantalla en el navegador el mensaje ``Hola mundo''.
+
+Adicionalmente, también muestra por la terminal del servidor el \textbf{JSON COMPROBAR ESTO SEGURAMENTE ESTE MAL} con toda la información de la petición del cliente (navegador).
+
+%MOSTRAR FOTOS TANTO DEL CLIENTE COMO DEL SERVIDOR
+
+\subsubsection{Implementación}
+Para realizar esto, lo primero que hay que hacer es montar el servidor HTTP. Para ello, se importa el módulo de Node.js ``http''.
+
+Una vez importado, se crea el servidor con el método ``createServer'' cuyo argumento es una función que se ejecuta cada vez que se realiza una petición HTTP.
+
+Dentro del cuerpo de esta función, para que el servidor muestre la información de la petición, es necesario usar ``request.headers'' y pasarlo al log de la consola de JavaScript.
+
+Para que el cliente reciba el mensaje, es necesario escribir una cabecera básica con el código 200, indicando que es correcto y el tipo MIME, que en este caso será texto plano.
+
+Luego con el método write, se escribe el mensaje ``Hola mundo'' en la página. POr último, se finaliza con end para que se mande el mesanje. %IMPORTANTE COMPROBAR ESTO, SEGURAMENTE ESTE MAL
+
+%MOSTRAR FOTO DE LA PETICION GET QUE SE REALIZA
+
+\subsection{calculadora.js}
+\subsubsection{Descripción}
+Este ejemplo implementa una calculadora básica haciendo uso de Node.js. 
+
+A la calculadora se le pasa el operador y los operandos en la URL en el navegador. En caso de ser incorrectos o no tener suficientes, muestra en el navegador un error.
+
+Las operaciones que puede hacer son: sumar, restar, producto y dividir.
+
+La sintaxis de la URL es la siguiente: \textbf{http://localhost:8080/$<$operador$>$/$<$operando-1$>$/$<$operando-2$>$}.
+
+
+%MOSTRAR MENSAJE DE SALIDA.
+
+\subsubsection{Implementación}
+La parte de creación del servidor es exactamente igual que en la que se realiza en ``helloworld.js''.
+
+Se ha creado una función ``calcular'' que permite realizar las funciones de la calculadora.
+
+Tambień se usa el módulo ``url'' para obtener la URL que pasa el cliente. El objetivo es conseguir obtener los parámetros para pasarlos a la función y que realice la cuenta. Para ello, se usa ``url.parse'' con el ``request.url'' para obtener mas informacion de la URL y luego solo se escoge el campo ``pathname''. Esto hace que se obtenga la URI, por ejemplo, si se quiere hacer ``1+2'': ``/sumar/1/2''.
+
+Cabe notar que, en este caso, la línea que hace esto es innecesaria, ya que se puede hacer un simple ``request.url'' y obtener la URI deseada.
+
+
+Luego, se elimina el primer ``/'' para poder hacer luego split con el mismo delimitador para obtener un array con el operador el primero, y los operadores al final.
+
+A continuación, se pasa a float y se llama a la funcion ``calcular''.
+
+Por último, se manda de manera idéntica a la explicada en la sección anterior para el ``helloworld.js''.
+
+
+\subsection{calculadora-web.js}
+PARTE DE OFRECER HTML
+process.cwd() -> Ruta absoluta del path
+fs -> parece como que ofrece la pagina html.
+
+fs.reafile -> Lee la pagina html y la ofrece como en los ejemplos anteriores, poniendo el mime al correcto y escribiendolo.
+
+PARTE DE REALIZAR LA cuenta
+js:
+exactamente igual que antes
+
+HTML:
+Crea la URL con los datos y hace un get con esa info para que luego se pueda mostrar
+
+\subsubsection{Descripción}
+Este ejemplo implementa exactamente lo mismo que ``calculadora.js'', pero teniendo una interfaz web que simplifica la introducción de los valores.
+
+Tmbien hace uso de Node.js y de unos módulos adicionales para ...
+
+%MOSTRAR EJEMPLO
+
+
+Además muestra por la pantalla donde se ejecuta la petición REST que se ha realizado, que sigue la misma sintaxis que el ejemplo anterior.
+
+\subsubsection{Implementación}
+
+\subsection{connections.js}
+\subsubsection{Descripción}
+\subsubsection{Implementación}
+
+\subsection{mongo-test.js}
+\subsubsection{Descripción}
+\subsubsection{Implementación}
+
+\subsection{Diferencias entre los ejemplos}
+
+\section{Segunda parte.}
+\subsection{Descripción}
+\subsection{Implementación}
+\end{document}

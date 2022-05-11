@@ -6,3 +6,8 @@ P3/memoria/*
 !P3/memoria/imagenes/
 P3/**/*.class
 P3/**/*.class
+
+**/memoria/*
+!**/memoria/images
+!**/memoria/imagenes
+!**/memoria/*.tex
