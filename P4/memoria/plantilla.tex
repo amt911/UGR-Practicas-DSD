@@ -14,7 +14,9 @@
 }
 
 \begin{document}
-%TODO 2: PLANTEAR EN ELIMINAR EL APARTADO DE IMPLEMENTACION YA QUE APARECE EN EL PDF
+%TODO: COMPROBAR EN LA PARTE DE SOCKET IO QUE PARTES SON EXACTAMENTE SOCKETS.
+%TODO 2: MEJORAR LA EXPLICACIONES EN GENERAL, SOBRE TODO LA PARTE DE LOS SOCKETS QUE ESTA MUY RARA.
+
 \maketitle
 
 \tableofcontents
@@ -119,7 +121,7 @@ Crea la URL con los datos y hace un get con esa info para que luego se pueda mos
 \subsubsection{Descripción}
 Este ejemplo implementa exactamente lo mismo que ``calculadora.js'', pero teniendo una interfaz web que simplifica la introducción de los valores.
 
-Tmbien hace uso de Node.js y de unos módulos adicionales para ...
+Tmbien hace uso de Node.js y de los módulos adicionales ``path'' y ``fs'' para buscar el archivo HTML con la ruta absoluta y también para comprobar la existencia de archivos en el sistema y de leerlos para ofrecerlos en el cliente.
 
 %MOSTRAR EJEMPLO
 
@@ -127,11 +129,47 @@ Tmbien hace uso de Node.js y de unos módulos adicionales para ...
 Además muestra por la pantalla donde se ejecuta la petición REST que se ha realizado, que sigue la misma sintaxis que el ejemplo anterior.
 
 \subsubsection{Implementación}
+La implementacion es muy similar al anterior, pero en este caso se usa el modulo de Node.js ``fs'' para poder realizar operaciones con archivos.
+
+Lo primero que tiene que hacer es enviar la pagina al navegador. Para ello, se consigue la URI como antes, luego se comprueba que si el usuario solo ha puesto la direccion (en este caso localhost:8080), en caso afirmativo se pone que sirva el archivo HTML. A continuación, se le añade la ruta absoluta de ese archivo y, finalmente, con el método ``exists'' comprueba que existe, y en caso afirmativo, con el método ``readFile'' se carga el archivo HTML de una manera similar a como se hacía para los mensajes en los ejemplos anteriores.
+
+Una vez cargada la página, el usuario puede insertar los operandos y el operador y, al darle a enviar se ejecuta la función ``enviar'' que lo que hace es convertir los valores introducidos en una cadena del tipo ``operador/operando1/operando2''. LUego, realiza una petición HTTP GET al servidor con esta cadena, la cual al pasar por el método ``exists'' va a devolver que no existe porque no es un archivo y va a ejecutar el mismo código que en el ejemplo de la calculadora anterior.
+
+%MOSTAR IMAGENES DE EJEMPLOS DE EJECUCION
 
 \subsection{connections.js}
-\subsubsection{Descripción}
-\subsubsection{Implementación}
+HTML -> MOSTRAR INFORMACION MEDIANTE FUNCIONES JS. ESTAS FUNCIONES SE LLAMAN DESDE EVENTOS SOCKET.IO A LOS QUE ESTA SUSCRITO. io.connect(serviceURL) hace que se ejecute el codigo js de io.sockets.on...
 
+JS -> 
+on es para recibir
+emit para enviar
+\subsubsection{Descripción}
+Este ejemplo hace uso del modulo Socket.io para ...
+
+Cuando un cliente se conecta, este aparece en la pantalla del navegador con su direccion IP y el puerto usado. Además, si se abren mas pestañas se puede ver como aparece la direccion y puerto del nuevo cliente, y si nos vamos a la pestaña del primer cliente se puede ver que se actualiza también. Esto mismo pasa tambien para las desconexiones, cuando un cliente se desconecta los demás lo ven en su sesión.
+
+En la pantalla del servidor aparecen los clientes conectados, las nuevsas conexiones y cuando un usuario se va a desconectar.
+
+%MOSTRAR FOTO PARA 1 CLIENTE Y LUEGO PARA VARIOS
+
+Además, cuando se desconecta el servicio, aparece un mensaje informandolo.
+
+\subsubsection{Implementación}
+Para implementar este ejemplo es necesario crear un ``httpServer'' como se ha hecho en los ejemplos anteriores, pero esta vez sólo cargando el fichero html.
+
+También es necesario crear el objeto Socket.io e indicarle la funcionalidad y los eventos que debe escuchar en cuanto se conecte un cliente. En este caso lo que se hace primero es añadir el usuario al array, luego se emite a los demás suscritos el cambio y por último se configuran los eventos ``output-evt'' y ``disconnect'' para mostrar un mensaje por el navegador y para actualizar los clientes conectados respectivamente.
+
+En el fichero HTML se conencta al socket del servidor y se configuran los eventos que va a suscrbirise. El evento ``connect'' se ejecuta en cuanto se conecta y le manda un evnto??? del tipo ``output-evt'' al servidor, el cual devuelve de vuelta ``Hola Cliente!'' y lo capta el cliente en ``output-evt'', que actualiza el mensaje de la página HTML.
+
+Cuando un cliente se desconecta se ejecuta en el servidor el evento ``disconnect'', el cual elimina al cliente de la lista y manda a todos los clientes el evento ``all-connections'' para que actualicen ellos también la lista.
+
+Por último, todos los clientes tienen el evento ``disconnect'', que permite que cuando el servidor se caiga por diversos motivos, cambie el mensaje de la página.
+
+%INTRODUCIR FOTOS DE SALIDA CON VARIOS CLIENTES Y TODO ESO, JUNTO CON LAS DEL SERVIDOR
+
+El diagrama de interacciones es el siguiente:
+
+%MOSTRAR SI ME VEO CAPAZ EL DIAGRAMA DE INTERACCION.
 \subsection{mongo-test.js}
 \subsubsection{Descripción}
 \subsubsection{Implementación}
