@@ -144,7 +144,7 @@ JS ->
 on es para recibir
 emit para enviar
 \subsubsection{Descripción}
-Este ejemplo hace uso del modulo Socket.io para ...
+Este ejemplo hace uso del modulo Socket.io para poder actualizar todos los clientes de manera asíncrona y realizar una comunicación entre el cliente y el servidor para que todos tengan la información mas actualizada.
 
 Cuando un cliente se conecta, este aparece en la pantalla del navegador con su direccion IP y el puerto usado. Además, si se abren mas pestañas se puede ver como aparece la direccion y puerto del nuevo cliente, y si nos vamos a la pestaña del primer cliente se puede ver que se actualiza también. Esto mismo pasa tambien para las desconexiones, cuando un cliente se desconecta los demás lo ven en su sesión.
 
@@ -172,8 +172,27 @@ El diagrama de interacciones es el siguiente:
 %MOSTRAR SI ME VEO CAPAZ EL DIAGRAMA DE INTERACCION.
 \subsection{mongo-test.js}
 \subsubsection{Descripción}
-\subsubsection{Implementación}
+Este ejemplo muestra al cliente todas las conexiones a la base de datos NoSQL, mostrando en un JSON el identificador, la dirección IP donde se encuentra el cliente, el puerto y la hora UTC a la que se ha realizado la conexión.
 
+Cuando se refresca la página o se abre una pestaña nueva del navegador, aparecen nuevas líneas de conexiones a la base de datos.
+
+
+%Mostrar una foto de la salida
+\subsubsection{Implementación}
+La implementación del servidor HTTP es exactamente igual que en ejemplos anteriores, cuando se realiza una petición, el servidor envia la pagina HTML que se encarga de mostrar las conexiones.
+
+En la parte de la base de datos, lo primero que se hace es conectarse, luego se crea una base de datos con nombre ``pruebaBaseDatos''.
+
+A continuación, con Socket.io, se crean los eventos que tiene que escuchar y emitir: 
+
+\begin{itemize}
+    \item my-address: manda al cliente su dirección IP y puerto
+    \item poner: Inserta los datos que el cliente manda en la base de datos.
+    \item obtener: busca en la base de datos el registro dado por la dirección IP del cliente y se lo manda al mismo (el cliente).
+    \item poner: Se encarga de insertar en la base de datos la informacion que ha enviado el cliente.
+\end{itemize}
+
+Para la parte del fichero HTML en el cliente, se realiza algo similar a ejemplos anteriores. Los eventos se encargan de insertar en la base de datos las nuevas conexiones y de actualizar la lista del cliente.
 \subsection{Diferencias entre los ejemplos}
 
 \section{Segunda parte.}
