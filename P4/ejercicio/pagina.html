@@ -25,17 +25,31 @@
         </div>
         <div class="aparatos">
             <div class="secciones-aparato">
-                <div class="negrita grande fondo-sec">Aire acondicionado</div>
+                <div class="negrita grande fondo-sec estado">
+                    <div>
+                        Aire acondicionado:
+                    </div>
+                    <div class="rojo" id="estado-aire">
+                        OFF
+                    </div>
+                </div>
                 <div class="fondo-sec" id="temperatura">20 °C</div>
                 <div>
-                    <img class="imagen" src="static/images/ac-off.jpg"/>
+                    <img id="aire" class="imagen" src="static/images/ac-off.jpg"/>
                 </div>
             </div>
             <div class="secciones-aparato">
-                <div class="negrita grande fondo-sec">Persiana ventana</div>
+                <div class="negrita grande fondo-sec estado">
+                    <div>
+                        Persiana ventana:
+                    </div>
+                    <div class="rojo" id="estado-persiana">
+                        Bajado
+                    </div>                    
+                </div>
                 <div class="fondo-sec" id="lumens">noseque candelas</div>
                 <div>
-                    <img class="imagen" src="static/images/per-up.jpg"/>
+                    <img id="persiana" class="imagen" src="static/images/per-up.jpg"/>
                 </div>
             </div>
         </div>
@@ -52,6 +66,15 @@
                     Cambiar luminosidad
                 </a>
             </div>            
+        </div>
+
+        <div>
+            <div>
+                Conexiones Activas:
+            </div>
+            <div id="usuarios-conectados-container">
+                awesome
+            </div>
         </div>
     </main>
 </body>

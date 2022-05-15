@@ -47,13 +47,17 @@ let io=socketio(httpServer);
 //Variables
 let temp=0;
 let lumens=0;
+const tempWarning=30;
+const lumensWarning=1000;
+const maxTemp=40;
+const maxLumens=2000;
 
 let clientes=[];
 io.sockets.on('connection', (client) => {
 	console.log("conecta")
-	//io.sockets.emit("cambio-temp", temp);
-	//io.sockets.emit("cambio-lumens", lumens);
 
+	clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
+	io.emit("clientes", clientes);
 	client.emit("cambio-temp", temp);
 	client.emit("cambio-lumens", lumens);
 
@@ -68,4 +72,20 @@ io.sockets.on('connection', (client) => {
 		console.log("cambio de lumens");
 		io.emit("cambio-lumens", lumens);
 	});	
+
+	client.on("disconnect", ()=>{
+		let indice=-1;
+
+		for(let i=0; i<clientes.length && indice==-1; i++){
+			if(clientes[i].address==client.request.connection.remoteAddress
+				&& clientes[i].port==client.request.connection.remotePort){
+					indice=i;
+				}
+		}
+
+		if(indice!=-1){
+			clientes.splice(indice, 1);
+			io.emit("clientes", clientes);
+		}
+	});
 });

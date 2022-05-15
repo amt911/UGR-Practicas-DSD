@@ -11,7 +11,7 @@ body div{
 
 main{
     display: grid;
-    grid-template-rows: auto auto 40px;
+    grid-template-rows: auto auto 40px auto auto;
     gap: 30px;
 }
 
@@ -43,6 +43,7 @@ main{
     object-fit: contain;
     width: 100%;
     height:100%;
+    cursor: pointer;
 }
 
 .secciones-aparato{
@@ -79,4 +80,21 @@ main{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.estado{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.rojo{
+    color:red;
+}
+
+.verde{
+    color: green !important;
+}
+
+#usuarios-conectados-container{
+    text-align: start;
 }
