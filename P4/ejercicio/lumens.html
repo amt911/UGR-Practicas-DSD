@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de monitorización</title>
+    <link rel="stylesheet" href="static/css/form.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main>
+        <div id="top">
+            <h1>Cambio de luminosidad</h1>
+        </div>
+
+        <div>
+            <form action="pagina.html" onsubmit="javascript:enviar();">
+                <label>Nueva temperatura</label><br />
+                <input type="text" id="cuadro" /><br /><br />
+
+                <button>Enviar</button>
+            </form>
+        </div>
+    </main>
+</body>
+
+<!--script src="/socket.io/socket.io.js"></script-->
+<script src="node_modules/socket.io/client-dist/socket.io.js"></script>
+<script src="static/js/lumens.js"></script>
+</html>

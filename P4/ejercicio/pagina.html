@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de monitorización</title>
+    <link rel="stylesheet" href="static/css/pagina.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">    
+</head>
+
+<body>
+    <main>
+        <div id="top">
+            <div>
+                <h1>Panel de monitorización</h1>
+            </div>
+            <div id="alertas">
+                <div>
+                    Alertas (0)
+                </div>
+            </div>
+        </div>
+        <div class="aparatos">
+            <div class="secciones-aparato">
+                <div class="negrita grande fondo-sec">Aire acondicionado</div>
+                <div class="fondo-sec" id="temperatura">20 °C</div>
+                <div>
+                    <img class="imagen" src="static/images/ac-off.jpg"/>
+                </div>
+            </div>
+            <div class="secciones-aparato">
+                <div class="negrita grande fondo-sec">Persiana ventana</div>
+                <div class="fondo-sec" id="lumens">noseque candelas</div>
+                <div>
+                    <img class="imagen" src="static/images/per-up.jpg"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="aparatos">
+            <div class="negrita redondeado">
+                <a href="temp.html">
+                    Cambiar temperatura
+                </a>
+            </div>
+
+            <div class="negrita redondeado">
+                <a href="lumens.html">
+                    Cambiar luminosidad
+                </a>
+            </div>            
+        </div>
+    </main>
+</body>
+<script src="node_modules/socket.io/client-dist/socket.io.js"></script>
+<script src="static/js/pagina.js"></script>
+</html>

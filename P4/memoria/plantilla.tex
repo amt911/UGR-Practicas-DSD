@@ -193,8 +193,13 @@ A continuación, con Socket.io, se crean los eventos que tiene que escuchar y em
 \end{itemize}
 
 Para la parte del fichero HTML en el cliente, se realiza algo similar a ejemplos anteriores. Los eventos se encargan de insertar en la base de datos las nuevas conexiones y de actualizar la lista del cliente.
-\subsection{Diferencias entre los ejemplos}
 
+\subsection{Diferencias entre los ejemplos}
+La principal diferencia entre los distintos ejemplos, es que en algunos se hace uso de un fichero HTML dedicado con javascript incrustado para el cliente, mientras que en otros tales como ``helloworld.js'' o ``calculadora.js'' solo incrustan el mensaje en una página básica.
+
+Otra diferencia es que ``helloworld.js'', ``calculadora.js'' y ``calculadora-web.js'' sólo hacen uso de Node.js, y algunos módulos del mismo. Mientras que en ``connections.js'' y ``mongo-test.js'' hacen uso de Socket.io adicionalmete.
+
+Por último, ``mongo-test.js'' hace uso de un módulo (driver) para conectarse a una base de datos NoSQL. Por tanto, este es el mas complejo de todos.
 \section{Segunda parte.}
 \subsection{Descripción}
 \subsection{Implementación}

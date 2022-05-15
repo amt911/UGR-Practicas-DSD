@@ -1,0 +1,82 @@
+body{
+    font-family: 'Roboto', sans-serif;
+    /*background-color: beige;*/
+    max-width: max-content;
+    text-align: center;
+}
+
+body div{
+    /*border: solid 2px red;*/
+}
+
+main{
+    display: grid;
+    grid-template-rows: auto auto 40px;
+    gap: 30px;
+}
+
+#top{
+    background-color: #9eb784;
+    display: grid;
+    grid-template-columns: 80% 1fr;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+#alertas{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: #696c6f;
+}
+
+.aparatos{
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    width: 100%;
+    gap: 12px;
+    justify-content: center;
+}
+
+.imagen{
+    /*border: solid 2px green;*/
+    object-fit: contain;
+    width: 100%;
+    height:100%;
+}
+
+.secciones-aparato{
+    background-color: #cac9bb;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.negrita{
+    font-weight: 900;
+}
+
+.grande{
+    font-size: large;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.secciones-aparato > div:nth-child(2){
+    font-size: x-large;
+}
+
+.fondo-sec{
+    background-color: #9daa5a;
+}
+
+.redondeado{
+    background-color:#aebba9;
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
