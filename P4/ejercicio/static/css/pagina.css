@@ -88,11 +88,11 @@ main{
 }
 
 .rojo{
-    color:red;
+    color:red !important;
 }
 
 .verde{
-    color: green !important;
+    color: green;
 }
 
 #usuarios-conectados-container{

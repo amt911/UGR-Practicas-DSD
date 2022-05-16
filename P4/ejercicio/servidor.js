@@ -47,6 +47,9 @@ let io=socketio(httpServer);
 //Variables
 let temp=0;
 let lumens=0;
+let estadoAC=false;				//false=apagado
+let estadoPersiana=true;		//false=bajado
+
 const tempWarning=30;
 const lumensWarning=1000;
 const maxTemp=40;
@@ -58,20 +61,47 @@ io.sockets.on('connection', (client) => {
 
 	clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
 	io.emit("clientes", clientes);
-	client.emit("cambio-temp", temp);
-	client.emit("cambio-lumens", lumens);
 
-	client.on('temperatura', (data)=>{
+	//Estas dos son necesarias para cuando se vuelve del formulario
+	//ya que se produce una desconexion momentanea
+	client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
+	client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
+	client.emit("estado-persiana", estadoPersiana);
+	client.emit("estado-AC", estadoAC);
+
+	client.on('cambio-temp', (data)=>{
 		temp=data;
-		console.log("cambio de temp");
-		io.emit("cambio-temp", temp);
+		//console.log("cambio de temp");
+		io.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
+
+		//Comprobar que si se ha pasado el warning aumentar alerta
+
+		if(temp>=maxTemp && lumens>=maxLumens){
+			//console.log("muy caliente")
+			estadoPersiana=false;
+			io.emit("estado-persiana", estadoPersiana);
+		}
 	});
 
-	client.on('lumens', (data)=>{
+	client.on('cambio-lumens', (data)=>{
 		lumens=data;
 		console.log("cambio de lumens");
-		io.emit("cambio-lumens", lumens);
+		io.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
+
+		if(temp>=maxTemp && lumens>=maxLumens){
+			//console.log("muy caliente")
+			estadoPersiana=false;
+			io.emit("estado-persiana", estadoPersiana);
+		}		
 	});	
+
+
+	client.on("estado-persiana", (data)=>{
+		estadoPersiana=data;
+		console.log("cambio de estado: "+estadoPersiana);
+
+		io.emit("estado-persiana", estadoPersiana);
+	});
 
 	client.on("disconnect", ()=>{
 		let indice=-1;
