@@ -41,6 +41,7 @@ function modificarAlertas(valor){
 }
 */
 socket.on('cambio-lumens', (data)=>{
+    console.log(data)
     let campo=document.getElementById("lumens");
 
     campo.innerText=data.lumens+" lumens";
@@ -144,14 +145,16 @@ function actualizarHistorial(mediciones){
     let lista=document.createElement("ul");
     historial.appendChild(lista);
 
+    //console.log(mediciones.length);
     for(let i=0; i<mediciones.length; i++){
         let item=document.createElement("li");
-        item.innerHTML="blablacar";
+        item.innerHTML="<strong>Evento:</strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha;
         lista.appendChild(item);
     }
 }
 
 socket.on("historial", (collection)=>{
+    //console.log("entro")
     actualizarHistorial(collection);
 });
 

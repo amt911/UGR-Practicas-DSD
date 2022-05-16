@@ -8,5 +8,5 @@ let socket=io.connect(url);
 
 function enviar(){
     let valor=document.getElementById("cuadro").value;
-    socket.emit('cambio-lumens', valor);
+    socket.emit('cambio-lumens', {evento: "luminosidad", valor: valor, fecha: new Date()});
 }

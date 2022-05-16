@@ -95,6 +95,7 @@ main{
     color: green;
 }
 
-#usuarios-conectados-container{
+#usuarios-conectados-container,
+#historial{
     text-align: start;
 }

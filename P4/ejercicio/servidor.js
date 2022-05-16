@@ -63,86 +63,96 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	let dbo = db.db("DSD_Practica_4");
 
 	let collection=dbo.collection("accionesSensores");
+	//console.log(collection.find().toArray((err, res)=>console.log(res)));
 
-	//dbo.createCollection("accionesSensores", function(err, collection){
-		io.sockets.on('connection', (client) => {
-			clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
-			io.emit("clientes", clientes);
+	io.sockets.on('connection', (client) => {
+		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
+		io.emit("clientes", clientes);
 
-			//Estas dos son necesarias para cuando se vuelve del formulario
-			//ya que se produce una desconexion momentanea
-			client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
-			client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
-			client.emit("estado-persiana", estadoPersiana);
-			client.emit("estado-AC", estadoAC);
-			//client.emit("historial", collection);
-		
-			client.on('cambio-temp', (data)=>{
-				temp=data.valor;
-				//console.log("cambio de temp");
-				io.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
-		
-				console.log(data);
-				collection.insertOne(data);
-				
-				//io.emit("historial", collection);
+		//Estas dos son necesarias para cuando se vuelve del formulario
+		//ya que se produce una desconexion momentanea
+		client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
+		client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
+		client.emit("estado-persiana", estadoPersiana);
+		client.emit("estado-AC", estadoAC);
+		//client.emit("historial", collection.find().toArray());
+		collection.find().toArray(function(err, res){
+			client.emit("historial", res);	
+		});		
 
-				//COMPROBAR ESTO
-				if(temp>=tempWarning && temp<=maxTemp){
-					alertas.push("Temperatura peligrosamente alta, considere tomar medidas");
-					io.emit("alerta", alertas);
-				}
+		client.on('cambio-temp', (data)=>{
+			temp=data.valor;
+			//console.log("cambio de temp");
+			io.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
+	
 
-
-				if(temp>=maxTemp && lumens>=maxLumens){
-					//console.log("muy caliente")
-					estadoPersiana=false;
-					io.emit("estado-persiana", estadoPersiana);
-				}
+			collection.insertOne(data);
+			
+			collection.find().toArray(function(err, res){
+				io.emit("historial", res);	
 			});
-		
-			client.on('cambio-lumens', (data)=>{
-				lumens=data;
-				console.log("cambio de lumens");
-				io.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
-		
-				if(temp>=maxTemp && lumens>=maxLumens){
-					estadoPersiana=false;
-					io.emit("estado-persiana", estadoPersiana);
-				}		
-			});	
-		
-		
-			client.on("estado-persiana", (data)=>{
-				estadoPersiana=data;
-				console.log("cambio de estado: "+estadoPersiana);
-		
+
+			//COMPROBAR ESTO
+			if(temp>=tempWarning && temp<=maxTemp){
+				alertas.push("Temperatura peligrosamente alta, considere tomar medidas");
+				io.emit("alerta", alertas);
+			}
+
+
+			if(temp>=maxTemp && lumens>=maxLumens){
+				//console.log("muy caliente")
+				estadoPersiana=false;
 				io.emit("estado-persiana", estadoPersiana);
+			}
+		});
+	
+		client.on('cambio-lumens', (data)=>{
+			lumens=data.valor;
+			//console.log("cambio de lumens");
+			io.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
+	
+			collection.insertOne(data);
+			
+			collection.find().toArray(function(err, res){
+				io.emit("historial", res);	
 			});
 
-			client.on("estado-AC", (data)=>{
-				estadoAC=data;
-				console.log("cambio de estado: "+estadoAC);
-		
-				io.emit("estado-AC", estadoAC);
-			});			
-		
-			client.on("disconnect", ()=>{
-				let indice=-1;
-		
-				for(let i=0; i<clientes.length && indice==-1; i++){
-					if(clientes[i].address==client.request.connection.remoteAddress
-						&& clientes[i].port==client.request.connection.remotePort){
-							indice=i;
-						}
-				}
-		
-				if(indice!=-1){
-					clientes.splice(indice, 1);
-					io.emit("clientes", clientes);
-				}
-			});
+			if(temp>=maxTemp && lumens>=maxLumens){
+				estadoPersiana=false;
+				io.emit("estado-persiana", estadoPersiana);
+			}		
+		});	
+	
+	
+		client.on("estado-persiana", (data)=>{
+			estadoPersiana=data;
+			console.log("cambio de estado: "+estadoPersiana);
+	
+			io.emit("estado-persiana", estadoPersiana);
 		});
-	//});
+
+		client.on("estado-AC", (data)=>{
+			estadoAC=data;
+			console.log("cambio de estado: "+estadoAC);
+	
+			io.emit("estado-AC", estadoAC);
+		});			
+	
+		client.on("disconnect", ()=>{
+			let indice=-1;
+	
+			for(let i=0; i<clientes.length && indice==-1; i++){
+				if(clientes[i].address==client.request.connection.remoteAddress
+					&& clientes[i].port==client.request.connection.remotePort){
+						indice=i;
+					}
+			}
+	
+			if(indice!=-1){
+				clientes.splice(indice, 1);
+				io.emit("clientes", clientes);
+			}
+		});
+	});
 })
 
