@@ -75,6 +75,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
 		client.emit("estado-persiana", estadoPersiana);
 		client.emit("estado-AC", estadoAC);
+		client.emit("alerta", alertas);
 		//client.emit("historial", collection.find().toArray());
 		collection.find().toArray(function(err, res){
 			client.emit("historial", res);	
@@ -93,8 +94,13 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			});
 
 			//COMPROBAR ESTO
-			if(temp>=tempWarning && temp<=maxTemp){
-				alertas.push("Temperatura peligrosamente alta, considere tomar medidas");
+			if(temp>=tempWarning && temp<=maxTemp && alertas.find(i=>i.sensor=="temp")==undefined){
+				alertas.push({sensor: "temp", msg: "Temperatura peligrosamente alta, considere tomar medidas"});
+				io.emit("alerta", alertas);
+			}
+			else if(temp<tempWarning && alertas.find(i=>i.sensor=="temp")!=undefined){
+				let index=alertas.find(i=>i.sensor=="temp");
+				alertas.splice(index, 1);
 				io.emit("alerta", alertas);
 			}
 
@@ -116,6 +122,17 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			collection.find().toArray(function(err, res){
 				io.emit("historial", res);	
 			});
+
+			//COMPROBAR ESTO
+			if(lumens>=lumensWarning && lumens<=maxLumens && alertas.find(i=>i.sensor=="lumens")==undefined){
+				alertas.push({sensor: "lumens", msg: "Luminosidad peligrosamente alta, considere tomar medidas"});
+				io.emit("alerta", alertas);
+			}
+			else if(lumens<lumensWarning && alertas.find(i=>i.sensor=="lumens")!=undefined){
+				let index=alertas.find(i=>i.sensor=="lumens");
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);
+			}
 
 			if(temp>=maxTemp && lumens>=maxLumens){
 				estadoPersiana=false;

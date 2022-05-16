@@ -28,6 +28,8 @@ main{
     justify-content: center;
     color: white;
     background-color: #696c6f;
+    position:relative;
+    cursor: pointer;
 }
 
 .aparatos{
@@ -98,4 +100,27 @@ main{
 #usuarios-conectados-container,
 #historial{
     text-align: start;
+}
+
+#desplegable{
+    width: 500px;
+    right: 0%;
+    position: absolute;
+    top: 100%;
+    
+    
+    background-color: rgba(105, 108, 111);
+    
+    display: none;
+    grid-template-rows: auto;
+    gap: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px 0 8px 8px;
+    padding: 5px;
+}
+
+#desplegable > div{
+    color: black;
+    background-color: beige;
+    border-radius: 3px;
 }

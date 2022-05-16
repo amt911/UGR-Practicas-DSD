@@ -22,24 +22,6 @@ socket.on('cambio-temp', (data)=>{
         campo.style.color="";
 });
 
-/*
-function modificarAlertas(valor){
-    let alertas=document.getElementById("mensaje-alerta");
-    //alert(alertas.innerText);
-
-    let parentesisBegin=alertas.innerText.indexOf("(");
-    let parentesisEnd=alertas.innerText.indexOf(")");
-    
-    let cadena=[...alertas.innerText];
-    
-    let valor=parseInt(alertas.innerText[parentesisBegin+1])+1;
-    
-    //alert(valor)
-    cadena.splice(parentesisBegin+1, parentesisEnd-parentesisBegin-1, valor)
-
-    alertas.innerText=cadena.join("");
-}
-*/
 socket.on('cambio-lumens', (data)=>{
     console.log(data)
     let campo=document.getElementById("lumens");
@@ -160,10 +142,50 @@ socket.on("historial", (collection)=>{
 
 
 
+function modificarAlertas(mensajes){
+    let alertas=document.getElementById("mensaje-alerta");
 
+    let parentesisBegin=alertas.innerText.indexOf("(");
+    let parentesisEnd=alertas.innerText.indexOf(")");
+    
+    //Paso el string a array para poder usar sus metodos
+    let cadena=[...alertas.innerText];
+    
+    //let valor=parseInt(alertas.innerText[parentesisBegin+1])+1;
+    
+    cadena.splice(parentesisBegin+1, parentesisEnd-parentesisBegin-1, mensajes.length)
 
+    alertas.innerText=cadena.join("");
+
+    let desplegable=document.getElementById("desplegable");
+    desplegable.innerHTML="";
+
+    for(let i=0; i<mensajes.length; i++){
+        let aux=document.createElement("div");
+        aux.innerHTML=mensajes[i].msg;
+
+        desplegable.appendChild(aux);
+    }
+}
 
 
 socket.on("alerta", (alertas)=>{
-    console.log("funciono");
+    console.log("hay una alerta");
+    modificarAlertas(alertas);
+});
+
+
+let esOpen=false;
+let alertasClick=document.getElementById("alertas");
+alertasClick.addEventListener("click", ()=>{
+    let desplegable=document.getElementById("desplegable");
+
+    if(esOpen){
+        esOpen=false;
+        desplegable.style.display="grid";
+    }
+    else{
+        esOpen=true;
+        desplegable.style.display="";
+    }
 });
