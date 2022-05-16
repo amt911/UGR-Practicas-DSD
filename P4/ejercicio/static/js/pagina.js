@@ -123,3 +123,17 @@ function actualizarLista(usuarios){
         lista.appendChild(item);
     }
 }
+
+function actualizarHistorial(mediciones){
+    let historial=document.getElementById("historial");
+    historial.innerHTML="";
+
+    let lista=document.createElement("ul");
+    historial.appendChild(lista);
+
+    for(let i=0; i<mediciones.length; i++){
+        let item=document.createElement("li");
+        item.innerHTML="blablacar";
+        lista.appendChild(item);
+    }
+}
