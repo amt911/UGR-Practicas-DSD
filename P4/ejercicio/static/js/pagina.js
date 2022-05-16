@@ -89,8 +89,15 @@ function togglePersiana(){
 let aire=document.getElementById("aire");
 let persiana=document.getElementById("persiana");
 
+socket.on("estado-AC", (estado)=>{
+    if(estado!=esOff){
+        toggleAire();
+    }
+});
+
 let esOff=true;
-aire.addEventListener("click", ()=>{
+
+function toggleAire(){
     let aux=document.getElementById("estado-aire");
 
     if(esOff){
@@ -102,7 +109,13 @@ aire.addEventListener("click", ()=>{
         aux.innerText="OFF";
     }
     
+    aux.classList.toggle("rojo");
     aux.classList.toggle("verde");
+}
+
+aire.addEventListener("click", ()=>{
+    toggleAire();
+    socket.emit("estado-AC", esOff);
 });
 
 persiana.addEventListener("click", ()=>{
@@ -137,3 +150,17 @@ function actualizarHistorial(mediciones){
         lista.appendChild(item);
     }
 }
+
+socket.on("historial", (collection)=>{
+    actualizarHistorial(collection);
+});
+
+
+
+
+
+
+
+socket.on("alerta", (alertas)=>{
+    console.log("funciono");
+});

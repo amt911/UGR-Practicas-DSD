@@ -57,26 +57,25 @@ const maxTemp=40;
 const maxLumens=2000;
 
 let clientes=[];
-
+let alertas=[];
 
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
-	//console.log(dbo.listCollections());
-	//console.log(dbo.collections());
-	//console.log(dbo);
-	dbo.createCollection("accionesSensores", function(err, collection){
+
+	let collection=dbo.collection("accionesSensores");
+
+	//dbo.createCollection("accionesSensores", function(err, collection){
 		io.sockets.on('connection', (client) => {
-			console.log("conecta")
-			console.log(err);
 			clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
 			io.emit("clientes", clientes);
-		
+
 			//Estas dos son necesarias para cuando se vuelve del formulario
 			//ya que se produce una desconexion momentanea
 			client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
 			client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
 			client.emit("estado-persiana", estadoPersiana);
 			client.emit("estado-AC", estadoAC);
+			//client.emit("historial", collection);
 		
 			client.on('cambio-temp', (data)=>{
 				temp=data.valor;
@@ -85,8 +84,16 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		
 				console.log(data);
 				collection.insertOne(data);
-				//Comprobar que si se ha pasado el warning aumentar alerta
-		
+				
+				//io.emit("historial", collection);
+
+				//COMPROBAR ESTO
+				if(temp>=tempWarning && temp<=maxTemp){
+					alertas.push("Temperatura peligrosamente alta, considere tomar medidas");
+					io.emit("alerta", alertas);
+				}
+
+
 				if(temp>=maxTemp && lumens>=maxLumens){
 					//console.log("muy caliente")
 					estadoPersiana=false;
@@ -100,7 +107,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
 		
 				if(temp>=maxTemp && lumens>=maxLumens){
-					//console.log("muy caliente")
 					estadoPersiana=false;
 					io.emit("estado-persiana", estadoPersiana);
 				}		
@@ -113,6 +119,13 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		
 				io.emit("estado-persiana", estadoPersiana);
 			});
+
+			client.on("estado-AC", (data)=>{
+				estadoAC=data;
+				console.log("cambio de estado: "+estadoAC);
+		
+				io.emit("estado-AC", estadoAC);
+			});			
 		
 			client.on("disconnect", ()=>{
 				let indice=-1;
@@ -130,6 +143,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				}
 			});
 		});
-	});
+	//});
 })
 
