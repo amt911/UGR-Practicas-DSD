@@ -146,13 +146,13 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);
 			}
 
-/*
+
 			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
-				estadoPersiana=false;
+				sensores[1].deviceState=false;
 				//io.emit("estado-persiana", estadoPersiana);
-				io.emit("cambio-sensor")
+				io.emit("cambio-sensor", sensores[1]);
 			}
-			*/
+
 		});
 
 		client.on("obtener-sensores", (data)=>{

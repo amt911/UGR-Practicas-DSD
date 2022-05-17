@@ -43,9 +43,7 @@ function setActuador(data){
     let imagen=document.getElementById("imagen-"+data.name);
     let divSensor=document.getElementById("div-"+data.name);
 
-    //alert(data.name)
     if(!data.deviceState){
-        //data.deviceState=false;
         estadoActuador.innerText="OFF";
         imagen.style.filter="grayscale(100%)";
 
@@ -54,16 +52,12 @@ function setActuador(data){
         divSensor.classList.add("apagado");
     }
     else{
-        //data.deviceState=true;
         estadoActuador.innerText="ON";
         imagen.style.filter="";
         divSensor.classList.remove("apagado");
+        estadoActuador.classList.add("verde");
+        estadoActuador.classList.remove("rojo");                
     }
-
-    //estadoActuador.classList.add("verde");
-    //estadoActuador.classList.remove("rojo");
-
-    //divSensor.classList.toggle("apagado");
 }
 
 socket.on("obtener-sensores", (data)=>{
@@ -96,18 +90,7 @@ socket.on("obtener-sensores", (data)=>{
 
     for(let i=0; i<aparatos.length; i++){
         aparatos[i].addEventListener("click", ()=>{
-            //if(data[i].deviceState)
-            //    data[i].deviceState=false;
-            //else
-            //    data[i].deviceState=true;
-
-            //socket.emit("cambio-sensor", data[i]);
-            //console.log(data[i]);
-
             socket.emit("obtener-sensor", data[i].name);
-
-            //PROBLEMA, INSTANCIAS DESACTUALIZADAS, ES NECESARIO TENERLAS BIEN
-
         });
     }
 })
