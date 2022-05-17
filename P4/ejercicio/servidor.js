@@ -87,7 +87,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	let dbo = db.db("DSD_Practica_4");
 
 	let collection=dbo.collection("accionesSensores");
-	//console.log(collection.find().toArray((err, res)=>console.log(res)));
 
 	io.sockets.on('connection', (client) => {
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
@@ -102,6 +101,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
+
+
+
+		client.on("add-sensor", (data)=>{
+			data.id=sensores.length+1;
+
+			sensores.push(data);
+			io.emit("obtener-sensores");
+		});
 
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
@@ -120,20 +128,14 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//No se envian datos actualizados debido a que no se han propagado aun
 			if(cambioValor){
 				//console.log("entra culiao");
-				collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
+				collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
 				
 				//Envia el historial de cambios en la base de datos
 				collection.find().toArray(function(err, res){
 					console.log(res.length);					
 					io.emit("historial", res);
-				});
-				collection.find().toArray(function(err, res){
-					console.log("im"+res.length);					
-					//io.emit("historial", res);
-				});				
+				});			
 			}
-
-			//console.log(data);
 
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.warningValue && alertas.find(i=>i.name==data.name)==undefined){

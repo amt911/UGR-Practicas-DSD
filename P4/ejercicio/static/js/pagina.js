@@ -90,9 +90,12 @@ socket.on("obtener-sensores", (data)=>{
 
     for(let i=0; i<aparatos.length; i++){
         aparatos[i].addEventListener("click", ()=>{
+            //alert(i);
             socket.emit("obtener-sensor", data[i].name);
         });
     }
+
+    console.log(data)
 })
 
 socket.on("obtener-sensor", (data)=>{
