@@ -6,49 +6,52 @@ if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
 
 let socket=io.connect(url);
 
-//Uno para el cambio de estado
-/*
-socket.on('cambio-temp', (data)=>{
-    let campo=document.getElementById("temperatura");
-
-    campo.innerText=data.temp+" °C";
-
-    if(data.temp>=data.tempWarning && data.temp<data.maxTemp)
-        campo.style.color="yellow";
-
-    else if(data.temp>=data.maxTemp)
-        campo.style.color="red";
-
-    else if(data.temp<data.tempWarning)
-        campo.style.color="";
+socket.on("clientes", (users)=>{
+    actualizarLista(users);
 });
 
-socket.on('cambio-lumens', (data)=>{
-    console.log(data)
-    let campo=document.getElementById("lumens");
+//----------------------------------------------------------------------------------
+//Otro para recibir y que se actualice la info
 
-    campo.innerText=data.lumens+" lumens";
+//socket.emit("obtener-sensores", true);
 
-    if(data.lumens>=data.lumensWarning && data.lumens<data.maxLumens){
-        campo.style.color="yellow";
+socket.on("obtener-sensores", (data)=>{
+    console.log("llamame")
+    let cards=document.getElementById("div-aparatos");
+    cards.innerHTML="";
+
+    for(let i=0; i<data.length; i++){
+        cards.insertAdjacentHTML("afterbegin", 
+        "<div class=\"secciones-aparato\">"+
+        "<div class=\"negrita grande fondo-sec estado\">"+
+            "<div>"+
+                data[i].deviceName+
+            "</div>"+
+            "<div class=\"rojo\" id=\"estado-aire\">"+
+                data[i].deviceState+
+            "</div>"+
+        "</div>"+
+        "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
+        "<div>"+
+            "<img id=\"aire\" class=\"imagen\" src=\"static/images/ac-off.jpg\"/>"+        //CAMBIAR PARA LA ENTREGA
+        "</div>"+
+    "</div>")
     }
 
-    else if(data.lumens>=data.maxLumens)
-        campo.style.color="red";
+    let aparatos=document.getElementsByClassName("secciones-aparato");
 
-    else if(data.lumens<data.lumensWarning)
-        campo.style.color="";
-});
-*/
+    for(let i=0; i<aparatos.length; i++){
+        aparatos[i].addEventListener("click", ()=>alert(i));
+    }
+})
 
 socket.on('cambio-sensor', (data)=>{
     console.log(data)
-    //alert(data.currentValue);
-    //alert(data.name);
-    //alert(data.currentValue+" celsius");
 
     let campo=document.getElementById(data.name);
 
+    console.log("ya no es null")
+    console.log(campo)
     campo.innerText=data.currentValue+" "+data.unit;
 
     if(data.currentValue>=data.warningValue && data.currentValue<data.maxValue){
@@ -62,15 +65,24 @@ socket.on('cambio-sensor', (data)=>{
         campo.style.color="";
 });
 
-socket.on("clientes", (users)=>{
-    actualizarLista(users);
-});
+
+/*
+let aire=document.getElementById("aire");
+let persiana=document.getElementById("persiana");
 
 socket.on("estado-persiana", (estado)=>{
     if(estado!=estaArriba){
         togglePersiana();
     }
 });
+
+
+socket.on("estado-AC", (estado)=>{
+    if(estado!=esOff){
+        toggleAire();
+    }
+});
+
 
 let estaArriba=true;
 function togglePersiana(){
@@ -88,16 +100,6 @@ function togglePersiana(){
 
     //socket.emit("estado-persiana", estaArriba);
 }
-
-//Otro para recibir y que se actualice la info
-let aire=document.getElementById("aire");
-let persiana=document.getElementById("persiana");
-
-socket.on("estado-AC", (estado)=>{
-    if(estado!=esOff){
-        toggleAire();
-    }
-});
 
 let esOff=true;
 
@@ -126,6 +128,9 @@ persiana.addEventListener("click", ()=>{
     togglePersiana();
     socket.emit("estado-persiana", estaArriba);
 });
+*/
+//----------------------------------------------------------------------------------
+
 
 function actualizarLista(usuarios){
     let usuariosConectados=document.getElementById("usuarios-conectados-container");
@@ -164,6 +169,7 @@ socket.on("historial", (collection)=>{
 
 
 function modificarAlertas(mensajes){
+    console.log(mensajes);
     let alertas=document.getElementById("mensaje-alerta");
 
     let parentesisBegin=alertas.innerText.indexOf("(");
@@ -183,7 +189,7 @@ function modificarAlertas(mensajes){
 
     for(let i=0; i<mensajes.length; i++){
         let aux=document.createElement("div");
-        aux.innerHTML=mensajes[i].msg;
+        aux.innerHTML=mensajes[i].warningMsg;
 
         desplegable.appendChild(aux);
     }

@@ -68,7 +68,8 @@ let sensores=[
 		maxValue: 40,
 		imageDir: null,
 		currentValue: 0,
-		deviceState: false
+		deviceState: false,
+		deviceName: "Aire acondicionado"
 	},
 	{
 		id: 2,
@@ -79,9 +80,11 @@ let sensores=[
 		maxValue: 2000,
 		imageDir: null,
 		currentValue: 0,
-		deviceState: true
+		deviceState: true,
+		deviceName: "Persiana ventana"
 	}	
 ]
+
 //console.log(sensores.length);
 
 /**
@@ -111,6 +114,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			client.emit("historial", res);	
 		});		
 
+		client.emit("obtener-sensores", sensores);
 
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
@@ -122,26 +126,27 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			sensores.splice(sensores.findIndex(i=>i.name==data.name), 1, data);
 			
 			io.emit("cambio-sensor", data);
-	
 
 			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
 			
 			collection.find().toArray(function(err, res){
 				io.emit("historial", res);
 			});
-/*
+
+			console.log(data);
 			//COMPROBAR ESTO
 			if(data.currentValue>=data.warningValue && data.currentValue<=data.maxValue && alertas.find(i=>i.name==data.name)==undefined){
+				console.log("alerta importante del gobierno")
 				alertas.push(data);
 				io.emit("alerta", alertas);
 			}
 			else if(data.currentValue<data.warningValue && alertas.find(i=>i.name==data.name)!=undefined){
-				let index=alertas.find(i=>i.name==data.name);
+				let index=alertas.findIndex(i=>i.name==data.name);
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);
 			}
 
-
+/*
 			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
 				estadoPersiana=false;
 				//io.emit("estado-persiana", estadoPersiana);
@@ -151,6 +156,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		});
 
 		client.on("obtener-sensores", (data)=>{
+			console.log("llamame")
 			client.emit("obtener-sensores", sensores);
 		});
 
@@ -159,67 +165,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			client.emit("obtener-sensor", objeto);
 			//console.log(objeto);
 		});
-
-/*
-		client.on('cambio-temp', (data)=>{
-			temp=data.valor;
-			//console.log("cambio de temp");
-			io.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
-	
-
-			collection.insertOne(data);
-			
-			collection.find().toArray(function(err, res){
-				io.emit("historial", res);	
-			});
-
-			//COMPROBAR ESTO
-			if(temp>=tempWarning && temp<=maxTemp && alertas.find(i=>i.sensor=="temp")==undefined){
-				alertas.push({sensor: "temp", msg: "Temperatura peligrosamente alta, considere tomar medidas"});
-				io.emit("alerta", alertas);
-			}
-			else if(temp<tempWarning && alertas.find(i=>i.sensor=="temp")!=undefined){
-				let index=alertas.find(i=>i.sensor=="temp");
-				alertas.splice(index, 1);
-				io.emit("alerta", alertas);
-			}
-
-
-			if(temp>=maxTemp && lumens>=maxLumens){
-				//console.log("muy caliente")
-				estadoPersiana=false;
-				io.emit("estado-persiana", estadoPersiana);
-			}
-		});
-	
-		client.on('cambio-lumens', (data)=>{
-			lumens=data.valor;
-			//console.log("cambio de lumens");
-			io.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
-	
-			collection.insertOne(data);
-			
-			collection.find().toArray(function(err, res){
-				io.emit("historial", res);	
-			});
-
-			//COMPROBAR ESTO
-			if(lumens>=lumensWarning && lumens<=maxLumens && alertas.find(i=>i.sensor=="lumens")==undefined){
-				alertas.push({sensor: "lumens", msg: "Luminosidad peligrosamente alta, considere tomar medidas"});
-				io.emit("alerta", alertas);
-			}
-			else if(lumens<lumensWarning && alertas.find(i=>i.sensor=="lumens")!=undefined){
-				let index=alertas.find(i=>i.sensor=="lumens");
-				alertas.splice(index, 1);
-				io.emit("alerta", alertas);
-			}
-
-			if(temp>=maxTemp && lumens>=maxLumens){
-				estadoPersiana=false;
-				io.emit("estado-persiana", estadoPersiana);
-			}		
-		});	
-*/
 /*
 		client.on("estado-persiana", (data)=>{
 			estadoPersiana=data;
