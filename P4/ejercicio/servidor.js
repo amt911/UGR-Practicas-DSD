@@ -80,7 +80,7 @@ let sensores=[
 		maxValue: 2000,
 		imageDir: null,
 		currentValue: 0,
-		deviceState: true,
+		deviceState: false,
 		deviceName: "Persiana ventana"
 	}	
 ]

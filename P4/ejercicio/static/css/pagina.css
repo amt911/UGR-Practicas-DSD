@@ -120,3 +120,7 @@ main{
     background-color: beige;
     border-radius: 3px;
 }
+
+.apagado > div{
+    background-color: grey !important;
+}

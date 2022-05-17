@@ -15,25 +15,79 @@ socket.on("clientes", (users)=>{
 
 //socket.emit("obtener-sensores", true);
 
+function toggleActuador(data){
+    let estadoActuador=document.getElementById("estado-"+data.name);
+    let imagen=document.getElementById("imagen-"+data.name);
+    let divSensor=document.getElementById("div-"+data.name);
+
+    //alert(data.name)
+    if(data.deviceState){
+        data.deviceState=false;
+        estadoActuador.innerText="OFF";
+        imagen.style.filter="grayscale(100%)";
+    }
+    else{
+        data.deviceState=true;
+        estadoActuador.innerText="ON";
+        imagen.style.filter="";
+    }
+
+    estadoActuador.classList.toggle("verde");
+    estadoActuador.classList.toggle("rojo");
+
+    divSensor.classList.toggle("apagado");
+}
+
+function setActuador(data){
+    let estadoActuador=document.getElementById("estado-"+data.name);
+    let imagen=document.getElementById("imagen-"+data.name);
+    let divSensor=document.getElementById("div-"+data.name);
+
+    //alert(data.name)
+    if(!data.deviceState){
+        //data.deviceState=false;
+        estadoActuador.innerText="OFF";
+        imagen.style.filter="grayscale(100%)";
+
+        estadoActuador.classList.remove("verde");
+        estadoActuador.classList.add("rojo");        
+        divSensor.classList.add("apagado");
+    }
+    else{
+        //data.deviceState=true;
+        estadoActuador.innerText="ON";
+        imagen.style.filter="";
+        divSensor.classList.remove("apagado");
+    }
+
+    //estadoActuador.classList.add("verde");
+    //estadoActuador.classList.remove("rojo");
+
+    //divSensor.classList.toggle("apagado");
+}
+
 socket.on("obtener-sensores", (data)=>{
-    console.log("llamame")
+
+    //console.log("llamame")
     let cards=document.getElementById("div-aparatos");
     cards.innerHTML="";
 
-    for(let i=0; i<data.length; i++){
+    for(let i=data.length-1; i>=0; i--){
+        //let estado=(data[i].deviceState)? "ON" : "OFF";
+
         cards.insertAdjacentHTML("afterbegin", 
-        "<div class=\"secciones-aparato\">"+
+        "<div id=\"div-"+data[i].name+"\" class=\"secciones-aparato apagado\">"+
         "<div class=\"negrita grande fondo-sec estado\">"+
             "<div>"+
                 data[i].deviceName+
             "</div>"+
-            "<div class=\"rojo\" id=\"estado-aire\">"+
-                data[i].deviceState+
+            "<div class=\"rojo\" id=\"estado-"+data[i].name+"\">"+
+                "OFF"+
             "</div>"+
         "</div>"+
         "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
-        "<div>"+
-            "<img id=\"aire\" class=\"imagen\" src=\"static/images/ac-off.jpg\"/>"+        //CAMBIAR PARA LA ENTREGA
+        "<div >"+
+            "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/ac-off.jpg\" style=\"filter: grayscale(100%)\"/>"+        //CAMBIAR PARA LA ENTREGA
         "</div>"+
     "</div>")
     }
@@ -41,12 +95,34 @@ socket.on("obtener-sensores", (data)=>{
     let aparatos=document.getElementsByClassName("secciones-aparato");
 
     for(let i=0; i<aparatos.length; i++){
-        aparatos[i].addEventListener("click", ()=>alert(i));
+        aparatos[i].addEventListener("click", ()=>{
+            //if(data[i].deviceState)
+            //    data[i].deviceState=false;
+            //else
+            //    data[i].deviceState=true;
+
+            //socket.emit("cambio-sensor", data[i]);
+            //console.log(data[i]);
+
+            socket.emit("obtener-sensor", data[i].name);
+
+            //PROBLEMA, INSTANCIAS DESACTUALIZADAS, ES NECESARIO TENERLAS BIEN
+
+        });
     }
 })
 
+socket.on("obtener-sensor", (data)=>{
+    if(data.deviceState)
+        data.deviceState=false;
+    else
+        data.deviceState=true;    
+
+    socket.emit("cambio-sensor", data);
+})
+
 socket.on('cambio-sensor', (data)=>{
-    console.log(data)
+    //console.log(data)
 
     let campo=document.getElementById(data.name);
 
@@ -61,73 +137,9 @@ socket.on('cambio-sensor', (data)=>{
 
     else if(data.currentValue<data.warningValue)
         campo.style.color="";
+
+    setActuador(data);
 });
-
-
-/*
-let aire=document.getElementById("aire");
-let persiana=document.getElementById("persiana");
-
-socket.on("estado-persiana", (estado)=>{
-    if(estado!=estaArriba){
-        togglePersiana();
-    }
-});
-
-
-socket.on("estado-AC", (estado)=>{
-    if(estado!=esOff){
-        toggleAire();
-    }
-});
-
-
-let estaArriba=true;
-function togglePersiana(){
-    let aux=document.getElementById("estado-persiana");
-    if(estaArriba){
-        estaArriba=false;
-        aux.innerText="Bajado";
-    }
-    else{
-        estaArriba=true;
-        aux.innerText="Alzado";
-    }    
-
-    aux.classList.toggle("rojo");
-
-    //socket.emit("estado-persiana", estaArriba);
-}
-
-let esOff=true;
-
-function toggleAire(){
-    let aux=document.getElementById("estado-aire");
-
-    if(esOff){
-        esOff=false;
-        aux.innerText="ON";
-    }
-    else{
-        esOff=true;
-        aux.innerText="OFF";
-    }
-    
-    aux.classList.toggle("rojo");
-    aux.classList.toggle("verde");
-}
-
-aire.addEventListener("click", ()=>{
-    toggleAire();
-    socket.emit("estado-AC", esOff);
-});
-
-persiana.addEventListener("click", ()=>{
-    togglePersiana();
-    socket.emit("estado-persiana", estaArriba);
-});
-*/
-//----------------------------------------------------------------------------------
 
 
 function actualizarLista(usuarios){
@@ -167,7 +179,7 @@ socket.on("historial", (collection)=>{
 
 
 function modificarAlertas(mensajes){
-    console.log(mensajes);
+    //console.log(mensajes);
     let alertas=document.getElementById("mensaje-alerta");
 
     let parentesisBegin=alertas.innerText.indexOf("(");
@@ -195,7 +207,7 @@ function modificarAlertas(mensajes){
 
 
 socket.on("alerta", (alertas)=>{
-    console.log("hay una alerta");
+    //console.log("hay una alerta");
     modificarAlertas(alertas);
 });
 
