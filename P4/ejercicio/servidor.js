@@ -121,20 +121,25 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		//RECORDAR QUE AQUI SOLO SE PASA UN JSON, NO UN ARRAY DE JSON
 		client.on("cambio-sensor", (data)=>{
-			console.log(clientes.length)
+			//console.log(clientes.length)
 		
+			//Inserta el nuevo estado del sensor pasado
 			sensores.splice(sensores.findIndex(i=>i.name==data.name), 1, data);
 			
+			//Multicast a los clientes del cambio
 			io.emit("cambio-sensor", data);
 
+			//Insercion de lo realizado en la base de datos
 			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
 			
+			//Envia el historial de cambios en la base de datos
 			collection.find().toArray(function(err, res){
 				io.emit("historial", res);
 			});
 
-			console.log(data);
-			//COMPROBAR ESTO
+			//console.log(data);
+
+			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.warningValue && alertas.find(i=>i.name==data.name)==undefined){
 				//console.log("alerta importante del gobierno")
 				alertas.push(data);
@@ -146,6 +151,17 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);
 			}
 
+			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
+			if(sensores[0].deviceState && sensores[1].deviceState){
+				alertas.push({name: "tip", warningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+				io.emit("alerta", alertas);				
+			}
+			else{
+				let index=alertas.findIndex(i=>i.name=="tip");
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}
+
 
 			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
 				sensores[1].deviceState=false;
@@ -155,31 +171,22 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		});
 
+		/**
+		 * Permite obtener todos los sensores que hay instalados en el hogar
+		 */
 		client.on("obtener-sensores", (data)=>{
-			console.log("llamame")
+			//console.log("llamame")
 			client.emit("obtener-sensores", sensores);
 		});
 
+		/**
+		 * Permite obtener un sensor dado su nombre
+		 */
 		client.on("obtener-sensor", (data)=>{
 			let objeto=sensores.find(i=>i.name===data);
 			client.emit("obtener-sensor", objeto);
 			//console.log(objeto);
 		});
-/*
-		client.on("estado-persiana", (data)=>{
-			estadoPersiana=data;
-			console.log("cambio de estado: "+estadoPersiana);
-	
-			io.emit("estado-persiana", estadoPersiana);
-		});
-
-		client.on("estado-AC", (data)=>{
-			estadoAC=data;
-			console.log("cambio de estado: "+estadoAC);
-	
-			io.emit("estado-AC", estadoAC);
-		});			
-*/
 
 		client.on("disconnect", ()=>{
 			let indice=-1;
