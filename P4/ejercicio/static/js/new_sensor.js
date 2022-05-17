@@ -6,6 +6,8 @@ if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
 
 let socket=io.connect(url);
 
+
+//IMPLEMENTAR SI DA TIEMPO FUNCION DE COMPROBACION
 function enviar(){
     let res={
 		id: null,   //Se le pone en el servidor

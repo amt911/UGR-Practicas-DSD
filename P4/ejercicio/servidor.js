@@ -102,17 +102,18 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
 
-
+		console.log(sensores);
 
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
 
 			sensores.push(data);
-			io.emit("obtener-sensores");
+			io.emit("obtener-sensores", sensores);
 		});
 
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
+			//console.log(sensores);
 			//console.log(clientes.length)
 			let index=sensores.findIndex(i=>i.id==data.id);
 			let cambioValor=(data.currentValue==sensores[index].currentValue)? false : true;
@@ -172,7 +173,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * Permite obtener todos los sensores que hay instalados en el hogar
 		 */
 		client.on("obtener-sensores", (data)=>{
-			//console.log("llamame")
+			console.log("llamame")
+			console.log(sensores);
 			client.emit("obtener-sensores", sensores);
 		});
 
@@ -187,6 +189,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		client.on("obtener-sensor-id", (data)=>{
 			let objeto=sensores.find(i=>i.id===data);
+			//console.log(objeto);
+
 			client.emit("obtener-sensor-id", objeto);
 			//console.log(objeto);
 		});

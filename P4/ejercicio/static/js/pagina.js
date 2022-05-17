@@ -61,10 +61,12 @@ function setActuador(data){
 }
 
 socket.on("obtener-sensores", (data)=>{
+    console.log("llamame")
+    console.log(data);
 
-    //console.log("llamame")
     let cards=document.getElementById("div-aparatos");
     cards.innerHTML="";
+
 
     for(let i=data.length-1; i>=0; i--){
         //let estado=(data[i].deviceState)? "ON" : "OFF";
@@ -90,7 +92,7 @@ socket.on("obtener-sensores", (data)=>{
 
     for(let i=0; i<aparatos.length; i++){
         aparatos[i].addEventListener("click", ()=>{
-            //alert(i);
+            //alert(data[i].id);
             socket.emit("obtener-sensor-id", data[i].id);
         });
     }
@@ -104,11 +106,16 @@ socket.on("obtener-sensor-id", (data)=>{
     else
         data.deviceState=true;    
 
+    //alert(data.id);
+
     socket.emit("cambio-sensor", data);
 })
 
 socket.on('cambio-sensor', (data)=>{
-    //console.log(data)
+    console.log("cambio-sensor")
+    console.log(data)
+
+    //alert(data.id);
 
     let campo=document.getElementById(data.name);
 
