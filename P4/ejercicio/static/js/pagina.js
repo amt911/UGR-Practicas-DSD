@@ -91,14 +91,14 @@ socket.on("obtener-sensores", (data)=>{
     for(let i=0; i<aparatos.length; i++){
         aparatos[i].addEventListener("click", ()=>{
             //alert(i);
-            socket.emit("obtener-sensor", data[i].name);
+            socket.emit("obtener-sensor-id", data[i].id);
         });
     }
 
     console.log(data)
 })
 
-socket.on("obtener-sensor", (data)=>{
+socket.on("obtener-sensor-id", (data)=>{
     if(data.deviceState)
         data.deviceState=false;
     else
@@ -169,7 +169,8 @@ socket.on("historial", (collection)=>{
 
 
 function modificarAlertas(mensajes){
-    //console.log(mensajes);
+    console.log("entrada")
+    console.log(mensajes);
     let alertas=document.getElementById("mensaje-alerta");
 
     let parentesisBegin=alertas.innerText.indexOf("(");
@@ -193,11 +194,12 @@ function modificarAlertas(mensajes){
 
         desplegable.appendChild(aux);
     }
+    console.log("salida")
 }
 
 
 socket.on("alerta", (alertas)=>{
-    //console.log("hay una alerta");
+    console.log("hay una alerta: "+alertas.length);
     modificarAlertas(alertas);
 });
 

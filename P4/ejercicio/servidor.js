@@ -114,9 +114,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
 			//console.log(clientes.length)
-			let index=sensores.findIndex(i=>i.name==data.name);
+			let index=sensores.findIndex(i=>i.id==data.id);
 			let cambioValor=(data.currentValue==sensores[index].currentValue)? false : true;
-			console.log(index)
+			//console.log(index)
 
 			//Inserta el nuevo estado del sensor pasado
 			sensores.splice(index, 1, data);
@@ -132,41 +132,40 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				
 				//Envia el historial de cambios en la base de datos
 				collection.find().toArray(function(err, res){
-					console.log(res.length);					
+					//console.log(res.length);					
 					io.emit("historial", res);
 				});			
 			}
 
 			//Si se superan los limites se muestra una advertencia
-			if(data.currentValue>=data.warningValue && alertas.find(i=>i.name==data.name)==undefined){
+			if(data.currentValue>=data.warningValue && alertas.find(i=>i.id==data.id)==undefined){
 				//console.log("alerta importante del gobierno")
 				alertas.push(data);
 				io.emit("alerta", alertas);
 			}
-			else if(data.currentValue<data.warningValue && alertas.find(i=>i.name==data.name)!=undefined){
-				let index=alertas.findIndex(i=>i.name==data.name);
+			else if(data.currentValue<data.warningValue && alertas.find(i=>i.id==data.id)!=undefined){
+				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);
 			}
 
-			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
-			if(sensores[0].deviceState && sensores[1].deviceState){
-				alertas.push({name: "tip", warningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
-				io.emit("alerta", alertas);				
-			}
-			else{
-				let index=alertas.findIndex(i=>i.name=="tip");
-				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
-			}
-
-
+			//Si se llega al maximo de temperatura, se cierra la persiana (OFF en la GUI)
 			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
 				sensores[1].deviceState=false;
-				//io.emit("estado-persiana", estadoPersiana);
 				io.emit("cambio-sensor", sensores[1]);
 			}
 
+			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
+			if(sensores[0].deviceState && sensores[1].deviceState && alertas.find(i=>i.name=="tip")==undefined){
+				alertas.push({name: "tip", warningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+				io.emit("alerta", alertas);				
+			}
+			else if(alertas.find(i=>i.name=="tip")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}
 		});
 
 		/**
@@ -183,6 +182,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		client.on("obtener-sensor", (data)=>{
 			let objeto=sensores.find(i=>i.name===data);
 			client.emit("obtener-sensor", objeto);
+			//console.log(objeto);
+		});
+
+		client.on("obtener-sensor-id", (data)=>{
+			let objeto=sensores.find(i=>i.id===data);
+			client.emit("obtener-sensor-id", objeto);
 			//console.log(objeto);
 		});
 
