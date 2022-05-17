@@ -58,6 +58,37 @@ const maxLumens=2000;
 
 let clientes=[];
 let alertas=[];
+let sensores=[
+	{
+		id: 1,
+		name: "temperatura",		//el id html
+		unit: "°C",		//la unidad
+		warningValue: 30,
+		warningMsg: "Temperatura peligrosamente alta, considere tomar medidas",
+		maxValue: 40,
+		imageDir: null,
+		currentValue: 0,
+		deviceState: false
+	},
+	{
+		id: 2,
+		name: "lumens",
+		unit: "lumens",
+		warningValue: 1000,
+		warningMsg: "Luminosidad peligrosamente alta, considere tomar medidas",
+		maxValue: 2000,
+		imageDir: null,
+		currentValue: 0,
+		deviceState: true
+	}	
+]
+//console.log(sensores.length);
+
+/**
+ * cambio-sensor: sustituira a los antiguos de los dos sensores, se le pasa un json
+ * 
+ */
+
 
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
@@ -67,20 +98,69 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 	io.sockets.on('connection', (client) => {
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
-		io.emit("clientes", clientes);
+		io.sockets.emit("clientes", clientes);
 
 		//Estas dos son necesarias para cuando se vuelve del formulario
 		//ya que se produce una desconexion momentanea
-		client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
-		client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
-		client.emit("estado-persiana", estadoPersiana);
-		client.emit("estado-AC", estadoAC);
+		//client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
+		//client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
+		//client.emit("estado-persiana", estadoPersiana);
+		//client.emit("estado-AC", estadoAC);
 		client.emit("alerta", alertas);
-		//client.emit("historial", collection.find().toArray());
 		collection.find().toArray(function(err, res){
 			client.emit("historial", res);	
 		});		
 
+
+		for(let i=0; i<sensores.length; i++)
+			client.emit("cambio-sensor", sensores[i]);
+
+		//RECORDAR QUE AQUI SOLO SE PASA UN JSON, NO UN ARRAY DE JSON
+		client.on("cambio-sensor", (data)=>{
+			console.log(clientes.length)
+		
+			sensores.splice(sensores.findIndex(i=>i.name==data.name), 1, data);
+			
+			io.emit("cambio-sensor", data);
+	
+
+			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
+			
+			collection.find().toArray(function(err, res){
+				io.emit("historial", res);
+			});
+/*
+			//COMPROBAR ESTO
+			if(data.currentValue>=data.warningValue && data.currentValue<=data.maxValue && alertas.find(i=>i.name==data.name)==undefined){
+				alertas.push(data);
+				io.emit("alerta", alertas);
+			}
+			else if(data.currentValue<data.warningValue && alertas.find(i=>i.name==data.name)!=undefined){
+				let index=alertas.find(i=>i.name==data.name);
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);
+			}
+
+
+			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
+				estadoPersiana=false;
+				//io.emit("estado-persiana", estadoPersiana);
+				io.emit("cambio-sensor")
+			}
+			*/
+		});
+
+		client.on("obtener-sensores", (data)=>{
+			client.emit("obtener-sensores", sensores);
+		});
+
+		client.on("obtener-sensor", (data)=>{
+			let objeto=sensores.find(i=>i.name===data);
+			client.emit("obtener-sensor", objeto);
+			//console.log(objeto);
+		});
+
+/*
 		client.on('cambio-temp', (data)=>{
 			temp=data.valor;
 			//console.log("cambio de temp");
@@ -139,8 +219,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("estado-persiana", estadoPersiana);
 			}		
 		});	
-	
-	
+*/
+/*
 		client.on("estado-persiana", (data)=>{
 			estadoPersiana=data;
 			console.log("cambio de estado: "+estadoPersiana);
@@ -154,7 +234,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	
 			io.emit("estado-AC", estadoAC);
 		});			
-	
+*/
+
 		client.on("disconnect", ()=>{
 			let indice=-1;
 	
@@ -167,7 +248,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	
 			if(indice!=-1){
 				clientes.splice(indice, 1);
-				io.emit("clientes", clientes);
+				io.sockets.emit("clientes", clientes);
 			}
 		});
 	});

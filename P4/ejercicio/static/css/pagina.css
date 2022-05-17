@@ -5,10 +5,6 @@ body{
     text-align: center;
 }
 
-body div{
-    /*border: solid 2px red;*/
-}
-
 main{
     display: grid;
     grid-template-rows: auto auto 40px auto auto;

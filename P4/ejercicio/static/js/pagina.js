@@ -7,6 +7,7 @@ if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
 let socket=io.connect(url);
 
 //Uno para el cambio de estado
+/*
 socket.on('cambio-temp', (data)=>{
     let campo=document.getElementById("temperatura");
 
@@ -30,14 +31,34 @@ socket.on('cambio-lumens', (data)=>{
 
     if(data.lumens>=data.lumensWarning && data.lumens<data.maxLumens){
         campo.style.color="yellow";
-
-  //      modificarAlertas(data.alertas);
     }
 
     else if(data.lumens>=data.maxLumens)
         campo.style.color="red";
 
     else if(data.lumens<data.lumensWarning)
+        campo.style.color="";
+});
+*/
+
+socket.on('cambio-sensor', (data)=>{
+    console.log(data)
+    //alert(data.currentValue);
+    //alert(data.name);
+    //alert(data.currentValue+" celsius");
+
+    let campo=document.getElementById(data.name);
+
+    campo.innerText=data.currentValue+" "+data.unit;
+
+    if(data.currentValue>=data.warningValue && data.currentValue<data.maxValue){
+        campo.style.color="yellow";
+    }
+
+    else if(data.currentValue>=data.maxValue)
+        campo.style.color="red";
+
+    else if(data.currentValue<data.warningValue)
         campo.style.color="";
 });
 
