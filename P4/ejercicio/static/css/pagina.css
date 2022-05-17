@@ -72,6 +72,14 @@ main{
 
 .redondeado{
     background-color:#aebba9;
+}
+
+.redondeado-rojo{
+    background-color: #d0724e;
+}
+
+.redondeado,
+.redondeado-rojo{
     border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 
@@ -123,4 +131,10 @@ main{
 
 .apagado > div{
     background-color: grey !important;
+}
+
+#botones-extra{
+    display: grid;
+    grid-template-columns: 70% minmax(0, 1fr);
+    gap: 12px;
 }

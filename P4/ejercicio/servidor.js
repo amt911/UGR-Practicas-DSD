@@ -169,6 +169,16 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			}
 		});
 
+		client.on("delete-sensor", (data)=>{
+			//Igualmente se comprueba en el servidor
+			if(data!="temperatura" && data!="lumens"){
+				let index=sensores.findIndex(i=>i.name==data);
+				sensores.splice(index, 1);
+
+				io.emit("obtener-sensores", sensores);
+			}
+		})
+
 		/**
 		 * Permite obtener todos los sensores que hay instalados en el hogar
 		 */

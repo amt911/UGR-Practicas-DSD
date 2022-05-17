@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Eliminar sensor</title>
+    <link rel="stylesheet" href="static/css/form.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main>
+        <div id="top">
+            <h1>Eliminar sensor</h1>
+        </div>
+        <div id="contenido">
+            <form onsubmit="event.preventDefault(); enviar();">
+                <label>Nombre del sensor</label>
+                <select id="sensor">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                </select>
+
+                <br/>  <br/>              
+
+                <button>Enviar</button>
+            </form>
+            <br/>
+            <div><a href="pagina.html">Volver a la página inicial</a></div>
+        </div>
+
+    </main>
+
+</body>
+
+<!--script src="/socket.io/socket.io.js"></script-->
+<script src="node_modules/socket.io/client-dist/socket.io.js"></script>
+<script src="static/js/delete_sensor.js"></script>    
+</html>
