@@ -140,6 +140,7 @@ function actualizarLista(usuarios){
 }
 
 function actualizarHistorial(mediciones){
+    console.log("entrada")
     let historial=document.getElementById("historial");
     historial.innerHTML="";
 
@@ -152,6 +153,9 @@ function actualizarHistorial(mediciones){
         item.innerHTML="<strong>Evento:</strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha;
         lista.appendChild(item);
     }
+
+    console.log("salida")
+    console.log("length: "+mediciones.length);
 }
 
 socket.on("historial", (collection)=>{

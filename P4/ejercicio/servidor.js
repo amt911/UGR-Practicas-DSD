@@ -46,16 +46,6 @@ console.log("Servicio HTTP iniciado");
 let io=socketio(httpServer);
 
 //Variables
-let temp=0;
-let lumens=0;
-let estadoAC=false;				//false=apagado
-let estadoPersiana=true;		//false=bajado
-
-const tempWarning=30;
-const lumensWarning=1000;
-const maxTemp=40;
-const maxLumens=2000;
-
 let clientes=[];
 let alertas=[];
 let sensores=[
@@ -103,12 +93,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
 		io.sockets.emit("clientes", clientes);
 
-		//Estas dos son necesarias para cuando se vuelve del formulario
-		//ya que se produce una desconexion momentanea
-		//client.emit("cambio-temp", {temp: temp, tempWarning: tempWarning, maxTemp: maxTemp});
-		//client.emit("cambio-lumens", {lumens: lumens, lumensWarning: lumensWarning, maxLumens: maxLumens});
-		//client.emit("estado-persiana", estadoPersiana);
-		//client.emit("estado-AC", estadoAC);
 		client.emit("alerta", alertas);
 		collection.find().toArray(function(err, res){
 			client.emit("historial", res);	
@@ -119,23 +103,35 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
 
-		//RECORDAR QUE AQUI SOLO SE PASA UN JSON, NO UN ARRAY DE JSON
+		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
 			//console.log(clientes.length)
-		
+			let index=sensores.findIndex(i=>i.name==data.name);
+			let cambioValor=(data.currentValue==sensores[index].currentValue)? false : true;
+			console.log(index)
+
 			//Inserta el nuevo estado del sensor pasado
-			sensores.splice(sensores.findIndex(i=>i.name==data.name), 1, data);
+			sensores.splice(index, 1, data);
 			
 			//Multicast a los clientes del cambio
 			io.emit("cambio-sensor", data);
 
 			//Insercion de lo realizado en la base de datos
-			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
-			
-			//Envia el historial de cambios en la base de datos
-			collection.find().toArray(function(err, res){
-				io.emit("historial", res);
-			});
+			//No se envian datos actualizados debido a que no se han propagado aun
+			if(cambioValor){
+				//console.log("entra culiao");
+				collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});				//ARREGLAR PARA QUE SIGA EL ESTANDAR QUE HE DEFINIDO
+				
+				//Envia el historial de cambios en la base de datos
+				collection.find().toArray(function(err, res){
+					console.log(res.length);					
+					io.emit("historial", res);
+				});
+				collection.find().toArray(function(err, res){
+					console.log("im"+res.length);					
+					//io.emit("historial", res);
+				});				
+			}
 
 			//console.log(data);
 

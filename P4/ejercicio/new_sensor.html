@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo sensor</title>
+    <link rel="stylesheet" href="static/css/form.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main>
+        <div id="top">
+            <h1>Añadir sensor nuevo</h1>
+        </div>
+        <div id="contenido">
+            <form onsubmit="event.preventDefault(); enviar();">
+                <label>Nombre del sensor (sin espacios, quizas comprobarlo en js)</label>
+                <br/>
+                <input type="text"/>
+
+                <br/><br/>
+
+                <label>Nombre del actuador</label>
+                <br/>
+                <input type="text"/>
+
+                <br/>  <br/> 
+
+                <label>Unidades</label>
+                <br/>
+                <input type="text"/>
+
+                <br/><br/>
+
+                <label>Valor de alerta</label>
+                <br/>
+                <input type="text"/>
+
+                <br/><br/>
+
+                <label>Mensaje de alerta</label>
+                <br/>
+                <input type="text"/>
+
+                <br/><br/>
+                
+                <label>Valor maximo aceptado</label>
+                <br/>
+                <input type="text"/>
+
+                <br/><br/>
+                
+                <label>Directorio de la imagen asociada</label>
+                <br/>
+                <input type="text"/>
+
+                <br/>  <br/>              
+
+                <button>Enviar</button>
+            </form>
+            <br/>
+            <div><a href="pagina.html">Volver a la página inicial</a></div>
+        </div>
+
+    </main>
+
+</body>
+
+<!--script src="/socket.io/socket.io.js"></script-->
+<script src="node_modules/socket.io/client-dist/socket.io.js"></script>
+<script src="static/js/new_sensor.js"></script>    
+</html>

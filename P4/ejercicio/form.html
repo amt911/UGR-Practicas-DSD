@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Panel de monitorización</title>
+    <title>Cambio medición</title>
     <link rel="stylesheet" href="static/css/form.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,10 +14,10 @@
 <body>
     <main>
         <div id="top">
-            <h1>Cambio de temperatura</h1>
+            <h1>Cambio de medición sensor</h1>
         </div>
 
-        <div>
+        <div id="contenido">
             <form onsubmit="event.preventDefault(); enviar(); console.log('a');">
                 <label>sensor</label><br/>
                 <select id="sensor">
@@ -25,16 +25,17 @@
                     <option>prueba</option>
                     <option>prueba</option>
                 </select>
-                <br/>
+                <br/><br/>
 
                 <label>Nuevo valor</label><br />
                 <input type="text" id="cuadro" /><br /><br />
 
                 <button>Enviar</button>
             </form>
+            <br/>
+            <div><a href="pagina.html">Volver a la página inicial</a></div>
         </div>
 
-        <div><a href="pagina.html">Volver a la página inicial</a></div>
     </main>
 
 </body>
