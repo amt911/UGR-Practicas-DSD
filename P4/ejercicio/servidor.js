@@ -176,6 +176,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				sensores.splice(index, 1);
 
 				io.emit("obtener-sensores", sensores);
+
+				if(alertas.find(i=>i.name==data)!=undefined){
+					alertas.splice(alertas.findIndex(i=>i.name==data), 1);
+					io.emit("alerta", alertas);
+				}
 			}
 		})
 
