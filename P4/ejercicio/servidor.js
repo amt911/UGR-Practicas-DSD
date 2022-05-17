@@ -135,8 +135,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			console.log(data);
 			//COMPROBAR ESTO
-			if(data.currentValue>=data.warningValue && data.currentValue<=data.maxValue && alertas.find(i=>i.name==data.name)==undefined){
-				console.log("alerta importante del gobierno")
+			if(data.currentValue>=data.warningValue && alertas.find(i=>i.name==data.name)==undefined){
+				//console.log("alerta importante del gobierno")
 				alertas.push(data);
 				io.emit("alerta", alertas);
 			}

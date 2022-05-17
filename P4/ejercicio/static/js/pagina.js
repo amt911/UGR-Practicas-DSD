@@ -50,8 +50,6 @@ socket.on('cambio-sensor', (data)=>{
 
     let campo=document.getElementById(data.name);
 
-    console.log("ya no es null")
-    console.log(campo)
     campo.innerText=data.currentValue+" "+data.unit;
 
     if(data.currentValue>=data.warningValue && data.currentValue<data.maxValue){
