@@ -13,7 +13,7 @@ socket.on("obtener-sensores", (data)=>{
 	select.innerHTML="";
 
 	//Prohibimos eliminar los originales
-	for(let i=2; i<data.length; i++){
+	for(let i=3; i<data.length; i++){
 		let aux=document.createElement("option");
 		aux.innerHTML=data[i].name;
 

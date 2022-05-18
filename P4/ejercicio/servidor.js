@@ -131,6 +131,13 @@ let actuadores=[
 		state: false,
 		idName: "radiador",
 		img: "per-down.jpg"
+	},
+	{
+		id: 5,
+		name: "Humidificador",
+		state: false,
+		idName: "humidificador",
+		img: "per-down.jpg"
 	}		
 ]
 
@@ -210,17 +217,73 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("cambio-actuador", data);
 
+			console.log("ANTES ----------------------------------")
+			console.log(actuadores[0]);
+			console.log(actuadores[1]);
+			console.log(actuadores[3]);
+			console.log("ANTES ----------------------------------")
+
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
-			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip")==undefined){
-				alertas.push({name: "tip", maxWarningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
+				alertas.push({name: "tip1", maxWarningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
 				io.emit("alerta", alertas);				
 			}
-			else if(alertas.find(i=>i.name=="tip")!=undefined){
-				let index=alertas.findIndex(i=>i.name=="tip");
+			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
+				console.log("1**********************")
+				let index=alertas.findIndex(i=>i.name=="tip1");
 				
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);				
 			}			
+
+			//Si el radiador y la ventana estan encendidos y abiertos
+			if(actuadores[3].state && actuadores[1].state && alertas.find(i=>i.name=="tip2")==undefined){
+				alertas.push({name: "tip2", maxWarningMsg:"Radiador encendido y ventana abierta, es recomendable realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[3].state && actuadores[1].state) && alertas.find(i=>i.name=="tip2")!=undefined){
+				console.log("2**********************")
+				let index=alertas.findIndex(i=>i.name=="tip2");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}						
+
+			//console.log("mec")
+			//Si el radiador y el aire acondicionado estan encendidos
+			if(actuadores[3].state && actuadores[0].state && alertas.find(i=>i.name=="tip3")==undefined){
+				alertas.push({name: "tip3", maxWarningMsg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[3].state && actuadores[0].state) && alertas.find(i=>i.name=="tip3")!=undefined){
+				console.log("3**********************")
+				let index=alertas.findIndex(i=>i.name=="tip3");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}						
+
+			//Si el humidificador y el deshumidificador estan encendidos
+			if(actuadores[2].state && actuadores[4].state && alertas.find(i=>i.name=="tip4")==undefined){
+				alertas.push({name: "tip4", maxWarningMsg:"Humidificador y deshumidificador encendidos, se recomienda realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[2].state && actuadores[4].state) && alertas.find(i=>i.name=="tip4")!=undefined){
+				console.log("3**********************")
+				let index=alertas.findIndex(i=>i.name=="tip4");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}	
+
+			console.log("DESPUES ----------------------------------")
+			console.log(actuadores[0]);
+			console.log(actuadores[1]);
+			console.log(actuadores[3]);
+			console.log(alertas.find(i=>i.name=="tip1"))
+			console.log(alertas.find(i=>i.name=="tip2"))
+			console.log(alertas.find(i=>i.name=="tip3"))			
+			console.log("DESPUES ----------------------------------")
 		});
 
 		client.on("obtener-actuador-id", (data)=>{
