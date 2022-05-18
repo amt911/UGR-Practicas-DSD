@@ -83,6 +83,11 @@ let sensores=[
  */
 
 
+/**
+ * El chat sera un array donde se almacene: id, hora, mensaje
+ */
+let mensajes=[];		//Inicialmente sera un array de string
+
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
 
@@ -97,10 +102,14 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			client.emit("historial", res);	
 		});		
 
-		client.emit("obtener-sensores", sensores);
+		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
 
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
+
+
+		client.emit("recibir-msgs", mensajes);
+
 
 		console.log(sensores);
 
@@ -111,6 +120,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			io.emit("obtener-sensores", sensores);
 		});
 
+		//PARTE CHAT-----------------------------------------
+		client.on("enviar-msg", (data)=>{
+			mensajes.push(data);
+
+			io.emit("recibir-msgs", mensajes);
+		})
+		//---------------------------------------------------
+
+
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
 			let index=sensores.findIndex(i=>i.id==data.id);
@@ -120,7 +138,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			sensores.splice(index, 1, data);
 			
 			//Multicast a los clientes del cambio
-			io.emit("cambio-sensor", data);
+			io.emit("cambio-sensor", data);		//NO LO ENTIENDO, REVISAR
 
 			//Insercion de lo realizado en la base de datos
 			//No se envian datos actualizados debido a que no se han propagado aun

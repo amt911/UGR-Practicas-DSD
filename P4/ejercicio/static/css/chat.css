@@ -1,0 +1,63 @@
+body{
+    font-family: 'Roboto', sans-serif;
+    /*background-color: beige;*/
+    min-width: max-content;
+    text-align: center;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+}
+
+body div{
+    /*border: solid 1px red;*/
+}
+
+main{
+    display: grid;
+    grid-template-columns: 30% minmax(70%, 200px);
+    grid-auto-rows: 95vh;
+    border-radius: inherit;
+    position: relative;
+    height: 95vh;
+    width: 100%;
+}
+
+#chat{
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) 50px ;
+}
+
+#seccion-chat{
+    padding: 5px;
+    display: grid;
+    grid-auto-rows: max-content;
+    gap: 12px;
+    word-break: break-word;
+    overflow-y: scroll;
+    border: solid 1px red;
+}
+
+#posicion-envio{
+    display: grid;
+    grid-template-columns: 90% 10%;
+    grid-auto-rows: 1fr;
+}
+
+#texto{
+    resize: none;
+    width: 90%;
+}
+
+#contactos{
+    background-color: beige;
+    border-right: solid 3px black;
+}
+
+.mensaje{
+    border: solid 1px black;
+    border-radius: 8px;
+}
+
+.usuario{
+    text-align: start;
+    margin-bottom: 5px;
+}

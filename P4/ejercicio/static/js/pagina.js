@@ -225,3 +225,23 @@ alertasClick.addEventListener("click", ()=>{
         desplegable.style.display="";
     }
 });
+
+
+
+
+
+//Seccion para las opciones extra
+let opcionesOpen=true;
+let opcionesClick=document.getElementById("mensaje-opciones");
+opcionesClick.addEventListener("click", ()=>{
+    let desplegable=document.getElementById("desplegable-opciones");
+
+    if(opcionesOpen){
+        opcionesOpen=false;
+        desplegable.style.display="grid";
+    }
+    else{
+        opcionesOpen=true;
+        desplegable.style.display="";
+    }
+});

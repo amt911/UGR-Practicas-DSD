@@ -14,11 +14,12 @@ main{
 #top{
     background-color: #9eb784;
     display: grid;
-    grid-template-columns: 80% 1fr;
+    grid-template-columns: 1fr 60% 1fr;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-#alertas{
+#alertas,
+#opciones{
     display: flex;
     align-items: center;
     justify-content: center;
@@ -124,7 +125,26 @@ main{
     z-index: 10;
 }
 
-#desplegable > div{
+#desplegable-opciones{
+    width: 20vw;
+    left: 0%;
+    position: absolute;
+    top: 100%;
+    
+    
+    background-color: rgba(105, 108, 111);
+    
+    display: none;
+    grid-template-rows: auto;
+    gap: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 0 8px 8px 8px;
+    padding: 5px;
+    z-index: 8;    
+}
+
+#desplegable > div,
+#desplegable-opciones > div{
     color: black;
     background-color: beige;
     border-radius: 3px;
