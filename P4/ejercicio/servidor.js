@@ -87,11 +87,15 @@ let sensores=[
  * El chat sera un array donde se almacene: id, hora, mensaje
  */
 let mensajes=[];		//Inicialmente sera un array de string
-
+let usuariosRegistrados=[];	//Usuarios ya registrados
+let interval;		//Usado para los intervalos
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
 
 	let collection=dbo.collection("accionesSensores");
+	//Teoricamente recibe la coleccion con los mensajes y usuarios registrados
+
+
 
 	io.sockets.on('connection', (client) => {
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
@@ -119,7 +123,20 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			sensores.push(data);
 			io.emit("obtener-sensores", sensores);
 		});
+/*
+		interval=setInterval(()=>{
+				if(sensores[0].deviceState && sensores[1].deviceState)
+					sensores[0].currentValue-=0.5;
+				else if(!sensores[0].deviceState && sensores[1].deviceState)
+					sensores[0].currentValue++;
+				else if(sensores[0].deviceState && !sensores[1].deviceState)
+					sensores[0].currentValue--;
+				else if(!sensores[0].deviceState && !sensores[1].deviceState)
+					sensores[0].currentValue+=0.5;
 
+			io.emit("cambio-sensor", sensores[0]);
+		}, 2000);
+*/
 		//PARTE CHAT-----------------------------------------
 		client.on("enviar-msg", (data)=>{
 			mensajes.push(data);
@@ -127,7 +144,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			io.emit("recibir-msgs", mensajes);
 		})
 		//---------------------------------------------------
-
 
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
