@@ -51,6 +51,7 @@ let alertas=[];
 let sensores=[
 	{
 		id: 1,
+		sensorName: "Termómetro",
 		name: "temperatura",		//el id html
 		unit: "°C",		//la unidad
 		warningValue: 30,
@@ -58,11 +59,10 @@ let sensores=[
 		maxValue: 40,
 		imageDir: null,
 		currentValue: 0,
-		deviceState: false,
-		deviceName: "Aire acondicionado"
 	},
 	{
 		id: 2,
+		sensorName: "Sensor de luminosidad",
 		name: "lumens",
 		unit: "lumens",
 		warningValue: 1000,
@@ -70,8 +70,24 @@ let sensores=[
 		maxValue: 2000,
 		imageDir: null,
 		currentValue: 0,
-		deviceState: false,
-		deviceName: "Persiana ventana"
+	}	
+]
+
+let actuadores=[
+	{
+		id: 1,
+		name: "Aire acondicionado",
+		state: false,
+		idName: "AC",
+		img: "ac-off.jpg"
+	},
+
+	{
+		id: 2,
+		name: "Persiana",
+		state: false,
+		idName: "ventana",
+		img: "per-down.jpg"
 	}	
 ]
 
@@ -107,10 +123,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		});		
 
 		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
+		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
 
+		//Obliga a actualizar el div 
 		for(let i=0; i<sensores.length; i++)
 			client.emit("cambio-sensor", sensores[i]);
 
+		//Obliga a poner el div con el estilo actualizado
+		for(let i=0; i<actuadores.length; i++)
+			client.emit("cambio-actuador", actuadores[i]);
 
 		client.emit("recibir-msgs", mensajes);
 
@@ -137,6 +158,27 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			io.emit("cambio-sensor", sensores[0]);
 		}, 2000);
 */
+
+
+		//PARTE ACTUADORES NUEVO-----------------------------
+		client.on("obtener-actuadores", ()=>{
+			client.emit("obtener-actuadores", actuadores);
+		})
+
+
+		client.on("cambio-actuador", (data)=>{
+			let index=actuadores.findIndex(i=>i.id==data.id);
+
+			actuadores.splice(index, 1, data);
+
+			io.emit("cambio-actuador", data);
+		});
+
+		client.on("obtener-actuador-id", (data)=>{
+			client.emit("obtener-actuador-id", actuadores.find(i=>i.id==data));
+		});
+		//---------------------------------------------------
+
 		//PARTE CHAT-----------------------------------------
 		client.on("enviar-msg", (data)=>{
 			mensajes.push(data);

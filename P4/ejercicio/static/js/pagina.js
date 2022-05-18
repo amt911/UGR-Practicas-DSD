@@ -39,11 +39,11 @@ function toggleActuador(data){
 }
 
 function setActuador(data){
-    let estadoActuador=document.getElementById("estado-"+data.name);
-    let imagen=document.getElementById("imagen-"+data.name);
-    let divSensor=document.getElementById("div-"+data.name);
+    let estadoActuador=document.getElementById("estado-"+data.idName);
+    let imagen=document.getElementById("imagen-"+data.idName);
+    let divSensor=document.getElementById("div-"+data.idName);
 
-    if(!data.deviceState){
+    if(!data.state){
         estadoActuador.innerText="OFF";
         imagen.style.filter="grayscale(100%)";
 
@@ -69,25 +69,18 @@ socket.on("obtener-sensores", (data)=>{
 
 
     for(let i=data.length-1; i>=0; i--){
-        //let estado=(data[i].deviceState)? "ON" : "OFF";
-
         cards.insertAdjacentHTML("afterbegin", 
-        "<div id=\"div-"+data[i].name+"\" class=\"secciones-aparato apagado\">"+
-        "<div class=\"negrita grande fondo-sec estado\">"+
-            "<div>"+
-                data[i].deviceName+
-            "</div>"+
-            "<div class=\"rojo\" id=\"estado-"+data[i].name+"\">"+
-                "OFF"+
-            "</div>"+
+        "<div id=\"div-"+data[i].name+"\" class=\"secciones-aparato\">"+
+        "<div class=\"negrita grande fondo-sec\">"+
+            data[i].sensorName+
         "</div>"+
         "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
-        "<div id=\"pad-horizontal\">"+      //eliminar pad-horizontal, puede que no haga falta
-            "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/ac-off.jpg\" style=\"filter: grayscale(100%)\"/>"+        //CAMBIAR PARA LA ENTREGA
+        "<div class=\"pad-horizontal\">"+      //eliminar pad-horizontal, puede que no haga falta
+            "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/ac-off.jpg\"/>"+        //CAMBIAR PARA LA ENTREGA
         "</div>"+
     "</div>")
     }
-
+/*
     let aparatos=document.getElementsByClassName("secciones-aparato");
 
     for(let i=0; i<aparatos.length; i++){
@@ -96,10 +89,10 @@ socket.on("obtener-sensores", (data)=>{
             socket.emit("obtener-sensor-id", data[i].id);
         });
     }
-
+*/
     console.log(data)
 })
-
+/*
 socket.on("obtener-sensor-id", (data)=>{
     if(data.deviceState)
         data.deviceState=false;
@@ -110,7 +103,7 @@ socket.on("obtener-sensor-id", (data)=>{
 
     socket.emit("cambio-sensor", data);
 })
-
+*/
 socket.on('cambio-sensor', (data)=>{
     console.log("cambio-sensor")
     console.log(data)
@@ -131,7 +124,7 @@ socket.on('cambio-sensor', (data)=>{
     else if(data.currentValue<data.warningValue)
         campo.style.color="";
 
-    setActuador(data);
+    //setActuador(data);
 });
 
 
@@ -245,3 +238,59 @@ opcionesClick.addEventListener("click", ()=>{
         desplegable.style.display="";
     }
 });
+
+
+
+//----------------------------------------------------------------------------------
+
+socket.on("obtener-actuadores", (data)=>{
+    let contenedor=document.getElementById("actuadores-container");
+    contenedor.innerHTML="";
+
+    for(let i=data.length-1; i>=0; i--){
+        contenedor.insertAdjacentHTML("afterbegin", 
+            "<div class=\"div-actuadores\">"+
+            "<div id=\"div-"+data[i].idName+"\" class=\"secciones-aparato apagado\">"+
+                "<div class=\"negrita grande fondo-sec estado\">"+
+                    "<div>"+
+                        data[i].name+
+                    "</div>"+
+                    "<div class=\"rojo\" id=\"estado-"+data[i].idName+"\">"+
+                        "OFF"+
+                    "</div>"+
+                "</div>"+
+                "<div class=\"pad-horizontal\">"+
+                    "<img id=\"imagen-"+data[i].idName+"\" class=\"imagen\" src=\"static/images/"+data[i].img+"\" style=\"filter: grayscale(100%)\"/>"+
+                "</div>"+
+            "</div>"+
+        "</div>"            
+        );
+    }
+
+    let actuadores=document.getElementsByClassName("div-actuadores");
+
+    for(let i=0; i<actuadores.length; i++){
+        actuadores[i].addEventListener("click", ()=>{
+            //alert(data[i].id);
+            socket.emit("obtener-actuador-id", data[i].id);
+        });
+    }    
+
+})
+
+socket.on("obtener-actuador-id", (data)=>{
+    console.log("antes: "+data.state)
+    data.state=(data.state)? false : true;
+    console.log("despues: "+data.state)
+    socket.emit("cambio-actuador", data);
+});
+
+socket.on("cambio-actuador", (data)=>{
+    let estado=document.getElementById("estado-"+data.idName);
+    estado.value=(data.state)? "ON" : "OFF";
+
+    console.log("cambio en el actuador")
+    setActuador(data);
+});
+
+//----------------------------------------------------------------------------------

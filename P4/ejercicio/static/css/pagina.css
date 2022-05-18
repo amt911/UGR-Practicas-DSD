@@ -7,7 +7,7 @@ body{
 
 main{
     display: grid;
-    grid-template-rows: repeat(2, auto) repeat(3, 40px) repeat(2, auto);
+    grid-template-rows: repeat(3, auto) repeat(3, 40px) repeat(2, auto);
     gap: 30px;
 }
 
@@ -191,7 +191,7 @@ main{
     grid-template-rows: auto 300px;
 }
 
-#pad-horizontal{
+.pad-horizontal{
     padding: 10px 0;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -199,4 +199,15 @@ main{
 
 #div-temperatura{
     border-radius: 8px;
+}
+
+.div-actuadores{
+    display: grid;
+    grid-template-rows: auto;
+}
+
+#actuadores-container{
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 12px;
 }
