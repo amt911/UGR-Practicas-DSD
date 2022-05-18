@@ -64,7 +64,7 @@ let sensores=[
 		blueValue: 0,
 		minValue: -60,		
 		imageDir: null,
-		currentValue: 0,
+		currentValue: 20,
 	},
 	{
 		id: 2,
@@ -79,7 +79,7 @@ let sensores=[
 		lowWarningValue: 500,
 		minWarningMsg: "Luminosidad demasiado baja, considere abrir la ventana o encender la luz",
 		blueValue: 200,
-		minValue: 0,		
+		minValue: 750,		
 		imageDir: null,
 		currentValue: 0,
 	},
@@ -98,7 +98,7 @@ let sensores=[
 		blueValue: 20,
 		minValue: 0,
 		imageDir: null,
-		currentValue: 0,
+		currentValue: 55,
 	}
 ]
 
@@ -167,14 +167,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
 		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
-
-		//Obliga a actualizar el div 
-		//for(let i=0; i<sensores.length; i++)
-		//	client.emit("cambio-sensor", sensores[i]);
-
-		//Obliga a poner el div con el estilo actualizado
-		for(let i=0; i<actuadores.length; i++)
-			client.emit("cambio-actuador", actuadores[i]);
 
 		client.emit("recibir-msgs", mensajes);
 

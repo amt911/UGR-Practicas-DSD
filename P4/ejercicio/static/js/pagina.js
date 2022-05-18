@@ -135,28 +135,6 @@ socket.on('cambio-sensor', (data)=>{
     console.log(data)
 
     setSensorValores(data);
-    /*
-
-    let campo=document.getElementById(data.name);
-
-    campo.innerText=data.currentValue+" "+data.unit;
-
-    if((data.currentValue>=data.highWarningValue && data.currentValue<data.redValue) ||
-    data.currentValue<=data.lowWarningValue && data.currentValue>data.blueValue){
-        campo.style.color="yellow";
-    }
-
-    else if(data.currentValue>=data.redValue && data.currentValue<=data.maxValue)
-        campo.style.color="red";
-
-    else if(data.currentValue<data.highWarningValue && data.currentValue>data.lowWarningValue)
-        campo.style.color="";
-    
-    else if(data.currentValue<=data.blueValue && data.currentValue>=data.minValue)
-    campo.style.color="blue";
-
-
-    */
 });
 
 
@@ -297,6 +275,7 @@ socket.on("obtener-actuadores", (data)=>{
             "</div>"+
         "</div>"            
         );
+        setActuador2(data[i]);
     }
 
     let actuadores=document.getElementsByClassName("div-actuadores");
@@ -311,23 +290,39 @@ socket.on("obtener-actuadores", (data)=>{
 })
 
 socket.on("obtener-actuador-id", (data)=>{
-    console.log("antes: "+data.state)
+    //console.log("antes: "+data.state)
     data.state=(data.state)? false : true;
-    console.log("despues: "+data.state)
+    //console.log("despues: "+data.state)
     socket.emit("cambio-actuador", data);
 });
 
-socket.on("cambio-actuador", (data)=>{
+function setActuador2(data){
     let estado=document.getElementById("estado-"+data.idName);
-    console.log(data);
-    console.log(estado);
-    console.log("------------antes actuador: "+estado.innerText)
+    //console.log(data);
+    //console.log(estado);
+    //console.log("------------antes actuador: "+estado.innerText)
     estado.innerText=(data.state)? "ON" : "OFF";
 
-    console.log("------------despues actuador: "+estado.innerText)
+    //console.log("------------despues actuador: "+estado.innerText)
+    //console.log("cambio en el actuador")
+    setActuador(data);    
+}
 
-    console.log("cambio en el actuador")
+socket.on("cambio-actuador", (data)=>{
+    /*
+    let estado=document.getElementById("estado-"+data.idName);
+    //console.log(data);
+    //console.log(estado);
+    //console.log("------------antes actuador: "+estado.innerText)
+    estado.innerText=(data.state)? "ON" : "OFF";
+
+    //console.log("------------despues actuador: "+estado.innerText)
+    //console.log("cambio en el actuador")
     setActuador(data);
+
+    */
+
+    setActuador2(data);
 });
 
 //----------------------------------------------------------------------------------

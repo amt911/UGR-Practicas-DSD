@@ -15,17 +15,17 @@ function enviar(){
 		sensorName: document.getElementById("sensor-name").value,
 		name: document.getElementById("sensor-name").value.replaceAll(" ", "-"),
 		unit: document.getElementById("unit").value,
-		highWarningValue: parseInt(document.getElementById("high-warning-value").value),
+		highWarningValue: parseFloat(document.getElementById("high-warning-value").value),
 		maxWarningMsg: document.getElementById("max-warning-msg").value,
-		redValue: parseInt(document.getElementById("red-value").value),
-		maxValue: parseInt(document.getElementById("max-value").value),
+		redValue: parseFloat(document.getElementById("red-value").value),
+		maxValue: parseFloat(document.getElementById("max-value").value),
 
-		lowWarningValue: parseInt(document.getElementById("low-warning-value").value),
+		lowWarningValue: parseFloat(document.getElementById("low-warning-value").value),
 		minWarningMsg: document.getElementById("min-warning-msg").value,
-		blueValue: parseInt(document.getElementById("blue-value").value),
-		minValue: parseInt(document.getElementById("min-value").value),
+		blueValue: parseFloat(document.getElementById("blue-value").value),
+		minValue: parseFloat(document.getElementById("min-value").value),
 		imageDir: document.getElementById("image-dir").value,
-		currentValue: 0,
+		currentValue: (parseFloat(document.getElementById("high-warning-value").value)+parseFloat(document.getElementById("low-warning-value").value))/2,
     }
 
     socket.emit("add-sensor", res);
