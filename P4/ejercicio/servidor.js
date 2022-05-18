@@ -210,6 +210,10 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		})
 
 
+		/**
+		 * Evento que capta cuando se realiza un cambio en un actuador. Ademas comprueba 
+		 * si se ha producido alguna alerta.
+		 */
 		client.on("cambio-actuador", (data)=>{
 			let index=actuadores.findIndex(i=>i.id==data.id);
 
@@ -217,19 +221,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("cambio-actuador", data);
 
-			console.log("ANTES ----------------------------------")
-			console.log(actuadores[0]);
-			console.log(actuadores[1]);
-			console.log(actuadores[3]);
-			console.log("ANTES ----------------------------------")
-
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
 				alertas.push({name: "tip1", maxWarningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
-				console.log("1**********************")
 				let index=alertas.findIndex(i=>i.name=="tip1");
 				
 				alertas.splice(index, 1);
@@ -242,7 +239,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[3].state && actuadores[1].state) && alertas.find(i=>i.name=="tip2")!=undefined){
-				console.log("2**********************")
 				let index=alertas.findIndex(i=>i.name=="tip2");
 				
 				alertas.splice(index, 1);
@@ -256,7 +252,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[3].state && actuadores[0].state) && alertas.find(i=>i.name=="tip3")!=undefined){
-				console.log("3**********************")
 				let index=alertas.findIndex(i=>i.name=="tip3");
 				
 				alertas.splice(index, 1);
@@ -269,21 +264,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[2].state && actuadores[4].state) && alertas.find(i=>i.name=="tip4")!=undefined){
-				console.log("3**********************")
 				let index=alertas.findIndex(i=>i.name=="tip4");
 				
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);				
 			}	
-
-			console.log("DESPUES ----------------------------------")
-			console.log(actuadores[0]);
-			console.log(actuadores[1]);
-			console.log(actuadores[3]);
-			console.log(alertas.find(i=>i.name=="tip1"))
-			console.log(alertas.find(i=>i.name=="tip2"))
-			console.log(alertas.find(i=>i.name=="tip3"))			
-			console.log("DESPUES ----------------------------------")
 		});
 
 		client.on("obtener-actuador-id", (data)=>{
@@ -318,6 +303,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("historial", res);
 			});			
 
+
+			
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.highWarningValue && alertas.find(i=>i.id==data.id)==undefined){
 				alertas.push(data);
@@ -329,7 +316,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);
 			}
 
-			//Si se llega al maximo de temperatura y de lumens, se cierra la persiana (OFF en la GUI)
+
+			//Parte de accionar actuadores dependiendo de los valores
+			//Si se llega al maximo de temperatura o de lumens, se cierra la persiana (OFF en la GUI)
 			if(sensores[0].currentValue>=sensores[0].maxValue || sensores[1].currentValue>=sensores[1].maxValue){
 				actuadores[1].state=false;
 				//console.log(actuadores[1]);
@@ -339,6 +328,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				actuadores[0].state=true;
 				io.emit("cambio-actuador", actuadores[0]);
 
+				//Si antes estaban los dos accionados, se deben eliminar
 				if(alertas.find(i=>i.name=="tip")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip");
 					alertas.splice(index, 1);
@@ -346,6 +336,65 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				}
 			}
 
+			//Si se llega a un maximo de humedad, se acciona el deshumidificador y se apaga el humidificador (si no lo estaba)
+			if(sensores[2].currentValue>=sensores[2].maxValue){
+				actuadores[2].state=true;
+				actuadores[4].state=false;
+
+				io.emit("cambio-actuador", actuadores[2]);
+				io.emit("cambio-actuador", actuadores[4]);
+
+				if(alertas.find(i=>i.name=="tip4")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip4");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}				
+			}
+			//Estos dos (el de arriba y el de abajo) se pueden juntar
+			//Si se llega a un minimo de humedad, se acciona el humidificador y se apaga el deshumidificador (si no lo estaba)
+			if(sensores[2].currentValue<=sensores[2].minValue){
+				actuadores[2].state=false;
+				actuadores[4].state=true;
+
+				io.emit("cambio-actuador", actuadores[2]);
+				io.emit("cambio-actuador", actuadores[4]);
+
+				if(alertas.find(i=>i.name=="tip4")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip4");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}				
+			}
+
+			//Si se llega a un minimo de temperatura, se acciona el radiador, se apaga el aire y se cierran las ventanas
+			if(sensores[0].currentValue<=sensores[0].minValue){
+				actuadores[0].state=false;
+				actuadores[1].state=false;
+				actuadores[3].state=true;
+
+				io.emit("cambio-actuador", actuadores[0]);
+				io.emit("cambio-actuador", actuadores[1]);
+				io.emit("cambio-actuador", actuadores[3]);
+
+				//Si existian alertas por conflicto de actuadores, se eliminan
+				if(alertas.find(i=>i.name=="tip1")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip1");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}
+
+				if(alertas.find(i=>i.name=="tip2")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip2");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}				
+
+				if(alertas.find(i=>i.name=="tip3")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip3");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}				
+			}
 		});
 
 		/**
