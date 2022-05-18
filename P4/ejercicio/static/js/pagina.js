@@ -82,7 +82,7 @@ socket.on("obtener-sensores", (data)=>{
             "</div>"+
         "</div>"+
         "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
-        "<div >"+
+        "<div id=\"pad-horizontal\">"+      //eliminar pad-horizontal, puede que no haga falta
             "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/ac-off.jpg\" style=\"filter: grayscale(100%)\"/>"+        //CAMBIAR PARA LA ENTREGA
         "</div>"+
     "</div>")
@@ -211,7 +211,7 @@ socket.on("alerta", (alertas)=>{
 });
 
 
-let esOpen=false;
+let esOpen=true;
 let alertasClick=document.getElementById("alertas");
 alertasClick.addEventListener("click", ()=>{
     let desplegable=document.getElementById("desplegable");

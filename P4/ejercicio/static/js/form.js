@@ -29,7 +29,7 @@ obtenerSensores();
 let valor=0;
 function enviar(){
     let sensor=document.getElementById("sensor").value;
-	valor=document.getElementById("cuadro").value;
+	valor=parseInt(document.getElementById("cuadro").value);
 	socket.emit("obtener-sensor", sensor);		
 }
 

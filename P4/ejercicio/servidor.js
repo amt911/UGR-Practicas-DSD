@@ -113,11 +113,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
-			//console.log(sensores);
-			//console.log(clientes.length)
 			let index=sensores.findIndex(i=>i.id==data.id);
 			let cambioValor=(data.currentValue==sensores[index].currentValue)? false : true;
-			//console.log(index)
 
 			//Inserta el nuevo estado del sensor pasado
 			sensores.splice(index, 1, data);
@@ -128,19 +125,16 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//Insercion de lo realizado en la base de datos
 			//No se envian datos actualizados debido a que no se han propagado aun
 			if(cambioValor){
-				//console.log("entra culiao");
 				collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
 				
 				//Envia el historial de cambios en la base de datos
 				collection.find().toArray(function(err, res){
-					//console.log(res.length);					
 					io.emit("historial", res);
 				});			
 			}
 
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.warningValue && alertas.find(i=>i.id==data.id)==undefined){
-				//console.log("alerta importante del gobierno")
 				alertas.push(data);
 				io.emit("alerta", alertas);
 			}
@@ -169,6 +163,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			}
 		});
 
+		/**
+		 * Accion que elimina un sensor, esto conlleva eliminar sus posibles alertas tambien
+		 */
 		client.on("delete-sensor", (data)=>{
 			//Igualmente se comprueba en el servidor
 			if(data!="temperatura" && data!="lumens"){
@@ -202,6 +199,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//console.log(objeto);
 		});
 
+		/**
+		 * Permite obtener un sensor dado su id
+		 */
 		client.on("obtener-sensor-id", (data)=>{
 			let objeto=sensores.find(i=>i.id===data);
 			//console.log(objeto);
@@ -210,6 +210,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//console.log(objeto);
 		});
 
+		/**
+		 * Acciones que realiza al desconectarse un cliente
+		 */
 		client.on("disconnect", ()=>{
 			let indice=-1;
 	

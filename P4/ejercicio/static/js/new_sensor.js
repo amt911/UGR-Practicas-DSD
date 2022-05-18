@@ -13,9 +13,9 @@ function enviar(){
 		id: null,   //Se le pone en el servidor
 		name: document.getElementById("sensor-name").value,
 		unit: document.getElementById("unit").value,
-		warningValue: document.getElementById("warning-value").value,
+		warningValue: parseInt(document.getElementById("warning-value").value),
 		warningMsg: document.getElementById("warning-msg").value,
-		maxValue: document.getElementById("max-value").value,
+		maxValue: parseInt(document.getElementById("max-value").value),
 		imageDir: document.getElementById("image-dir").value,
 		currentValue: 0,
 		deviceState: false,
