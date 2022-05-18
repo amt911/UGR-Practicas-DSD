@@ -18,15 +18,9 @@
         </div>
         <div id="contenido">
             <form onsubmit="event.preventDefault(); enviar();">
-                <label>Nombre del sensor (sin espacios, quizas comprobarlo en js)</label>
+                <label>Nombre del sensor</label>
                 <br/>
                 <input id="sensor-name" type="text"/>
-
-                <br/><br/>
-
-                <label>Nombre del actuador</label>
-                <br/>
-                <input id="device-name" type="text"/>
 
                 <br/>  <br/> 
 
@@ -36,15 +30,15 @@
 
                 <br/><br/>
 
-                <label>Valor de alerta</label>
+                <label>Valor de alerta alto</label>
                 <br/>
-                <input id="warning-value" type="text"/>
+                <input id="high-warning-value" type="text"/>
 
                 <br/><br/>
 
-                <label>Mensaje de alerta</label>
+                <label>Mensaje de alerta alto</label>
                 <br/>
-                <input id="warning-msg" type="text"/>
+                <input id="max-warning-msg" type="text"/>
 
                 <br/><br/>
                 
@@ -54,6 +48,36 @@
 
                 <br/><br/>
                 
+                <label>Valor máximo crítico</label>
+                <br/>
+                <input id="red-value" type="text"/>
+
+                <br/><br/>
+
+                <label>Valor de alerta minimo</label>
+                <br/>
+                <input id="low-warning-value" type="text"/>
+
+                <br/><br/>
+
+                <label>Mensaje de alerta bajo</label>
+                <br/>
+                <input id="min-warning-msg" type="text"/>
+
+                <br/><br/>
+                
+                <label>Valor minimo aceptado</label>
+                <br/>
+                <input id="min-value" type="text"/>
+
+                <br/><br/>
+                
+                <label>Valor minimo crítico</label>
+                <br/>
+                <input id="blue-value" type="text"/>
+
+                <br/><br/>
+
                 <label>Directorio de la imagen asociada</label>
                 <br/>
                 <input id="image-dir" type="text"/>

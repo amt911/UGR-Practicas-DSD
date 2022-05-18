@@ -54,9 +54,15 @@ let sensores=[
 		sensorName: "Termómetro",
 		name: "temperatura",		//el id html
 		unit: "°C",		//la unidad
-		warningValue: 30,
-		warningMsg: "Temperatura peligrosamente alta, considere tomar medidas",
-		maxValue: 40,
+		highWarningValue: 30,
+		maxWarningMsg: "Temperatura peligrosamente alta, considere tomar medidas",
+		redValue: 40,
+		maxValue: 50,
+
+		lowWarningValue: 10,
+		minWarningMsg: "Temperatura demasiado baja, considere activar el radiador",
+		blueValue: 0,
+		minValue: -60,		
 		imageDir: null,
 		currentValue: 0,
 	},
@@ -65,12 +71,35 @@ let sensores=[
 		sensorName: "Sensor de luminosidad",
 		name: "lumens",
 		unit: "lumens",
-		warningValue: 1000,
-		warningMsg: "Luminosidad peligrosamente alta, considere tomar medidas",
+		highWarningValue: 1000,
+		maxWarningMsg: "Luminosidad peligrosamente alta, considere tomar medidas",
+		redValue: 1800,
 		maxValue: 2000,
+
+		lowWarningValue: 500,
+		minWarningMsg: "Luminosidad demasiado baja, considere abrir la ventana o encender la luz",
+		blueValue: 200,
+		minValue: 0,		
 		imageDir: null,
 		currentValue: 0,
-	}	
+	},
+	{
+		id: 3,
+		sensorName: "Sensor de humedad",
+		name: "humedad",
+		unit: "% HR",
+		highWarningValue: 80,
+		maxWarningMsg: "Humedad demasiado alta, considere encender el deshumidificador",
+		redValue: 90,
+		maxValue: 100,
+ 
+		lowWarningValue: 30,
+		minWarningMsg: "Humedad demasiado baja, considere activar el humidificador",
+		blueValue: 20,
+		minValue: 0,
+		imageDir: null,
+		currentValue: 0,
+	}
 ]
 
 let actuadores=[
@@ -88,7 +117,21 @@ let actuadores=[
 		state: false,
 		idName: "ventana",
 		img: "per-down.jpg"
-	}	
+	},
+	{
+		id: 3,
+		name: "Deshumidificador",
+		state: false,
+		idName: "deshumidificador",
+		img: "per-down.jpg"
+	},
+	{
+		id: 4,
+		name: "Radiador",
+		state: false,
+		idName: "radiador",
+		img: "per-down.jpg"
+	}		
 ]
 
 //console.log(sensores.length);
@@ -126,8 +169,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
 
 		//Obliga a actualizar el div 
-		for(let i=0; i<sensores.length; i++)
-			client.emit("cambio-sensor", sensores[i]);
+		//for(let i=0; i<sensores.length; i++)
+		//	client.emit("cambio-sensor", sensores[i]);
 
 		//Obliga a poner el div con el estilo actualizado
 		for(let i=0; i<actuadores.length; i++)
@@ -136,10 +179,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		client.emit("recibir-msgs", mensajes);
 
 
-		console.log(sensores);
+		//console.log(sensores);
 
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
+			
+			console.log(data);
 
 			sensores.push(data);
 			io.emit("obtener-sensores", sensores);
@@ -172,6 +217,18 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			actuadores.splice(index, 1, data);
 
 			io.emit("cambio-actuador", data);
+
+			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
+			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip")==undefined){
+				alertas.push({name: "tip", maxWarningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+				io.emit("alerta", alertas);				
+			}
+			else if(alertas.find(i=>i.name=="tip")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}			
 		});
 
 		client.on("obtener-actuador-id", (data)=>{
@@ -190,7 +247,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//Aqui solo se pasa el propio json, no el array
 		client.on("cambio-sensor", (data)=>{
 			let index=sensores.findIndex(i=>i.id==data.id);
-			let cambioValor=(data.currentValue==sensores[index].currentValue)? false : true;
 
 			//Inserta el nuevo estado del sensor pasado
 			sensores.splice(index, 1, data);
@@ -200,43 +256,41 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			//Insercion de lo realizado en la base de datos
 			//No se envian datos actualizados debido a que no se han propagado aun
-			if(cambioValor){
-				collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
-				
-				//Envia el historial de cambios en la base de datos
-				collection.find().toArray(function(err, res){
-					io.emit("historial", res);
-				});			
-			}
+			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
+			
+			//Envia el historial de cambios en la base de datos
+			collection.find().toArray(function(err, res){
+				io.emit("historial", res);
+			});			
 
 			//Si se superan los limites se muestra una advertencia
-			if(data.currentValue>=data.warningValue && alertas.find(i=>i.id==data.id)==undefined){
+			if(data.currentValue>=data.highWarningValue && alertas.find(i=>i.id==data.id)==undefined){
 				alertas.push(data);
 				io.emit("alerta", alertas);
 			}
-			else if(data.currentValue<data.warningValue && alertas.find(i=>i.id==data.id)!=undefined){
+			else if(data.currentValue<data.highWarningValue && alertas.find(i=>i.id==data.id)!=undefined){
 				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);
 			}
 
-			//Si se llega al maximo de temperatura, se cierra la persiana (OFF en la GUI)
-			if(sensores[0].currentValue>=sensores[0].maxValue && sensores[1].currentValue>=sensores[1].maxValue){
-				sensores[1].deviceState=false;
-				io.emit("cambio-sensor", sensores[1]);
+			//Si se llega al maximo de temperatura y de lumens, se cierra la persiana (OFF en la GUI)
+			if(sensores[0].currentValue>=sensores[0].maxValue || sensores[1].currentValue>=sensores[1].maxValue){
+				actuadores[1].state=false;
+				//console.log(actuadores[1]);
+				io.emit("cambio-actuador", actuadores[1]);
+
+				//Parte extra, se pone el aire acondicionado tambien
+				actuadores[0].state=true;
+				io.emit("cambio-actuador", actuadores[0]);
+
+				if(alertas.find(i=>i.name=="tip")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}
 			}
 
-			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
-			if(sensores[0].deviceState && sensores[1].deviceState && alertas.find(i=>i.name=="tip")==undefined){
-				alertas.push({name: "tip", warningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
-				io.emit("alerta", alertas);				
-			}
-			else if(alertas.find(i=>i.name=="tip")!=undefined){
-				let index=alertas.findIndex(i=>i.name=="tip");
-				
-				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
-			}
 		});
 
 		/**
@@ -261,8 +315,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * Permite obtener todos los sensores que hay instalados en el hogar
 		 */
 		client.on("obtener-sensores", (data)=>{
-			console.log("llamame")
-			console.log(sensores);
+			//console.log("llamame")
+			//console.log(sensores);
 			client.emit("obtener-sensores", sensores);
 		});
 

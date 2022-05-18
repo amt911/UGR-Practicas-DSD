@@ -9,17 +9,23 @@ let socket=io.connect(url);
 
 //IMPLEMENTAR SI DA TIEMPO FUNCION DE COMPROBACION
 function enviar(){
+	
     let res={
 		id: null,   //Se le pone en el servidor
-		name: document.getElementById("sensor-name").value,
+		sensorName: document.getElementById("sensor-name").value,
+		name: document.getElementById("sensor-name").value.replaceAll(" ", "-"),
 		unit: document.getElementById("unit").value,
-		warningValue: parseInt(document.getElementById("warning-value").value),
-		warningMsg: document.getElementById("warning-msg").value,
+		highWarningValue: parseInt(document.getElementById("high-warning-value").value),
+		maxWarningMsg: document.getElementById("max-warning-msg").value,
+		redValue: parseInt(document.getElementById("red-value").value),
 		maxValue: parseInt(document.getElementById("max-value").value),
+
+		lowWarningValue: parseInt(document.getElementById("low-warning-value").value),
+		minWarningMsg: document.getElementById("min-warning-msg").value,
+		blueValue: parseInt(document.getElementById("blue-value").value),
+		minValue: parseInt(document.getElementById("min-value").value),
 		imageDir: document.getElementById("image-dir").value,
 		currentValue: 0,
-		deviceState: false,
-		deviceName: document.getElementById("device-name").value
     }
 
     socket.emit("add-sensor", res);
