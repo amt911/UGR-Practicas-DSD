@@ -156,6 +156,7 @@ let actuadores=[
 let mensajes=[];		//Inicialmente sera un array de string
 let usuariosRegistrados=[];	//Usuarios ya registrados
 let interval, estadoSim=false;		//Usado para los intervalos
+let canvas=null;
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
 
@@ -340,6 +341,21 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		client.emit("get-boton-sim", estadoSim);
 		//console.log(sensores);
+
+
+
+		//PARTE DE PINTAR--------------------------------
+		
+		if(canvas!=null)
+			client.emit("update-pizarra", canvas);
+
+		client.on("update-pizarra", (data)=>{
+			console.log("ENTENDIDO, MANDANDO A TODOS");
+			canvas=data;
+			io.emit("update-pizarra", data);
+		});
+		//-----------------------------------------------
+
 
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
