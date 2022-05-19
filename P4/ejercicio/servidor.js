@@ -164,7 +164,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 
 	io.sockets.on('connection', (client) => {
-		function funcion1A(data){
+		function funcion1A(){
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
 				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
@@ -363,12 +363,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(actuadores[3].state)
 					tempDelta++;
 	
+				if(!actuadores[0].state && !actuadores[1].state && !actuadores[3].state)
+					tempDelta=0.5;
+				
 				if(sensores[0].currentValue+tempDelta>=sensores[0].blueValue && sensores[0].currentValue+tempDelta<=sensores[0].redValue)
 					sensores[0].currentValue+=tempDelta;
-				else if(sensores[0].currentValue+tempDelta<10)
-					sensores[0].currentValue=10;
+				else if(sensores[0].currentValue+tempDelta<sensores[0].blueValue)
+					sensores[0].currentValue=sensores[0].blueValue;
 				else
-					sensores[0].currentValue=40;
+					sensores[0].currentValue=sensores[0].redValue;
 				
 	
 				//Parte de luminosidad
@@ -385,8 +388,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(actuadores[4].state)
 					humedadDelta++;
 	
+				if(!actuadores[2].state && !actuadores[4].state)
+					humedadDelta=-0.5;
+
 				if(sensores[2].currentValue+humedadDelta>=sensores[2].blueValue && sensores[2].currentValue+humedadDelta<=sensores[2].redValue)
 					sensores[2].currentValue+=humedadDelta;
+				else if(sensores[2].currentValue+tempDelta<sensores[2].blueValue)
+					sensores[2].currentValue=sensores[2].blueValue;
+				else
+					sensores[2].currentValue=sensores[2].redValue;
 	
 				io.emit("cambio-sensor", sensores[0]);
 				io.emit("cambio-sensor", sensores[1]);
@@ -396,9 +406,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				funcion2S(sensores[0]);
 				funcion2S(sensores[1]);
 				funcion2S(sensores[2]);
+
+				funcion1A();
 			}, 2000);
 
-			console.log("xdddddddddddddddddddddddd");
+			//console.log("xdddddddddddddddddddddddd");
 			estadoSim=true;
 			io.emit("get-boton-sim", true);
 		});
@@ -429,7 +441,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("cambio-actuador", data);
 
-			funcion1A(data);
+			funcion1A();
 
 			/*
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
