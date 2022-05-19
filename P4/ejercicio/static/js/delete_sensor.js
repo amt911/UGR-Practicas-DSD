@@ -24,5 +24,7 @@ socket.on("obtener-sensores", (data)=>{
 //IMPLEMENTAR SI DA TIEMPO FUNCION DE COMPROBACION
 function enviar(){
 	let sensor=document.getElementById("sensor").value;
-    socket.emit("delete-sensor", sensor);
+
+	if(sensor!="")
+    	socket.emit("delete-sensor", sensor);
 }
