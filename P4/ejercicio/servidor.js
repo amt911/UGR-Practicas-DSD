@@ -79,9 +79,9 @@ let sensores=[
 		lowWarningValue: 500,
 		minWarningMsg: "Luminosidad demasiado baja, considere abrir la ventana o encender la luz",
 		blueValue: 200,
-		minValue: 750,		
+		minValue: 0,		
 		imageDir: null,
-		currentValue: 0,
+		currentValue: 750,
 	},
 	{
 		id: 3,
@@ -223,7 +223,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
-				alertas.push({name: "tip1", maxWarningMsg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
@@ -235,7 +235,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			//Si el radiador y la ventana estan encendidos y abiertos
 			if(actuadores[3].state && actuadores[1].state && alertas.find(i=>i.name=="tip2")==undefined){
-				alertas.push({name: "tip2", maxWarningMsg:"Radiador encendido y ventana abierta, es recomendable realizar una acción"});
+				alertas.push({name: "tip2", msg:"Radiador encendido y ventana abierta, es recomendable realizar una acción"});
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[3].state && actuadores[1].state) && alertas.find(i=>i.name=="tip2")!=undefined){
@@ -248,7 +248,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//console.log("mec")
 			//Si el radiador y el aire acondicionado estan encendidos
 			if(actuadores[3].state && actuadores[0].state && alertas.find(i=>i.name=="tip3")==undefined){
-				alertas.push({name: "tip3", maxWarningMsg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
+				alertas.push({name: "tip3", msg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[3].state && actuadores[0].state) && alertas.find(i=>i.name=="tip3")!=undefined){
@@ -260,7 +260,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			//Si el humidificador y el deshumidificador estan encendidos
 			if(actuadores[2].state && actuadores[4].state && alertas.find(i=>i.name=="tip4")==undefined){
-				alertas.push({name: "tip4", maxWarningMsg:"Humidificador y deshumidificador encendidos, se recomienda realizar una acción"});
+				alertas.push({name: "tip4", msg:"Humidificador y deshumidificador encendidos, se recomienda realizar una acción"});
 				io.emit("alerta", alertas);				
 			}
 			else if(!(actuadores[2].state && actuadores[4].state) && alertas.find(i=>i.name=="tip4")!=undefined){
@@ -307,7 +307,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.highWarningValue && alertas.find(i=>i.id==data.id)==undefined){
-				alertas.push(data);
+				alertas.push({id: data.id, name: data.name, msg: data.maxWarningMsg});
 				io.emit("alerta", alertas);
 			}
 			else if(data.currentValue<data.highWarningValue && alertas.find(i=>i.id==data.id)!=undefined){
@@ -316,19 +316,33 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);
 			}
 
+			
+			if(data.currentValue<=data.lowWarningValue && alertas.find(i=>i.id==data.id)==undefined){
+				alertas.push({id: data.id, name: data.name, msg: data.minWarningMsg});
+				io.emit("alerta", alertas);
+			}
+			else if(data.currentValue<data.highWarningValue && alertas.find(i=>i.id==data.id)!=undefined){
+				let index=alertas.findIndex(i=>i.id==data.id);
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);
+			}			
+
 
 			//Parte de accionar actuadores dependiendo de los valores
 			//Si se llega al maximo de temperatura o de lumens, se cierra la persiana (OFF en la GUI)
-			if(sensores[0].currentValue>=sensores[0].maxValue || sensores[1].currentValue>=sensores[1].maxValue){
+			if(sensores[0].currentValue>=sensores[0].redValue || sensores[1].currentValue>=sensores[1].redValue){
 				actuadores[1].state=false;
 				//console.log(actuadores[1]);
 				io.emit("cambio-actuador", actuadores[1]);
 
-				//Parte extra, se pone el aire acondicionado tambien
+				//Parte extra, se pone el aire acondicionado y se quita el radiador
 				actuadores[0].state=true;
 				io.emit("cambio-actuador", actuadores[0]);
 
-				//Si antes estaban los dos accionados, se deben eliminar
+				actuadores[3].state=false;
+				io.emit("cambio-actuador", actuadores[3]);
+
+				//Si antes estaban los dos accionados, habia una alerta, por lo que se debe eliminar
 				if(alertas.find(i=>i.name=="tip")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip");
 					alertas.splice(index, 1);
@@ -337,7 +351,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			}
 
 			//Si se llega a un maximo de humedad, se acciona el deshumidificador y se apaga el humidificador (si no lo estaba)
-			if(sensores[2].currentValue>=sensores[2].maxValue){
+			if(sensores[2].currentValue>=sensores[2].redValue){
 				actuadores[2].state=true;
 				actuadores[4].state=false;
 
@@ -352,7 +366,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			}
 			//Estos dos (el de arriba y el de abajo) se pueden juntar
 			//Si se llega a un minimo de humedad, se acciona el humidificador y se apaga el deshumidificador (si no lo estaba)
-			if(sensores[2].currentValue<=sensores[2].minValue){
+			if(sensores[2].currentValue<=sensores[2].blueValue){
 				actuadores[2].state=false;
 				actuadores[4].state=true;
 
@@ -367,7 +381,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			}
 
 			//Si se llega a un minimo de temperatura, se acciona el radiador, se apaga el aire y se cierran las ventanas
-			if(sensores[0].currentValue<=sensores[0].minValue){
+			if(sensores[0].currentValue<=sensores[0].blueValue){
 				actuadores[0].state=false;
 				actuadores[1].state=false;
 				actuadores[3].state=true;

@@ -200,7 +200,7 @@ function modificarAlertas(mensajes){
 
     for(let i=0; i<mensajes.length; i++){
         let aux=document.createElement("div");
-        aux.innerHTML=mensajes[i].maxWarningMsg;
+        aux.innerHTML=mensajes[i].msg;
 
         desplegable.appendChild(aux);
     }
