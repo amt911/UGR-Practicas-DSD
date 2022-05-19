@@ -161,6 +161,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	let dbo = db.db("DSD_Practica_4");
 
 	let collection=dbo.collection("accionesSensores");
+	let msgDB=dbo.collection("mensajesDB");
 	//Teoricamente recibe la coleccion con los mensajes y usuarios registrados
 
 
@@ -336,7 +337,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
 		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
 
-		client.emit("recibir-msgs", mensajes);
+		msgDB.find().toArray(function(err, res){
+			client.emit("recibir-todos-msgs", res);
+		});
 
 
 		client.emit("get-boton-sim", estadoSim);
@@ -350,9 +353,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			client.emit("update-pizarra", canvas[i]);
 
 		client.on("update-pizarra", (data)=>{
-			//console.log("ENTENDIDO, MANDANDO A TODOS");
-			//canvas=data;
-			//io.emit("update-pizarra", data);
 			console.log(data);
 			canvas.push(data);
 
@@ -470,10 +470,15 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//---------------------------------------------------
 
 		//PARTE CHAT-----------------------------------------
-		client.on("enviar-msg", (data)=>{
-			mensajes.push(data);
+		client.on("recibir-msg", (data)=>{
+			let res={msg: data.msg,
+				fecha: data.fecha, 
+				user: client.request.connection.remoteAddress+":"+client.request.connection.remotePort,
+				};
+			//mensajes.push(res);
+			msgDB.insertOne(res);
 
-			io.emit("recibir-msgs", mensajes);
+			io.emit("recibir-msg", res);
 		})
 		//---------------------------------------------------
 

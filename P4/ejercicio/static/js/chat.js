@@ -6,7 +6,7 @@ if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
 
 let socket=io.connect(url);
 
-socket.on("recibir-msgs", (data)=>{
+socket.on("recibir-todos-msgs", (data)=>{
 	let caja=document.getElementById("seccion-chat");
 	caja.innerHTML="";
 
@@ -14,10 +14,10 @@ socket.on("recibir-msgs", (data)=>{
 		caja.insertAdjacentHTML("afterbegin", 
 		"<div class=\"mensaje\">"+
 		"<div class=\"usuario\">"+
-			"usuario (hora)"+
+			data[i].user+" ("+data[i].fecha+")"+
 		"</div>"+
 		"<div class=\"texto\">"+
-			data[i]+
+			data[i].msg+
 		"</div>"+
 	 	"</div>"
 		);
@@ -25,8 +25,47 @@ socket.on("recibir-msgs", (data)=>{
 	
 })
 
+socket.on("recibir-msg", (data)=>{
+	let caja=document.getElementById("seccion-chat");
+
+	caja.insertAdjacentHTML("beforeend", 
+	"<div class=\"mensaje\">"+
+	"<div class=\"usuario\">"+
+		data.user+" ("+data.fecha+")"+
+	"</div>"+
+	"<div class=\"texto\">"+
+		data.msg+
+	"</div>"+
+	 "</div>"
+	);	
+});
+
+function obtenerFechaActual(){
+    let fecha=new Date()
+	let meses={
+		0: "enero",
+		1: "febrero",
+		2: "marzo",
+		3: "abril",
+		4: "mayo",
+		5: "junio",
+		6: "julio",
+		7: "agosto",
+		8: "septiembre",
+		9: "octubre",
+		10: "noviembre",
+		11: "diciembre"
+	};
+
+    let dia=(fecha.getDate()<10)?"0"+fecha.getDate(): fecha.getDate();
+    let minutos=(fecha.getMinutes()<10)?"0"+fecha.getMinutes(): fecha.getMinutes();
+    let horas=(fecha.getHours()<10)?"0"+fecha.getHours():fecha.getHours();
+
+    return dia+" de "+meses[fecha.getMonth()]+" del "+fecha.getFullYear()+", "+horas+":"+minutos
+}
+
 
 function enviar(){
 	let msg=document.getElementById("texto").value;
-	 socket.emit("enviar-msg", msg);
+	 socket.emit("recibir-msg", {msg: msg, fecha: obtenerFechaActual()});
 }
