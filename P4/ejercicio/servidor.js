@@ -156,7 +156,7 @@ let actuadores=[
 let mensajes=[];		//Inicialmente sera un array de string
 let usuariosRegistrados=[];	//Usuarios ya registrados
 let interval, estadoSim=false;		//Usado para los intervalos
-let canvas=null;
+let canvas=[];
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
 
@@ -345,13 +345,17 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 
 		//PARTE DE PINTAR--------------------------------
-		
-		if(canvas!=null)
-			client.emit("update-pizarra", canvas);
+		console.log("canvas length: "+canvas.length)
+		for(let i=0; i<canvas.length; i++)
+			client.emit("update-pizarra", canvas[i]);
 
 		client.on("update-pizarra", (data)=>{
-			console.log("ENTENDIDO, MANDANDO A TODOS");
-			canvas=data;
+			//console.log("ENTENDIDO, MANDANDO A TODOS");
+			//canvas=data;
+			//io.emit("update-pizarra", data);
+			console.log(data);
+			canvas.push(data);
+
 			io.emit("update-pizarra", data);
 		});
 		//-----------------------------------------------
