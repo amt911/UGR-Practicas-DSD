@@ -59,9 +59,9 @@ let sensores=[
 		redValue: 40,
 		maxValue: 50,
 
-		lowWarningValue: 10,
+		lowWarningValue: 15,
 		minWarningMsg: "Temperatura demasiado baja, considere activar el radiador",
-		blueValue: 0,
+		blueValue: 10,
 		minValue: -60,		
 		imageDir: null,
 		currentValue: 20,
@@ -154,7 +154,7 @@ let actuadores=[
  */
 let mensajes=[];		//Inicialmente sera un array de string
 let usuariosRegistrados=[];	//Usuarios ya registrados
-let interval;		//Usado para los intervalos
+let interval, estadoSim=false;		//Usado para los intervalos
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
 	let dbo = db.db("DSD_Practica_4");
 
@@ -164,63 +164,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 
 	io.sockets.on('connection', (client) => {
-		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
-		io.sockets.emit("clientes", clientes);
-
-		client.emit("alerta", alertas);
-		collection.find().toArray(function(err, res){
-			client.emit("historial", res);	
-		});		
-
-		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
-		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
-
-		client.emit("recibir-msgs", mensajes);
-
-
-		//console.log(sensores);
-
-		client.on("add-sensor", (data)=>{
-			data.id=sensores.length+1;
-			
-			console.log(data);
-
-			sensores.push(data);
-			io.emit("obtener-sensores", sensores);
-		});
-/*
-		interval=setInterval(()=>{
-				if(sensores[0].deviceState && sensores[1].deviceState)
-					sensores[0].currentValue-=0.5;
-				else if(!sensores[0].deviceState && sensores[1].deviceState)
-					sensores[0].currentValue++;
-				else if(sensores[0].deviceState && !sensores[1].deviceState)
-					sensores[0].currentValue--;
-				else if(!sensores[0].deviceState && !sensores[1].deviceState)
-					sensores[0].currentValue+=0.5;
-
-			io.emit("cambio-sensor", sensores[0]);
-		}, 2000);
-*/
-
-
-		//PARTE ACTUADORES NUEVO-----------------------------
-		client.on("obtener-actuadores", ()=>{
-			client.emit("obtener-actuadores", actuadores);
-		})
-
-
-		/**
-		 * Evento que capta cuando se realiza un cambio en un actuador. Ademas comprueba 
-		 * si se ha producido alguna alerta.
-		 */
-		client.on("cambio-actuador", (data)=>{
-			let index=actuadores.findIndex(i=>i.id==data.id);
-
-			actuadores.splice(index, 1, data);
-
-			io.emit("cambio-actuador", data);
-
+		function funcion1A(data){
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
 				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
@@ -268,7 +212,276 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				
 				alertas.splice(index, 1);
 				io.emit("alerta", alertas);				
-			}	
+			}
+		}
+
+		function funcion2S(data){
+			//Si se superan los limites se muestra una advertencia
+			if(data.currentValue>=data.highWarningValue && alertas.find(i=>i.id==data.id)==undefined){
+				alertas.push({id: data.id, name: data.name, msg: data.maxWarningMsg});
+				io.emit("alerta", alertas);
+			}
+			else if(data.currentValue<data.highWarningValue && alertas.find(i=>i.id==data.id)!=undefined){
+				let index=alertas.findIndex(i=>i.id==data.id);
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);
+			}
+
+			
+			if(data.currentValue<=data.lowWarningValue && alertas.find(i=>i.id==data.id)==undefined){
+				alertas.push({id: data.id, name: data.name, msg: data.minWarningMsg});
+				io.emit("alerta", alertas);
+			}
+			else if(data.currentValue<data.highWarningValue && alertas.find(i=>i.id==data.id)!=undefined){
+				let index=alertas.findIndex(i=>i.id==data.id);
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);
+			}			
+
+
+			//Parte de accionar actuadores dependiendo de los valores
+			//Si se llega al maximo de temperatura o de lumens, se cierra la persiana (OFF en la GUI)
+			if((sensores[0].currentValue>=sensores[0].redValue || sensores[1].currentValue>=sensores[1].redValue) && (actuadores[1].state 
+				|| !actuadores[0].state || actuadores[3].state)){
+					console.log("aslkdjalskjlsadkfj")
+				actuadores[1].state=false;
+				//console.log(actuadores[1]);
+				io.emit("cambio-actuador", actuadores[1]);
+
+				//Parte extra, se pone el aire acondicionado y se quita el radiador
+				actuadores[0].state=true;
+				io.emit("cambio-actuador", actuadores[0]);
+
+				actuadores[3].state=false;
+				io.emit("cambio-actuador", actuadores[3]);
+
+				//Si antes estaban los dos accionados, habia una alerta, por lo que se debe eliminar
+				if(alertas.find(i=>i.name=="tip")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}
+			}
+
+			//Si se llega a un maximo de humedad, se acciona el deshumidificador y se apaga el humidificador (si no lo estaba)
+			if(sensores[2].currentValue>=sensores[2].redValue && (!actuadores[2].state || actuadores[4].state)){
+				actuadores[2].state=true;
+				actuadores[4].state=false;
+
+				io.emit("cambio-actuador", actuadores[2]);
+				io.emit("cambio-actuador", actuadores[4]);
+
+				if(alertas.find(i=>i.name=="tip4")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip4");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}				
+			}
+			//Estos dos (el de arriba y el de abajo) se pueden juntar
+			//Si se llega a un minimo de humedad, se acciona el humidificador y se apaga el deshumidificador (si no lo estaba)
+			if(sensores[2].currentValue<=sensores[2].blueValue && (!actuadores[4].state || actuadores[2].state)){
+				actuadores[2].state=false;
+				actuadores[4].state=true;
+
+				io.emit("cambio-actuador", actuadores[2]);
+				io.emit("cambio-actuador", actuadores[4]);
+
+				if(alertas.find(i=>i.name=="tip4")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip4");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);					
+				}				
+			}
+
+			//Si se llega a un minimo de temperatura, se acciona el radiador, se apaga el aire y se cierran las ventanas
+			if(sensores[0].currentValue<=sensores[0].blueValue && (!actuadores[3].state || actuadores[0].state || actuadores[1].state)){	//la segunda parte es nueva
+				actuadores[0].state=false;
+				actuadores[1].state=false;
+				actuadores[3].state=true;
+
+				io.emit("cambio-actuador", actuadores[0]);
+				io.emit("cambio-actuador", actuadores[1]);
+				io.emit("cambio-actuador", actuadores[3]);
+
+				//Si existian alertas por conflicto de actuadores, se eliminan
+				if(alertas.find(i=>i.name=="tip1")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip1");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}
+
+				if(alertas.find(i=>i.name=="tip2")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip2");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}				
+
+				if(alertas.find(i=>i.name=="tip3")!=undefined){
+					let index=alertas.findIndex(i=>i.name=="tip3");
+					alertas.splice(index, 1);
+					io.emit("alerta", alertas);										
+				}				
+			}
+		}
+
+		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
+		io.sockets.emit("clientes", clientes);
+
+		client.emit("alerta", alertas);
+		collection.find().toArray(function(err, res){
+			client.emit("historial", res);	
+		});		
+
+		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
+		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
+
+		client.emit("recibir-msgs", mensajes);
+
+
+		client.emit("get-boton-sim", estadoSim);
+		//console.log(sensores);
+
+		client.on("add-sensor", (data)=>{
+			data.id=sensores.length+1;
+			
+			console.log(data);
+
+			sensores.push(data);
+			io.emit("obtener-sensores", sensores);
+		});
+
+		client.on("comenzar-sim", ()=>{
+			interval=setInterval(()=>{
+				let tempDelta=0;
+	
+				if(actuadores[0].state)
+					tempDelta--;
+				
+				if(actuadores[1].state)
+					tempDelta+=0.5;
+				
+				if(actuadores[3].state)
+					tempDelta++;
+	
+				if(sensores[0].currentValue+tempDelta>=sensores[0].blueValue && sensores[0].currentValue+tempDelta<=sensores[0].redValue)
+					sensores[0].currentValue+=tempDelta;
+				else if(sensores[0].currentValue+tempDelta<10)
+					sensores[0].currentValue=10;
+				else
+					sensores[0].currentValue=40;
+				
+	
+				//Parte de luminosidad
+				if(actuadores[1].state)
+					sensores[1].currentValue=1500;
+				else
+					sensores[1].currentValue=0;
+	
+				//Parte de humedad
+				let humedadDelta=0;
+	
+				if(actuadores[2].state)
+					humedadDelta--;
+				if(actuadores[4].state)
+					humedadDelta++;
+	
+				if(sensores[2].currentValue+humedadDelta>=sensores[2].blueValue && sensores[2].currentValue+humedadDelta<=sensores[2].redValue)
+					sensores[2].currentValue+=humedadDelta;
+	
+				io.emit("cambio-sensor", sensores[0]);
+				io.emit("cambio-sensor", sensores[1]);
+				io.emit("cambio-sensor", sensores[2]);
+	
+				//Sirve para comprobar que no se pase el limite
+				funcion2S(sensores[0]);
+				funcion2S(sensores[1]);
+				funcion2S(sensores[2]);
+			}, 2000);
+
+			console.log("xdddddddddddddddddddddddd");
+			estadoSim=true;
+			io.emit("get-boton-sim", true);
+		});
+
+		client.on("parar-sim", ()=>{
+			clearInterval(interval);
+			interval=null;
+
+			estadoSim=false;
+			io.emit("get-boton-sim", false);
+		});
+
+
+		//PARTE ACTUADORES NUEVO-----------------------------
+		client.on("obtener-actuadores", ()=>{
+			client.emit("obtener-actuadores", actuadores);
+		})
+
+
+		/**
+		 * Evento que capta cuando se realiza un cambio en un actuador. Ademas comprueba 
+		 * si se ha producido alguna alerta.
+		 */
+		client.on("cambio-actuador", (data)=>{
+			let index=actuadores.findIndex(i=>i.id==data.id);
+
+			actuadores.splice(index, 1, data);
+
+			io.emit("cambio-actuador", data);
+
+			funcion1A(data);
+
+			/*
+			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
+			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
+				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip1");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}			
+
+			//Si el radiador y la ventana estan encendidos y abiertos
+			if(actuadores[3].state && actuadores[1].state && alertas.find(i=>i.name=="tip2")==undefined){
+				alertas.push({name: "tip2", msg:"Radiador encendido y ventana abierta, es recomendable realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[3].state && actuadores[1].state) && alertas.find(i=>i.name=="tip2")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip2");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}						
+
+			//console.log("mec")
+			//Si el radiador y el aire acondicionado estan encendidos
+			if(actuadores[3].state && actuadores[0].state && alertas.find(i=>i.name=="tip3")==undefined){
+				alertas.push({name: "tip3", msg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[3].state && actuadores[0].state) && alertas.find(i=>i.name=="tip3")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip3");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}						
+
+			//Si el humidificador y el deshumidificador estan encendidos
+			if(actuadores[2].state && actuadores[4].state && alertas.find(i=>i.name=="tip4")==undefined){
+				alertas.push({name: "tip4", msg:"Humidificador y deshumidificador encendidos, se recomienda realizar una acción"});
+				io.emit("alerta", alertas);				
+			}
+			else if(!(actuadores[2].state && actuadores[4].state) && alertas.find(i=>i.name=="tip4")!=undefined){
+				let index=alertas.findIndex(i=>i.name=="tip4");
+				
+				alertas.splice(index, 1);
+				io.emit("alerta", alertas);				
+			}
+			
+			*/
 		});
 
 		client.on("obtener-actuador-id", (data)=>{
@@ -303,7 +516,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("historial", res);
 			});			
 
-
+			funcion2S(data);
+/*
 			
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.highWarningValue && alertas.find(i=>i.id==data.id)==undefined){
@@ -409,6 +623,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 					io.emit("alerta", alertas);										
 				}				
 			}
+
+		*/
 		});
 
 		/**

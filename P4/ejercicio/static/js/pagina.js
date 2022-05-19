@@ -326,3 +326,33 @@ socket.on("cambio-actuador", (data)=>{
 });
 
 //----------------------------------------------------------------------------------
+
+let botonSimulacion=document.getElementById("simulacion");
+
+let esParar=false;
+botonSimulacion.addEventListener("click", ()=>{
+    if(esParar){
+        esParar=false;
+        botonSimulacion.innerText="Iniciar simulacion parametros";
+        socket.emit("parar-sim");
+    }
+    else{
+        esParar=true;
+        botonSimulacion.innerText="Parar simulacion parametros";
+        socket.emit("comenzar-sim");
+    }
+});
+
+socket.on("get-boton-sim", (data)=>{
+    console.log("e entrado esta mal escritop")
+    esParar=data;
+
+    if(!esParar){
+        botonSimulacion.innerText="Iniciar simulacion parametros";
+        //socket.emit("parar-sim");
+    }
+    else{
+        botonSimulacion.innerText="Parar simulacion parametros";
+        //socket.emit("comenzar-sim");
+    }
+});
