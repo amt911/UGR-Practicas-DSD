@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Pizarra digital</title>
     <link rel="stylesheet" href="static/css/form.css" />
+    <link rel="stylesheet" href="static/css/canvas.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +19,45 @@
         </div>
 
         <div id="contenido">
-            <canvas id="pizarra" width="1280" height="720"></canvas>
+            <div id="herramientas">
+                <div id="colores">
+                    <div id="azul">
+                    </div>
+                    <div id="negro">
+                    </div>   
+                    <div id="rojo">
+                    </div>  
+                    <div id="goma">
+                        <img src="static/images/aiare.png"/>
+                    </div>
+                </div>
+
+                <div id="grosor">
+                    <div id="fino">
+                        <div>
+                            Fino
+                        </div>
+                    </div>
+                    <div id="medio">
+                        <div>
+                            Medio
+                        </div>
+                    </div>   
+                    <div id="gordo">
+                        <div>
+                            Gordo
+                        </div>
+                    </div>                                     
+                </div>
+
+                <div id="borrar">
+                    Borrar todo el lienzo
+                </div>
+            </div>
+
+            <div>
+                <canvas id="pizarra" width="1280" height="720"></canvas>
+            </div>
         </div>
 
         <img id="aux"/>

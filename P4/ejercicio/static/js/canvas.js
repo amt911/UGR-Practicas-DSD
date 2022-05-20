@@ -34,6 +34,8 @@ pizarra.addEventListener("mousedown", (e)=>{
 
     previo.x=e.clientX-viewport.left;
     previo.y=e.clientY-viewport.top;
+
+    //POner aqui una variable que se envie luego a socketio
 });
 
 pizarra.addEventListener("mouseup", (e)=>{
@@ -45,4 +47,34 @@ socket.on("update-pizarra", (data)=>{
     pizarra2D.lineTo(data.previo.x, data.previo.y);
     pizarra2D.lineTo(data.actual.x, data.actual.y);
     pizarra2D.stroke();
+})
+
+
+let colores=["blue", "black", "red", "white"];
+
+let coloresDiv=document.getElementById("colores").children;
+
+//alert(coloresDiv)
+//console.log(coloresDiv)
+
+for(let i=0; i<coloresDiv.length; i++){
+    coloresDiv[i].addEventListener("click", ()=>{
+        pizarra2D.strokeStyle=colores[i]
+    })
+}
+
+let grosor=[1, 3, 10];
+let grosorDiv=document.getElementById("grosor").children;
+
+for(let i=0; i<grosorDiv.length; i++){
+    grosorDiv[i].addEventListener("click", ()=>{
+        pizarra2D.lineWidth=grosor[i];
+    })
+}
+
+let borrarTodo=document.getElementById("borrar");
+
+borrarTodo.addEventListener("click", ()=>{
+    alert("bot")
+    pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
 })

@@ -1,0 +1,60 @@
+#contenido{
+    display: grid;
+    grid-template-rows: auto;
+}
+
+#herramientas{
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    background-color: aliceblue;
+}
+
+#colores{
+    display: grid;
+    grid-template-columns: repeat(4, 50px);
+    grid-auto-rows: 50px;
+    gap: 12px;
+    padding: 12px;
+}
+
+#colores > div,
+#grosor > div{
+    cursor: pointer;
+}
+
+#azul{
+    background-color: blue;
+}
+
+#negro{
+    background-color: black;
+}
+
+#rojo{
+    background-color: red;
+}
+
+#grosor{
+    display: grid;
+    grid-template-columns: repeat(4, 50px);
+    grid-auto-rows: 50px;
+    gap: 12px;
+    padding: 12px;
+}
+
+#fino,
+#medio,
+#gordo{
+    border: solid 1px black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#borrar{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 12px;
+    border: solid 1px black;
+}
