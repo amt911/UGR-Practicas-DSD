@@ -89,4 +89,7 @@ function enviar(){
 	 socket.emit("recibir-msg", {msg: msg, fecha: obtenerFechaActual()});
 
 	 document.getElementById("texto").value="";
+
+	 let div = document.getElementById("wrapper");
+	 div.scrollTop = div.scrollHeight;	 
 }
