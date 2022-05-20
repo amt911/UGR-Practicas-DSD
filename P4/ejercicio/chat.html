@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Cambio medición</title>
+    <title>Chat grupal</title>
     <link rel="stylesheet" href="static/css/chat.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,11 +25,11 @@
             <div>
                 <form action="#" onsubmit="event.preventDefault(); enviar();">
                     <div id="posicion-envio">
-                        <div>
-                            <textarea id="texto"></textarea>
+                        <div id="caja-texto">
+                            <input type="text" id="texto"/>
                         </div>
-                        <div>
-                            <button>Enviar</button>
+                        <div id="boton-envio">
+                            <button><img src="static/images/send.png"/></button>
                         </div>
                     </div>
                 </form>

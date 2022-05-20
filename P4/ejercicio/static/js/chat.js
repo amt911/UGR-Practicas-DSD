@@ -87,4 +87,6 @@ function enviar(){
 	let msg=document.getElementById("texto").value;
 	
 	 socket.emit("recibir-msg", {msg: msg, fecha: obtenerFechaActual()});
+
+	 document.getElementById("texto").value="";
 }

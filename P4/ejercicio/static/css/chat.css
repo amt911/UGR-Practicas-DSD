@@ -23,8 +23,16 @@ main{
 
 #chat{
     display: grid;
-    grid-template-rows: minmax(0, 1fr) 50px ;
+    grid-template-rows: 1fr auto ;
     height: 100%;
+    padding-bottom: 12px;
+}
+
+button{
+    height: 50px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 #seccion-chat{
@@ -34,18 +42,25 @@ main{
     gap: 12px;
     word-break: break-word;
     overflow-y: scroll;
-    border: solid 1px red;
+    /*border: solid 1px red;*/
 }
 
 #posicion-envio{
     display: grid;
-    grid-template-columns: 90% 10%;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-auto-rows: 1fr;
+    border-top: solid 2px black;
 }
-
+/*
+#posicion-envio > div{
+    border: solid 1px red;
+}
+*/
 #texto{
     resize: none;
-    width: 90%;
+    width: 100%;
+    box-sizing: border-box;
+    height: 80%;
 }
 
 #contactos{
@@ -56,6 +71,7 @@ main{
 .mensaje{
     border: solid 1px black;
     border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .usuario{
@@ -66,4 +82,23 @@ main{
 
 #login{
     position:sticky;
+}
+
+
+img{
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+#caja-texto{
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+#boton-envio{
+    border: solid 1px black;
+    border-radius: 12px;
 }
