@@ -64,7 +64,7 @@ let sensores=[
 		minWarningMsg: "Temperatura demasiado baja, considere activar el radiador",
 		blueValue: 10,
 		minValue: -60,		
-		imageDir: null,
+		imageDir: "termometro.png",
 		currentValue: 20,
 	},
 	{
@@ -81,7 +81,7 @@ let sensores=[
 		minWarningMsg: "Luminosidad demasiado baja, considere abrir la ventana o encender la luz",
 		blueValue: 200,
 		minValue: 0,		
-		imageDir: null,
+		imageDir: "sun.png",
 		currentValue: 750,
 	},
 	{
@@ -98,7 +98,7 @@ let sensores=[
 		minWarningMsg: "Humedad demasiado baja, considere activar el humidificador",
 		blueValue: 20,
 		minValue: 0,
-		imageDir: null,
+		imageDir: "humedad.png",
 		currentValue: 55,
 	}
 ]
@@ -109,7 +109,7 @@ let actuadores=[
 		name: "Aire acondicionado",
 		state: false,
 		idName: "AC",
-		img: "ac-off.jpg"
+		img: "aire.png"
 	},
 
 	{
@@ -117,28 +117,28 @@ let actuadores=[
 		name: "Persiana",
 		state: false,
 		idName: "ventana",
-		img: "per-down.jpg"
+		img: "persiana.png"
 	},
 	{
 		id: 3,
 		name: "Deshumidificador",
 		state: false,
 		idName: "deshumidificador",
-		img: "per-down.jpg"
+		img: "deshumidificador.png"
 	},
 	{
 		id: 4,
 		name: "Radiador",
 		state: false,
 		idName: "radiador",
-		img: "per-down.jpg"
+		img: "radiador.png"
 	},
 	{
 		id: 5,
 		name: "Humidificador",
 		state: false,
 		idName: "humidificador",
-		img: "per-down.jpg"
+		img: "humidificador.png"
 	}		
 ]
 

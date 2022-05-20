@@ -18,7 +18,7 @@ socket.on("clientes", (users)=>{
 function toggleActuador(data){
     let estadoActuador=document.getElementById("estado-"+data.name);
     let imagen=document.getElementById("imagen-"+data.name);
-    let divSensor=document.getElementById("div-"+data.name);
+    let divActuador=document.getElementById("div-"+data.name);
 
     //alert(data.name)
     if(data.deviceState){
@@ -35,13 +35,14 @@ function toggleActuador(data){
     estadoActuador.classList.toggle("verde");
     estadoActuador.classList.toggle("rojo");
 
-    divSensor.classList.toggle("apagado");
+    divActuador.classList.toggle("apagado");
 }
 
 function setActuador(data){
+    console.log("FUNCIONANANANAN")
     let estadoActuador=document.getElementById("estado-"+data.idName);
     let imagen=document.getElementById("imagen-"+data.idName);
-    let divSensor=document.getElementById("div-"+data.idName);
+    let divActuador=document.getElementById("div-"+data.idName);
     let banner=document.getElementById("banner-"+data.idName);
 
     if(!data.state){
@@ -50,13 +51,13 @@ function setActuador(data){
 
         estadoActuador.classList.remove("verde");
         estadoActuador.classList.add("rojo");        
-        divSensor.classList.add("apagado");
+        divActuador.classList.add("apagado");
         banner.classList.remove("fondo-sec");
     }
     else{
         estadoActuador.innerText="ON";
         imagen.style.filter="";
-        divSensor.classList.remove("apagado");
+        divActuador.classList.remove("apagado");
         estadoActuador.classList.add("verde");
         estadoActuador.classList.remove("rojo");                
         banner.classList.add("fondo-sec");
@@ -73,13 +74,13 @@ socket.on("obtener-sensores", (data)=>{
 
     for(let i=data.length-1; i>=0; i--){
         cards.insertAdjacentHTML("afterbegin", 
-        "<div id=\"div-"+data[i].name+"\" class=\"secciones-aparato\">"+
+        "<div id=\"div-"+data[i].name+"\" class=\"secciones-sensor\">"+
         "<div class=\"negrita grande fondo-sec\">"+
             data[i].sensorName+
         "</div>"+
         "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
         "<div class=\"pad-horizontal\">"+
-            "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/ac-off.jpg\"/>"+        //CAMBIAR PARA LA ENTREGA
+            "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/"+data[i].imageDir+"\"/>"+        //CAMBIAR PARA LA ENTREGA
         "</div>"+
     "</div>");
 
@@ -259,26 +260,26 @@ socket.on("obtener-actuadores", (data)=>{
 
     for(let i=data.length-1; i>=0; i--){
         contenedor.insertAdjacentHTML("afterbegin", 
-            "<div id=\"div-"+data[i].idName+"\" class=\"div-actuadores apagado\">"+
-            "<div class=\"secciones-aparato\">"+
-                "<div id=\"banner-"+data[i].idName+"\" class=\"negrita grande fondo-sec estado\">"+
-                    "<div>"+
-                        data[i].name+
+            //"<div id=\"div-"+data[i].idName+"\" class=\"div-actuadores apagado\">"+
+                "<div id=\"div-"+data[i].idName+"\" class=\"secciones-actuador apagado\">"+
+                    "<div id=\"banner-"+data[i].idName+"\" class=\"negrita grande fondo-sec estado\">"+
+                        "<div>"+
+                            data[i].name+
+                        "</div>"+
+                        "<div class=\"rojo\" id=\"estado-"+data[i].idName+"\">"+
+                            "OFF"+
+                        "</div>"+
                     "</div>"+
-                    "<div class=\"rojo\" id=\"estado-"+data[i].idName+"\">"+
-                        "OFF"+
+                    "<div class=\"pad-horizontal\">"+
+                        "<img id=\"imagen-"+data[i].idName+"\" class=\"imagen\" src=\"static/images/"+data[i].img+"\" style=\"filter: grayscale(100%)\"/>"+
                     "</div>"+
-                "</div>"+
-                "<div class=\"pad-horizontal\">"+
-                    "<img id=\"imagen-"+data[i].idName+"\" class=\"imagen\" src=\"static/images/"+data[i].img+"\" style=\"filter: grayscale(100%)\"/>"+
-                "</div>"+
-            "</div>"+
-        "</div>"            
+                "</div>"
+            //"</div>"            
         );
         setActuador2(data[i]);
     }
 
-    let actuadores=document.getElementsByClassName("div-actuadores");
+    let actuadores=document.getElementsByClassName("secciones-actuador");
 
     for(let i=0; i<actuadores.length; i++){
         actuadores[i].addEventListener("click", ()=>{

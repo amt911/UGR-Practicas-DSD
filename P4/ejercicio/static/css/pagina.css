@@ -31,8 +31,10 @@ main{
 
 .aparatos{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr ;
-    width: 100%;
+    /*grid-template-columns: repeat(3, minmax(28%, 320px));*/
+    grid-template-columns: repeat(3, 28%);
+    grid-auto-rows: 300px;
+    /*width: 100%;*/
     gap: 12px;
     justify-content: center;
 }
@@ -41,14 +43,24 @@ main{
     /*border: solid 2px green;*/
     object-fit: contain;
     width: 100%;
-    height:100%;
+    /*max-height:280px;*/
+    height: 100%;
+    /*border: solid 1px red;*/
     cursor: pointer;
 }
 
-.secciones-aparato{
+.secciones-actuador{
     background-color: #cac9bb;
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.secciones-sensor{
+    background-color: #cac9bb;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
     border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 }
@@ -195,6 +207,8 @@ main{
     overflow: hidden;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
+    height: 100%;
+    /*border: solid 2px blue;*/
 }
 
 #div-temperatura{
@@ -208,7 +222,9 @@ main{
 
 #actuadores-container{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 28%);
+    grid-auto-rows: 300px;
+    justify-content: center;
     gap: 12px;
 }
 

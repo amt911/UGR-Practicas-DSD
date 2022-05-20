@@ -12,9 +12,9 @@ body div{
 }
 
 main{
-    display: grid;
+    /*display: grid;
     grid-template-columns: 30% minmax(70%, 200px);
-    grid-auto-rows: 95vh;
+    grid-auto-rows: 95vh;*/
     border-radius: inherit;
     position: relative;
     height: 95vh;
@@ -24,6 +24,7 @@ main{
 #chat{
     display: grid;
     grid-template-rows: minmax(0, 1fr) 50px ;
+    height: 100%;
 }
 
 #seccion-chat{
