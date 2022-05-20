@@ -393,6 +393,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//-----------------------------------------------
 
 
+		//PARTE DE CHAT-----------------------------------------------
+		client.on("comprobar-cuenta", (data)=>{
+			client.emit("comprobar-cuenta", null);
+		})
+		//-----------------------------------------------
+
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
 			

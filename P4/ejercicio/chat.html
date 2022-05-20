@@ -13,12 +13,25 @@
 
 <body>
     <main>
-<!--
-        <div id="contactos">
-            chat multicast
-        </div>
-    -->
+        <div id="wrapper-login">
+            <div id="login">
+                <h1>Iniciar sesión</h1>
+                <p>También sirve para registrarse</p>
 
+                <div id="errores" class="rojo"></div>
+                <form action="#" onsubmit="event.preventDefault(); registro();">
+                    <label>Nombre</label><br/>
+                    <input id="name" type="text"/>
+                    <br/><br/>
+
+                    <label>Contraseña</label><br/>
+                    <input id="passwd" type="password"/>
+                    <br/><br/>
+
+                    <button>Iniciar sesión</button>
+                </form>
+            </div>
+        </div>
         <div id="chat">
             <div id="wrapper">
                 <div id="seccion-chat">
@@ -31,7 +44,7 @@
                             <input type="text" id="texto"/>
                         </div>
                         <div id="boton-envio">
-                            <button><img src="static/images/send.png"/></button>
+                            <button id="enviar-msg"><img src="static/images/send.png"/></button>
                         </div>
                     </div>
                 </form>

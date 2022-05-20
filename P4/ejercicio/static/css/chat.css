@@ -7,7 +7,7 @@ body{
 }
 
 body div{
-    /*border: solid 1px red;*/
+    border: solid 1px red;
 }
 
 main{
@@ -22,13 +22,14 @@ main{
 }
 
 #chat{
-    display: grid;
+    display: none;
+    /*display: grid;*/
     grid-template-rows: 1fr auto ;
     height: 100%;
     padding-bottom: 12px;
 }
 
-button{
+#enviar-msg{
     height: 50px;
     background-color: transparent;
     border: none;
@@ -113,4 +114,26 @@ img{
     overflow: auto;
     display: flex;
     flex-direction: column-reverse;
+}
+
+#login{
+    width: max-content;
+    height: max-content;
+    border-radius: 8px;
+    border: solid 1px black;
+    padding: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    background-color: white;
+}
+
+#wrapper-login{
+    height: 95vh;
+    width: 100%;    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rojo{
+    color: red;
 }

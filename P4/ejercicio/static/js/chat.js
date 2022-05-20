@@ -92,4 +92,32 @@ function enviar(){
 
 	 let div = document.getElementById("wrapper");
 	 div.scrollTop = div.scrollHeight;	 
+
+	 console.log(div.clientHeight);
 }
+
+
+function registro(){
+	let divLogin=document.getElementById("wrapper-login");
+	let divChat=document.getElementById("chat");
+
+	let name=document.getElementById("name");
+	let passwd=document.getElementById("passwd");
+
+	socket.emit("comprobar-cuenta", {name: name, passwd: passwd});
+
+/*
+	divLogin.style.display="none";
+	divChat.style.display="grid";
+*/
+}
+
+socket.on("comprobar-cuenta", (data)=>{
+	if(data!=null){
+
+	}
+	else{
+		let error=document.getElementById("errores");
+		error.innerText="Error, los credenciales ya existen o son invalidos"
+	}
+})
