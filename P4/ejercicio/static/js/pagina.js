@@ -78,8 +78,8 @@ socket.on("obtener-sensores", (data)=>{
         "<div class=\"negrita grande fondo-sec\">"+
             data[i].sensorName+
         "</div>"+
-        "<div class=\"fondo-sec\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
-        "<div class=\"pad-horizontal\">"+
+        "<div class=\"fondo-sec unidades-grandes\" id=\""+data[i].name+"\">"+data[i].currentValue+" "+data[i].unit+"</div>"+
+        "<div id=\"div-imagen-"+data[i].name+"\" class=\"pad-horizontal\">"+
             "<img id=\"imagen-"+data[i].name+"\" class=\"imagen\" src=\"static/images/"+data[i].imageDir+"\"/>"+        //CAMBIAR PARA LA ENTREGA
         "</div>"+
     "</div>");
@@ -112,23 +112,32 @@ socket.on("obtener-sensor-id", (data)=>{
 */
 
 function setSensorValores(data){
+    //rojo #b7352c
     let campo=document.getElementById(data.name);
+    let fondo=document.getElementById("div-imagen-"+data.name);
 
     campo.innerText=data.currentValue+" "+data.unit;
 
     if((data.currentValue>=data.highWarningValue && data.currentValue<data.redValue) ||
     data.currentValue<=data.lowWarningValue && data.currentValue>data.blueValue){
         campo.style.color="yellow";
+        fondo.style.backgroundColor="#c1c100";
     }
 
-    else if(data.currentValue>=data.redValue && data.currentValue<=data.maxValue)
+    else if(data.currentValue>=data.redValue && data.currentValue<=data.maxValue){
         campo.style.color="red";
+        fondo.style.backgroundColor="#b7352c";
+    }
 
-    else if(data.currentValue<data.highWarningValue && data.currentValue>data.lowWarningValue)
+    else if(data.currentValue<data.highWarningValue && data.currentValue>data.lowWarningValue){
         campo.style.color="";
+        fondo.style.backgroundColor="";
+    }
     
-    else if(data.currentValue<=data.blueValue && data.currentValue>=data.minValue)
+    else if(data.currentValue<=data.blueValue && data.currentValue>=data.minValue){
     campo.style.color="blue";
+    fondo.style.backgroundColor="#2196F3";
+    }
 }
 
 socket.on('cambio-sensor', (data)=>{

@@ -32,7 +32,7 @@ main{
 .aparatos{
     display: grid;
     /*grid-template-columns: repeat(3, minmax(28%, 320px));*/
-    grid-template-columns: repeat(3, 28%);
+    grid-template-columns: repeat(3, 1fr);
     grid-auto-rows: 300px;
     /*width: 100%;*/
     gap: 12px;
@@ -230,4 +230,9 @@ main{
 
 #simulacion{
     cursor: pointer;
+}
+
+.unidades-grandes{
+    font-size: 200%;
+    font-weight: bold;
 }

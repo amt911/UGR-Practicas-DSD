@@ -40,6 +40,23 @@ socket.on("recibir-msg", (data)=>{
 	);	
 });
 
+
+function comprobarPalabrotas(){
+    var texto=document.getElementById("texto");
+    var palabrotas=["palabrota", "imbecil", "terrible", "caca", "patada", "necio", "tonto", "fiesta", "malo", "corcholis"]
+
+    palabrotas.forEach(
+        (aux)=>{       
+            texto.value=texto.value.replace(new RegExp(aux, "ig"), "*".repeat(aux.length))
+        }
+    )
+}
+
+let cajaChat=document.getElementById("texto");
+
+cajaChat.addEventListener("keypress", comprobarPalabrotas);
+
+
 function obtenerFechaActual(){
     let fecha=new Date()
 	let meses={
@@ -66,6 +83,8 @@ function obtenerFechaActual(){
 
 
 function enviar(){
+	comprobarPalabrotas();
 	let msg=document.getElementById("texto").value;
+	
 	 socket.emit("recibir-msg", {msg: msg, fecha: obtenerFechaActual()});
 }
