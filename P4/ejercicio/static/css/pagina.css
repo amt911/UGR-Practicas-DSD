@@ -1,7 +1,7 @@
 body{
     font-family: 'Roboto', sans-serif;
     /*background-color: beige;*/
-    max-width: max-content;
+    /*max-width: max-content;*/
     text-align: center;
 }
 
@@ -132,13 +132,13 @@ main{
     grid-template-rows: auto;
     gap: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-    border-radius: 8px 0 8px 8px;
+    /*border-radius: 8px 0 8px 8px;*/
     padding: 5px;
     z-index: 10;
 }
 
 #desplegable-opciones{
-    width: 20vw;
+    /*width: 20vw;*/
     left: 0%;
     position: absolute;
     top: 100%;
@@ -150,7 +150,7 @@ main{
     grid-template-rows: auto;
     gap: 10px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
-    border-radius: 0 8px 8px 8px;
+    /*border-radius: 0 8px 8px 8px;*/
     padding: 5px;
     z-index: 8;    
 }
@@ -222,7 +222,7 @@ main{
 
 #actuadores-container{
     display: grid;
-    grid-template-columns: repeat(3, 28%);
+    grid-template-columns: repeat(3, 1fr);/*repeat(3, 28%);*/
     grid-auto-rows: 300px;
     justify-content: center;
     gap: 12px;

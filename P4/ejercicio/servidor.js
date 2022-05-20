@@ -168,76 +168,95 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 	io.sockets.on('connection', (client) => {
 		function funcion1A(){
+			let hayAlertaCambio=false;
+
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
 				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}
 			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
 				let index=alertas.findIndex(i=>i.name=="tip1");
 				
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}			
 
 			//Si el radiador y la ventana estan encendidos y abiertos
 			if(actuadores[3].state && actuadores[1].state && alertas.find(i=>i.name=="tip2")==undefined){
 				alertas.push({name: "tip2", msg:"Radiador encendido y ventana abierta, es recomendable realizar una acción"});
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}
 			else if(!(actuadores[3].state && actuadores[1].state) && alertas.find(i=>i.name=="tip2")!=undefined){
 				let index=alertas.findIndex(i=>i.name=="tip2");
 				
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}						
 
 			//console.log("mec")
 			//Si el radiador y el aire acondicionado estan encendidos
 			if(actuadores[3].state && actuadores[0].state && alertas.find(i=>i.name=="tip3")==undefined){
 				alertas.push({name: "tip3", msg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}
 			else if(!(actuadores[3].state && actuadores[0].state) && alertas.find(i=>i.name=="tip3")!=undefined){
 				let index=alertas.findIndex(i=>i.name=="tip3");
 				
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}						
 
 			//Si el humidificador y el deshumidificador estan encendidos
 			if(actuadores[2].state && actuadores[4].state && alertas.find(i=>i.name=="tip4")==undefined){
 				alertas.push({name: "tip4", msg:"Humidificador y deshumidificador encendidos, se recomienda realizar una acción"});
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}
 			else if(!(actuadores[2].state && actuadores[4].state) && alertas.find(i=>i.name=="tip4")!=undefined){
 				let index=alertas.findIndex(i=>i.name=="tip4");
 				
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);				
+				//io.emit("alerta", alertas);				
+				hayAlertaCambio=true;
 			}
+
+			if(hayAlertaCambio)
+				io.emit("alerta", alertas);
 		}
 
 		function funcion2S(data){
+			let hayAlertaCambio=false;
+
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.highWarningValue && alertas.find(i=>(i.id==data.id && !i.low))==undefined){
 				alertas.push({id: data.id, name: data.name, msg: data.maxWarningMsg, low: false});
-				io.emit("alerta", alertas);
+				//io.emit("alerta", alertas);
+				hayAlertaCambio=true;
 			}
 			else if(data.currentValue<data.highWarningValue && alertas.find(i=>(i.id==data.id && !i.low))!=undefined){
 				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);
+				//io.emit("alerta", alertas);
+				hayAlertaCambio=true;
 			}
 			
 			if(data.currentValue<=data.lowWarningValue && alertas.find(i=>(i.id==data.id && i.low))==undefined){
 				alertas.push({id: data.id, name: data.name, msg: data.minWarningMsg, low: true});
-				io.emit("alerta", alertas);
+				//io.emit("alerta", alertas);
+				hayAlertaCambio=true;
 			}
 			else if(data.currentValue>data.lowWarningValue && alertas.find(i=>(i.id==data.id && i.low))!=undefined){
 				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
-				io.emit("alerta", alertas);
+				//io.emit("alerta", alertas);
+				hayAlertaCambio=true;
 			}			
 
 
@@ -261,7 +280,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);					
+					//io.emit("alerta", alertas);					
+					hayAlertaCambio=true;
 				}
 			}
 
@@ -276,7 +296,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip4")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip4");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);					
+					//io.emit("alerta", alertas);					
 				}				
 			}
 			//Estos dos (el de arriba y el de abajo) se pueden juntar
@@ -291,7 +311,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip4")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip4");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);					
+					//io.emit("alerta", alertas);					
+					hayAlertaCambio=true;
 				}				
 			}
 
@@ -309,21 +330,26 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip1")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip1");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);										
+					//io.emit("alerta", alertas);										
+					hayAlertaCambio=true;
 				}
 
 				if(alertas.find(i=>i.name=="tip2")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip2");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);										
+					//io.emit("alerta", alertas);										
+					hayAlertaCambio=true;
 				}				
 
 				if(alertas.find(i=>i.name=="tip3")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip3");
 					alertas.splice(index, 1);
-					io.emit("alerta", alertas);										
+					//io.emit("alerta", alertas);										
 				}				
 			}
+
+			if(hayAlertaCambio)
+				io.emit("alerta", alertas);
 		}
 
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});

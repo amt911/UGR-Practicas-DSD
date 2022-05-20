@@ -14,7 +14,7 @@ socket.on("clientes", (users)=>{
 //Otro para recibir y que se actualice la info
 
 //socket.emit("obtener-sensores", true);
-
+/*
 function toggleActuador(data){
     let estadoActuador=document.getElementById("estado-"+data.name);
     let imagen=document.getElementById("imagen-"+data.name);
@@ -38,8 +38,8 @@ function toggleActuador(data){
     divActuador.classList.toggle("apagado");
 }
 
+/*
 function setActuador(data){
-    console.log("FUNCIONANANANAN")
     let estadoActuador=document.getElementById("estado-"+data.idName);
     let imagen=document.getElementById("imagen-"+data.idName);
     let divActuador=document.getElementById("div-"+data.idName);
@@ -63,7 +63,7 @@ function setActuador(data){
         banner.classList.add("fondo-sec");
     }
 }
-
+*/
 socket.on("obtener-sensores", (data)=>{
     //console.log("llamame")
     //console.log(data);
@@ -205,7 +205,12 @@ function modificarAlertas(mensajes){
 
         desplegable.appendChild(aux);
     }
-    console.log("salida")
+    //console.log("salida")
+
+    if(mensajes.length>0)
+        alertas.style.color="yellow";
+    else
+        alertas.style.color="";
 }
 
 
@@ -260,7 +265,6 @@ socket.on("obtener-actuadores", (data)=>{
 
     for(let i=data.length-1; i>=0; i--){
         contenedor.insertAdjacentHTML("afterbegin", 
-            //"<div id=\"div-"+data[i].idName+"\" class=\"div-actuadores apagado\">"+
                 "<div id=\"div-"+data[i].idName+"\" class=\"secciones-actuador apagado\">"+
                     "<div id=\"banner-"+data[i].idName+"\" class=\"negrita grande fondo-sec estado\">"+
                         "<div>"+
@@ -298,15 +302,33 @@ socket.on("obtener-actuador-id", (data)=>{
 });
 
 function setActuador2(data){
-    let estado=document.getElementById("estado-"+data.idName);
-    //console.log(data);
-    //console.log(estado);
-    //console.log("------------antes actuador: "+estado.innerText)
-    estado.innerText=(data.state)? "ON" : "OFF";
+    //let estado=document.getElementById("estado-"+data.idName);
+    //estado.innerText=(data.state)? "ON" : "OFF";
 
-    //console.log("------------despues actuador: "+estado.innerText)
-    //console.log("cambio en el actuador")
-    setActuador(data);    
+    //setActuador(data);    
+
+    let estadoActuador=document.getElementById("estado-"+data.idName);
+    let imagen=document.getElementById("imagen-"+data.idName);
+    let divActuador=document.getElementById("div-"+data.idName);
+    let banner=document.getElementById("banner-"+data.idName);
+
+    if(!data.state){
+        estadoActuador.innerText="OFF";
+        imagen.style.filter="grayscale(100%)";
+
+        estadoActuador.classList.remove("verde");
+        estadoActuador.classList.add("rojo");        
+        divActuador.classList.add("apagado");
+        banner.classList.remove("fondo-sec");
+    }
+    else{
+        estadoActuador.innerText="ON";
+        imagen.style.filter="";
+        divActuador.classList.remove("apagado");
+        estadoActuador.classList.add("verde");
+        estadoActuador.classList.remove("rojo");                
+        banner.classList.add("fondo-sec");
+    }    
 }
 
 socket.on("cambio-actuador", (data)=>{
