@@ -384,6 +384,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("update-pizarra", data);
 		});
+
+		client.on("limpiar-lienzo", ()=>{
+			canvas=[];
+
+			io.emit("limpiar-lienzo");
+		})
 		//-----------------------------------------------
 
 

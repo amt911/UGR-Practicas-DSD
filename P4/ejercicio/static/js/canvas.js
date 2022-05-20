@@ -21,7 +21,10 @@ pizarra.addEventListener("mousemove", (e)=>{
     if(pulsado){
         let viewport=pizarra.getBoundingClientRect();
 
-        socket.emit("update-pizarra", {actual: {x: e.clientX-viewport.left, y: e.clientY-viewport.top}, previo: previo});
+        socket.emit("update-pizarra", {actual: {x: e.clientX-viewport.left, y: e.clientY-viewport.top}, 
+        previo: previo,
+        grosor: pizarra2D.lineWidth,
+        color: pizarra2D.strokeStyle});
 
         previo.x=e.clientX-viewport.left;
         previo.y=e.clientY-viewport.top;
@@ -43,13 +46,19 @@ pizarra.addEventListener("mouseup", (e)=>{
 });
 
 socket.on("update-pizarra", (data)=>{
+    pizarra2D.lineWidth=data.grosor;
+    pizarra2D.strokeStyle=data.color;
+
     pizarra2D.beginPath();
     pizarra2D.lineTo(data.previo.x, data.previo.y);
     pizarra2D.lineTo(data.actual.x, data.actual.y);
     pizarra2D.stroke();
+
+    pizarra2D.lineWidth=grosorAntiguo;
+    pizarra2D.strokeStyle=colorAntiguo;
 })
 
-
+let colorAntiguo="blue";
 let colores=["blue", "black", "red", "white"];
 
 let coloresDiv=document.getElementById("colores").children;
@@ -60,21 +69,30 @@ let coloresDiv=document.getElementById("colores").children;
 for(let i=0; i<coloresDiv.length; i++){
     coloresDiv[i].addEventListener("click", ()=>{
         pizarra2D.strokeStyle=colores[i]
+        colorAntiguo=colores[i];
     })
 }
 
+let grosorAntiguo=1;
 let grosor=[1, 3, 10];
 let grosorDiv=document.getElementById("grosor").children;
 
 for(let i=0; i<grosorDiv.length; i++){
     grosorDiv[i].addEventListener("click", ()=>{
         pizarra2D.lineWidth=grosor[i];
+        grosorAntiguo=grosor[i];
     })
 }
 
 let borrarTodo=document.getElementById("borrar");
 
-borrarTodo.addEventListener("click", ()=>{
-    alert("bot")
+socket.on("limpiar-lienzo", ()=>{
     pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
+})
+
+borrarTodo.addEventListener("click", ()=>{
+    //alert("bot")
+    //pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
+
+    socket.emit("limpiar-lienzo");
 })
