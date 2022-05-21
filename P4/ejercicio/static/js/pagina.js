@@ -211,7 +211,9 @@ socket.on("obtener-actuadores", (data)=>{
     for(let i=0; i<actuadores.length; i++){
         actuadores[i].addEventListener("click", ()=>{
             //alert(data[i].id);
-            socket.emit("obtener-actuador-id", data[i].id);
+            //socket.emit("obtener-actuador-id", data[i].id);
+            data[i].state=(data[i].state)? false : true;
+            socket.emit("cambio-actuador", data[i]);            
         });
     }    
 
@@ -221,13 +223,14 @@ socket.on("obtener-actuadores", (data)=>{
 /**
  * Obtiene el actuador con identificador pasado al servidor
  */
+/*
 socket.on("obtener-actuador-id", (data)=>{
     //console.log("antes: "+data.state)
-    data.state=(data.state)? false : true;
     //console.log("despues: "+data.state)
+    data.state=(data.state)? false : true;
     socket.emit("cambio-actuador", data);
 });
-
+*/
 
 /**
  * Cambia el estilo del actuador pasado por parametro
@@ -262,37 +265,35 @@ socket.on("cambio-actuador", (data)=>{
     setActuador(data);
 });
 
-//----------------------------------------------------------------------------------
+socket.on("get-boton-sim", (data)=>{
+    esParar=data;
 
+    if(!esParar){
+        botonSimulacion.innerText="Iniciar simulacion sensores";
+    }
+    else{
+        botonSimulacion.innerText="Parar simulacion sensores";
+    }
+});
+
+//----------------------------------------------------------------------------------
+//ZONA MAIN
 let botonSimulacion=document.getElementById("simulacion");
 
 let esParar=false;
 botonSimulacion.addEventListener("click", ()=>{
     if(esParar){
         esParar=false;
-        botonSimulacion.innerText="Iniciar simulacion parametros";
+        //botonSimulacion.innerText="Iniciar simulacion sensores";
         socket.emit("parar-sim");
     }
     else{
         esParar=true;
-        botonSimulacion.innerText="Parar simulacion parametros";
+        //botonSimulacion.innerText="Parar simulacion sensores";
         socket.emit("comenzar-sim");
     }
 });
 
-socket.on("get-boton-sim", (data)=>{
-    esParar=data;
-
-    if(!esParar){
-        botonSimulacion.innerText="Iniciar simulacion parametros";
-    }
-    else{
-        botonSimulacion.innerText="Parar simulacion parametros";
-    }
-});
-
-
-//ZONA MAIN
 let esOpen=true;
 let alertasClick=document.getElementById("alertas");
 alertasClick.addEventListener("click", ()=>{
