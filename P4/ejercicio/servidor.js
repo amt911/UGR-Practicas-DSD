@@ -47,8 +47,16 @@ console.log("Servicio HTTP iniciado");
 let io=socketio(httpServer);
 
 //Variables
-let clientes=[];
-let alertas=[];
+
+let clientes=[];		//Los clientes que hay conectados en cada momento
+let alertas=[];			//Alertas que se reciben del servidor
+
+/**
+ * 	Sensores que vienen por defecto
+ * 	blueValue: representa valor en el cual se pone azul el numero
+ * 	redValue: representa lo mismo que el anterior, pero para rojo
+ * 	highWarningValue/lowWarningValue: representa los valores superiores e inferiores en los que la medicion se torna amarilla (advertencia)
+ */
 let sensores=[
 	{
 		id: 1,
@@ -103,6 +111,9 @@ let sensores=[
 	}
 ]
 
+/**
+ * Lista con los actuadores actualmente añadidos
+ */
 let actuadores=[
 	{
 		id: 1,
@@ -140,43 +151,35 @@ let actuadores=[
 		idName: "humidificador",
 		img: "humidificador.png"
 	}		
-]
-
-//console.log(sensores.length);
-
-/**
- * cambio-sensor: sustituira a los antiguos de los dos sensores, se le pasa un json
- * 
- */
+];
 
 
-/**
- * El chat sera un array donde se almacene: id, hora, mensaje
- */
-let mensajes=[];		//Inicialmente sera un array de string
-let usuariosRegistrados=[];	//Usuarios ya registrados
 let interval, estadoSim=false;		//Usado para los intervalos
-let canvas=[];
+let canvas=[];		//Los trazos almacenados de la pizarra digital
+
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
+	//Base de datos a utilizar
 	let dbo = db.db("DSD_Practica_4");
 
-	let collection=dbo.collection("accionesSensores");
-	let msgDB=dbo.collection("mensajesDB");
+	//Bases de datos necesarias para la practica. Cabe notar que con este metodo no es
+	//necesario eliminar la coleccion ya que si no existe se crea, y en otro caso se accede
+	let collection=dbo.collection("accionesSensores");	//Cambios en los valores de los sensores
+	let msgDB=dbo.collection("mensajesDB");		//Mensajes del chat de texto
+	let usuarios=dbo.collection("usuarios");	//Usuarios registrados en el sistema
 
-	//Esto de abajo a lo mejor hay que eliminarlo
-	let usuarios=dbo.collection("usuarios");
-	//Teoricamente recibe la coleccion con los mensajes y usuarios registrados
-
-
-
+	//Conexion de un cliente con el socket
 	io.sockets.on('connection', (client) => {
+
+		/**
+		 * Función que al ser llamada detecta posibles estados incorrectos entre actuadores
+		 * (por ejemplo, raidador y aire acondicionado encendidos) y manda las alertas correspondientes
+		 */
 		function funcion1A(){
-			let hayAlertaCambio=false;
+			let hayAlertaCambio=false;	//Sirve para evitar emitir muchos eventos, solo se manda uno al final
 
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
 			if(actuadores[0].state && actuadores[1].state && alertas.find(i=>i.name=="tip1")==undefined){
-				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});
-				//io.emit("alerta", alertas);				
+				alertas.push({name: "tip1", msg:"Es recomendable o cerrar la ventana o apagar el aire acondicionado"});		
 				hayAlertaCambio=true;
 			}
 			else if(!(actuadores[0].state && actuadores[1].state) && alertas.find(i=>i.name=="tip1")!=undefined){
@@ -234,31 +237,34 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("alerta", alertas);
 		}
 
+		/**
+		 * Encargado de comprobar que no se superen los limites impuestos para los sensores.
+		 * En caso de superarlos, se manda una alerta, y en caso extremos, se acciona el
+		 * actuador mas adecuado para la situacion.
+		 * 
+		 * @param data El sensor que se va a comprobar
+		 */
 		function funcion2S(data){
 			let hayAlertaCambio=false;
 
 			//Si se superan los limites se muestra una advertencia
 			if(data.currentValue>=data.highWarningValue && alertas.find(i=>(i.id==data.id && !i.low))==undefined){
 				alertas.push({id: data.id, name: data.name, msg: data.maxWarningMsg, low: false});
-				//io.emit("alerta", alertas);
 				hayAlertaCambio=true;
 			}
 			else if(data.currentValue<data.highWarningValue && alertas.find(i=>(i.id==data.id && !i.low))!=undefined){
 				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
-				//io.emit("alerta", alertas);
 				hayAlertaCambio=true;
 			}
 			
 			if(data.currentValue<=data.lowWarningValue && alertas.find(i=>(i.id==data.id && i.low))==undefined){
 				alertas.push({id: data.id, name: data.name, msg: data.minWarningMsg, low: true});
-				//io.emit("alerta", alertas);
 				hayAlertaCambio=true;
 			}
 			else if(data.currentValue>data.lowWarningValue && alertas.find(i=>(i.id==data.id && i.low))!=undefined){
 				let index=alertas.findIndex(i=>i.id==data.id);
 				alertas.splice(index, 1);
-				//io.emit("alerta", alertas);
 				hayAlertaCambio=true;
 			}			
 
@@ -267,9 +273,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			//Si se llega al maximo de temperatura o de lumens, se cierra la persiana (OFF en la GUI)
 			if((sensores[0].currentValue>=sensores[0].redValue || sensores[1].currentValue>=sensores[1].redValue) && (actuadores[1].state 
 				|| !actuadores[0].state || actuadores[3].state)){
-					//console.log("aslkdjalskjlsadkfj")
+
 				actuadores[1].state=false;
-				//console.log(actuadores[1]);
 				io.emit("cambio-actuador", actuadores[1]);
 
 				//Parte extra, se pone el aire acondicionado y se quita el radiador
@@ -302,7 +307,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 					//io.emit("alerta", alertas);					
 				}				
 			}
-			//Estos dos (el de arriba y el de abajo) se pueden juntar
+
 			//Si se llega a un minimo de humedad, se acciona el humidificador y se apaga el deshumidificador (si no lo estaba)
 			if(sensores[2].currentValue<=sensores[2].blueValue && (!actuadores[4].state || actuadores[2].state)){
 				actuadores[2].state=false;
@@ -313,8 +318,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 				if(alertas.find(i=>i.name=="tip4")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip4");
-					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);					
+					alertas.splice(index, 1);					
 					hayAlertaCambio=true;
 				}				
 			}
@@ -333,105 +337,153 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip1")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip1");
 					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);										
 					hayAlertaCambio=true;
 				}
 
 				if(alertas.find(i=>i.name=="tip2")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip2");
 					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);										
 					hayAlertaCambio=true;
 				}				
 
 				if(alertas.find(i=>i.name=="tip3")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip3");
 					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);										
 				}				
 			}
 
+			//Si ha habido un cambio, se emiten las alertas a todos los clientes
 			if(hayAlertaCambio)
 				io.emit("alerta", alertas);
 		}
 
+		//Cuando se conecta un cliente, se mete su direccion y puerto en el array para ser mostrado. Ademas se emite a todos el cambio
 		clientes.push({address:client.request.connection.remoteAddress, port:client.request.connection.remotePort});
 		io.sockets.emit("clientes", clientes);
 
+		//Se emiten las alertas actuales al cliente recien conectado
 		client.emit("alerta", alertas);
+
+		//Se emite el historial de cambios de sensor 
 		collection.find().toArray(function(err, res){
 			client.emit("historial", res);	
 		});		
 
-		client.emit("obtener-sensores", sensores);		//Inicializa los HTML con todos los sensores
-		client.emit("obtener-actuadores", actuadores);	//Inicializa los actuadores
+		//Inicializa los HTML con todos los sensores
+		client.emit("obtener-sensores", sensores);
 
-		msgDB.find().toArray(function(err, res){
-			client.emit("recibir-todos-msgs", res);
-		});
+		//Inicializa los HTML con los actuadores
+		client.emit("obtener-actuadores", actuadores);
 
+		//Manda todos los mensajes de la base de datos (solo para el chat)
+		//msgDB.find().toArray(function(err, res){
+		//	client.emit("recibir-todos-msgs", res);
+		//});
 
+		//Obtiene el estado actual del boton de simulacion
 		client.emit("get-boton-sim", estadoSim);
-		//console.log(sensores);
 
-
-
-		//PARTE DE PINTAR--------------------------------
-		console.log("canvas length: "+canvas.length)
+		//Se mandan todos los trazos del lienzo al cliente (solo pizarra)
 		for(let i=0; i<canvas.length; i++)
 			client.emit("update-pizarra", canvas[i]);
 
+		//Se guarda el nuevo trazo y se retransmite a todos para que se actualice
 		client.on("update-pizarra", (data)=>{
-			console.log(data);
 			canvas.push(data);
 
 			io.emit("update-pizarra", data);
 		});
 
+		//Cuando se pulsa el boton de limpiar lienzo se vacia el array y se retransmite el cambio
 		client.on("limpiar-lienzo", ()=>{
 			canvas=[];
 
 			io.emit("limpiar-lienzo");
 		})
-		//-----------------------------------------------
+
+
+		client.on("recibir-todos-msg", (data)=>{
+			console.log(data.name);
+			console.log(data.passwd);
+			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
+				console.log("resultado");
+				
+				if(res.length>0){
+					msgDB.find().toArray(function(err, res){
+						client.emit("recibir-todos-msgs", res);
+						console.log(res);
+					});
+				}
+			});
+		});
 
 
 		//PARTE DE CHAT NUEVO-----------------------------------------------
+		/**
+		 * Comprueba si una cuenta existe en la base de datos cuando se intenta iniciar sesion
+		 */
 		client.on("comprobar-cuenta", (data)=>{
 			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
 				console.log(res);
 				client.emit("comprobar-cuenta", res.length);
 			});
 		})
-
+		//------------------------------------------------------------------
+		/**
+		 * Permite registrar a un usuario nuevo, y en caso de existir ya ese nombre, no se crea
+		 */
 		client.on("crear-cuenta", (data)=>{
 			usuarios.find({name: data.name}).toArray(function(err, res){
-				//client.emit("comprobar-cuenta", res.length);
-				console.log(res);
+				//console.log(res);
 				if(res.length==0){
 					usuarios.insertOne({name: data.name, passwd: data.passwd});
-					client.emit("crear-cuenta", true);
+					client.emit("crear-cuenta", true);		//Todo OK
 				}
 				else{
-					client.emit("crear-cuenta", false);
+					client.emit("crear-cuenta", false);		//Ha habido un error
 				}
 			});
 		})
+
+		/**
+		 * Permite recibir un mensaje y mandarselo al resto
+		 */
+		client.on("recibir-msg", (data)=>{
+			if(data.user != null){
+				let res={msg: data.msg,
+					fecha: data.fecha, 
+					user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
+					};
+
+				msgDB.insertOne(res);
+
+				io.emit("recibir-msg", res);
+			}
+		})		
 		//-----------------------------------------------
 
+		/**
+		 * Añade un sensor nuevo a la lista. Como desventaja, debido a la implementacionm
+		 * no puede interactuar con actuadores, pero si puede cambiarse su valor.
+		 */
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
 			
-			console.log(data);
+			//console.log(data);
 
 			sensores.push(data);
 			io.emit("obtener-sensores", sensores);
 		});
 
+		//PARTE DE SIM
+		/**
+		 * Evento que se activa cuando se pulsa el boton de comenzar simulacion
+		 */
 		client.on("comenzar-sim", ()=>{
 			interval=setInterval(()=>{
 				let tempDelta=0;
 	
+				//Se añaden los valores de los distintos actuadores
 				if(actuadores[0].state)
 					tempDelta--;
 				
@@ -441,9 +493,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(actuadores[3].state)
 					tempDelta++;
 	
+				//En caso de estar todo off, por defecto sube 0.5
 				if(!actuadores[0].state && !actuadores[1].state && !actuadores[3].state)
 					tempDelta=0.5;
 				
+				//Para evitar errores de redondeo, se pone al maximo o al minimo
 				if(sensores[0].currentValue+tempDelta>=sensores[0].blueValue && sensores[0].currentValue+tempDelta<=sensores[0].redValue)
 					sensores[0].currentValue+=tempDelta;
 				else if(sensores[0].currentValue+tempDelta<sensores[0].blueValue)
@@ -461,14 +515,17 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				//Parte de humedad
 				let humedadDelta=0;
 	
+				//Se acumulan los valores de los distintos actuadores
 				if(actuadores[2].state)
 					humedadDelta--;
 				if(actuadores[4].state)
 					humedadDelta++;
 	
+				//Si estan apagados se reduce 0.5 cada vez
 				if(!actuadores[2].state && !actuadores[4].state)
 					humedadDelta=-0.5;
 
+				//Lo mismo que antes, para evitar errores de redondeo y se quede parada la humedad
 				if(sensores[2].currentValue+humedadDelta>=sensores[2].blueValue && sensores[2].currentValue+humedadDelta<=sensores[2].redValue)
 					sensores[2].currentValue+=humedadDelta;
 				else if(sensores[2].currentValue+tempDelta<sensores[2].blueValue)
@@ -476,36 +533,42 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				else
 					sensores[2].currentValue=sensores[2].redValue;
 	
+				//Se emiten todos los cambios en los sensores
 				io.emit("cambio-sensor", sensores[0]);
 				io.emit("cambio-sensor", sensores[1]);
 				io.emit("cambio-sensor", sensores[2]);
 	
-				//Sirve para comprobar que no se pase el limite
+				//Se emiten las alertas correspondientes y se accionan los actuadores correspondientes
 				funcion2S(sensores[0]);
 				funcion2S(sensores[1]);
 				funcion2S(sensores[2]);
 
+				//Ademas se comprueba si hay algunos actuadores incompatibles (explicado anteriormente)
 				funcion1A();
 			}, 2000);
 
-			//console.log("xdddddddddddddddddddddddd");
 			estadoSim=true;
-			io.emit("get-boton-sim", true);
+			io.emit("get-boton-sim", true);		//Se emite el nuevo estado del boton
 		});
 
+		/**
+		 * Permite parar la simulacion cuando se pulsa de nuevo el boton
+		 */
 		client.on("parar-sim", ()=>{
 			clearInterval(interval);
 			interval=null;
 
 			estadoSim=false;
-			io.emit("get-boton-sim", false);
+			io.emit("get-boton-sim", false);		//Se emite el nuevo estado
 		});
+		//FIN PARTE DE SIM
 
 
 		//PARTE ACTUADORES NUEVO-----------------------------
-		client.on("obtener-actuadores", ()=>{
-			client.emit("obtener-actuadores", actuadores);
-		})
+		//QUIZAS ESTO SE PUEDA PONER MEJOR???
+		//client.on("obtener-actuadores", ()=>{
+		//	client.emit("obtener-actuadores", actuadores);
+		//})
 
 
 		/**
@@ -522,27 +585,18 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			funcion1A();
 		});
 
+		/**
+		 * Permite obtener el actuador con el identificador pasado
+		 */
 		client.on("obtener-actuador-id", (data)=>{
 			client.emit("obtener-actuador-id", actuadores.find(i=>i.id==data));
 		});
 		//---------------------------------------------------
 
-		//PARTE CHAT-----------------------------------------
-		client.on("recibir-msg", (data)=>{
-			if(data.user != null){
-				let res={msg: data.msg,
-					fecha: data.fecha, 
-					user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
-					};
-				//mensajes.push(res);
-				msgDB.insertOne(res);
-
-				io.emit("recibir-msg", res);
-			}
-		})
-		//---------------------------------------------------
-
-		//Aqui solo se pasa el propio json, no el array
+		/**
+		 * Evento que se activa cuando se produce un cambio en la medicion de un sensor
+		 * pasado como parametro.
+		 */
 		client.on("cambio-sensor", (data)=>{
 			let index=sensores.findIndex(i=>i.id==data.id);
 
@@ -561,7 +615,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("historial", res);
 			});			
 
-			funcion2S(data);
+			funcion2S(data);		//Se actualizan las alertas
+			funcion1A();
 		});
 
 		/**
@@ -585,12 +640,13 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		/**
 		 * Permite obtener todos los sensores que hay instalados en el hogar
 		 */
+		/*
 		client.on("obtener-sensores", (data)=>{
 			//console.log("llamame")
 			//console.log(sensores);
 			client.emit("obtener-sensores", sensores);
 		});
-
+*/
 		/**
 		 * Permite obtener un sensor dado su nombre
 		 */

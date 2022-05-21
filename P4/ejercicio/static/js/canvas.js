@@ -1,12 +1,38 @@
+//Extrae la URL base para las peticiones
 let url=document.URL.slice(0);
 
 if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
     url=url.slice(0, document.URL.lastIndexOf("/"));
 }
+//-------------------------------------------
 
 let socket=io.connect(url);
 
+/**
+ * Evento que traza las lineas nuevas de todos los clientes, includas las suyas propias
+ */
+socket.on("update-pizarra", (data)=>{
+    pizarra2D.lineWidth=data.grosor;
+    pizarra2D.strokeStyle=data.color;
 
+    pizarra2D.beginPath();
+    pizarra2D.lineTo(data.previo.x, data.previo.y);
+    pizarra2D.lineTo(data.actual.x, data.actual.y);
+    pizarra2D.stroke();
+
+    pizarra2D.lineWidth=grosorAntiguo;
+    pizarra2D.strokeStyle=colorAntiguo;
+})
+
+/**
+ * Evento que limpia el lienzo
+ */
+socket.on("limpiar-lienzo", ()=>{
+    pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
+});
+
+
+//ZONA MAIN
 let pizarra=document.getElementById("pizarra");
 let pizarra2D=pizarra.getContext("2d");
 
@@ -15,7 +41,7 @@ pizarra.style.backgroundColor="#FFFFFF";
 pizarra.style.border="solid 1px black";
 
 let pulsado=false;
-let previo={x:null, y:null};
+let previo={x:null, y:null};        //Una linea esta formada de dos puntos, este es el primero
 
 pizarra.addEventListener("mousemove", (e)=>{
     if(pulsado){
@@ -37,34 +63,16 @@ pizarra.addEventListener("mousedown", (e)=>{
 
     previo.x=e.clientX-viewport.left;
     previo.y=e.clientY-viewport.top;
-
-    //POner aqui una variable que se envie luego a socketio
 });
 
 pizarra.addEventListener("mouseup", (e)=>{
     pulsado=false;
 });
 
-socket.on("update-pizarra", (data)=>{
-    pizarra2D.lineWidth=data.grosor;
-    pizarra2D.strokeStyle=data.color;
-
-    pizarra2D.beginPath();
-    pizarra2D.lineTo(data.previo.x, data.previo.y);
-    pizarra2D.lineTo(data.actual.x, data.actual.y);
-    pizarra2D.stroke();
-
-    pizarra2D.lineWidth=grosorAntiguo;
-    pizarra2D.strokeStyle=colorAntiguo;
-})
-
 let colorAntiguo="blue";
 let colores=["blue", "black", "red", "white"];
 
 let coloresDiv=document.getElementById("colores").children;
-
-//alert(coloresDiv)
-//console.log(coloresDiv)
 
 for(let i=0; i<coloresDiv.length; i++){
     coloresDiv[i].addEventListener("click", ()=>{
@@ -86,13 +94,6 @@ for(let i=0; i<grosorDiv.length; i++){
 
 let borrarTodo=document.getElementById("borrar");
 
-socket.on("limpiar-lienzo", ()=>{
-    pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
-})
-
 borrarTodo.addEventListener("click", ()=>{
-    //alert("bot")
-    //pizarra2D.clearRect(0, 0, pizarra.width, pizarra.height);
-
     socket.emit("limpiar-lienzo");
-})
+});

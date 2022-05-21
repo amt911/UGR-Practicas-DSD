@@ -1,13 +1,17 @@
+// Esta parte obtiene la URL base para realizar peticiones
 let url=document.URL.slice(0);
 
 if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
     url=url.slice(0, document.URL.lastIndexOf("/"));
 }
+//------------------------------------------------------------
 
 let socket=io.connect(url);
 
 
-//IMPLEMENTAR SI DA TIEMPO FUNCION DE COMPROBACION
+/**
+ * Envia el nuevo sensor al servidor
+ */
 function enviar(){
 	
     let res={

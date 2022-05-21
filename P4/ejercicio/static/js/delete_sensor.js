@@ -1,14 +1,21 @@
+// Esta parte obtiene la URL base para realizar peticiones
 let url=document.URL.slice(0);
 
 if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
     url=url.slice(0, document.URL.lastIndexOf("/"));
 }
+//----------------------------------------------------------
 
 let socket=io.connect(url);
 
-socket.emit("obtener-sensores", true);
+//ARREGLAR ESTO???
+//socket.emit("obtener-sensores", true);
 
+/**
+ * Obtiene la lista de sensores que se pueden eliminar
+ */
 socket.on("obtener-sensores", (data)=>{
+	console.log("me actualizo???");
 	let select=document.getElementById("sensor");
 	select.innerHTML="";
 
@@ -21,7 +28,9 @@ socket.on("obtener-sensores", (data)=>{
 	}	
 })
 
-//IMPLEMENTAR SI DA TIEMPO FUNCION DE COMPROBACION
+/**
+ * Permite enviar la eleccion del sensor a eliminar
+ */
 function enviar(){
 	let sensor=document.getElementById("sensor").value;
 
