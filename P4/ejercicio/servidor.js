@@ -162,6 +162,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 	let collection=dbo.collection("accionesSensores");
 	let msgDB=dbo.collection("mensajesDB");
+
+	//Esto de abajo a lo mejor hay que eliminarlo
+	let usuarios=dbo.collection("usuarios");
 	//Teoricamente recibe la coleccion con los mensajes y usuarios registrados
 
 
@@ -393,9 +396,26 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//-----------------------------------------------
 
 
-		//PARTE DE CHAT-----------------------------------------------
+		//PARTE DE CHAT NUEVO-----------------------------------------------
 		client.on("comprobar-cuenta", (data)=>{
-			client.emit("comprobar-cuenta", null);
+			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
+				console.log(res);
+				client.emit("comprobar-cuenta", res.length);
+			});
+		})
+
+		client.on("crear-cuenta", (data)=>{
+			usuarios.find({name: data.name}).toArray(function(err, res){
+				//client.emit("comprobar-cuenta", res.length);
+				console.log(res);
+				if(res.length==0){
+					usuarios.insertOne({name: data.name, passwd: data.passwd});
+					client.emit("crear-cuenta", true);
+				}
+				else{
+					client.emit("crear-cuenta", false);
+				}
+			});
 		})
 		//-----------------------------------------------
 

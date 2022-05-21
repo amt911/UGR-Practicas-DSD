@@ -81,12 +81,13 @@ function obtenerFechaActual(){
     return dia+" de "+meses[fecha.getMonth()]+" del "+fecha.getFullYear()+", "+horas+":"+minutos
 }
 
+let user;
 
 function enviar(){
 	comprobarPalabrotas();
 	let msg=document.getElementById("texto").value;
 	
-	 socket.emit("recibir-msg", {msg: msg, fecha: obtenerFechaActual()});
+	 socket.emit("recibir-msg", {user, msg: msg, fecha: obtenerFechaActual()});
 
 	 document.getElementById("texto").value="";
 
@@ -98,13 +99,25 @@ function enviar(){
 
 
 function registro(){
+	/*
 	let divLogin=document.getElementById("wrapper-login");
 	let divChat=document.getElementById("chat");
+*/
 
-	let name=document.getElementById("name");
-	let passwd=document.getElementById("passwd");
+	let name=document.getElementById("name").value;
+	let passwd=document.getElementById("passwd").value;
+	let select=document.getElementById("opcion-login");
 
-	socket.emit("comprobar-cuenta", {name: name, passwd: passwd});
+	let esInicio=(select.value==="inicio")? true: false;
+	console.log("esInicio"+esInicio);
+
+	//alert(name);
+	//alert(passwd);
+
+	if(esInicio)
+		socket.emit("comprobar-cuenta", {name: name, passwd: passwd});
+	else
+		socket.emit("crear-cuenta", {name: name, passwd: passwd});
 
 /*
 	divLogin.style.display="none";
@@ -113,11 +126,37 @@ function registro(){
 }
 
 socket.on("comprobar-cuenta", (data)=>{
-	if(data!=null){
+	if(data!=0){
+		let name=document.getElementById("name").innerText;
+		let passwd=document.getElementById("passwd");
+		passwd="";
 
+		let divLogin=document.getElementById("wrapper-login");
+		let divChat=document.getElementById("chat");		
+		divLogin.style.display="none";
+		divChat.style.display="grid";
+		user=name;
 	}
 	else{
 		let error=document.getElementById("errores");
-		error.innerText="Error, los credenciales ya existen o son invalidos"
+		error.innerText="Error, los credenciales son invalidos"
+	}
+});
+
+socket.on("crear-cuenta", (data)=>{
+	if(data){
+		let name=document.getElementById("name").innerText;
+		let passwd=document.getElementById("passwd");
+		passwd="";
+		user=name;
+
+		let divLogin=document.getElementById("wrapper-login");
+		let divChat=document.getElementById("chat");		
+		divLogin.style.display="none";
+		divChat.style.display="grid";		
+	}
+	else{
+		let error=document.getElementById("errores");
+		error.innerText="Error, los credenciales ya existen"		
 	}
 })
