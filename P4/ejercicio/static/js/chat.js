@@ -11,19 +11,39 @@ socket.on("recibir-todos-msgs", (data)=>{
 	caja.innerHTML="";
 
 	for(let i=data.length-1; i>=0; i--){
-		caja.insertAdjacentHTML("afterbegin", 
-		"<div class=\"mensaje\">"+
-		"<div class=\"usuario\">"+
-			data[i].user+" ("+data[i].fecha+")"+
-		"</div>"+
-		"<div class=\"texto\">"+
-			data[i].msg+
-		"</div>"+
-	 	"</div>"
-		);
+		//console.log("asdasdasd")
+		//console.log(data[i].user.split("(")[0].slice(0, -1))
+		if(data[i].user.split("(")[0].slice(0, -1)==sessionStorage.getItem("user")){
+			caja.insertAdjacentHTML("afterbegin",
+			"<div class=\"relativo\">"+ 
+			"<div class=\"mensaje mis-msg\">"+
+			"<div class=\"usuario\">"+
+				data[i].user+" ("+data[i].fecha+")"+
+			"</div>"+
+			"<div class=\"texto\">"+
+				data[i].msg+
+			"</div>"+
+			"</div>"+
+			"</div>"
+			);
+		}
+		else{
+			caja.insertAdjacentHTML("afterbegin", 
+			"<div class=\"mensaje\">"+
+			"<div class=\"usuario\">"+
+				data[i].user+" ("+data[i].fecha+")"+
+			"</div>"+
+			"<div class=\"texto\">"+
+				data[i].msg+
+			"</div>"+
+			"</div>"
+			);			
+		}
 	}
 	
 })
+
+//color mio #A5D6A7
 
 socket.on("recibir-msg", (data)=>{
 	let caja=document.getElementById("seccion-chat");
