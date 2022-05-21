@@ -529,14 +529,16 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		//PARTE CHAT-----------------------------------------
 		client.on("recibir-msg", (data)=>{
-			let res={msg: data.msg,
-				fecha: data.fecha, 
-				user: client.request.connection.remoteAddress+":"+client.request.connection.remotePort,
-				};
-			//mensajes.push(res);
-			msgDB.insertOne(res);
+			if(data.user != null){
+				let res={msg: data.msg,
+					fecha: data.fecha, 
+					user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
+					};
+				//mensajes.push(res);
+				msgDB.insertOne(res);
 
-			io.emit("recibir-msg", res);
+				io.emit("recibir-msg", res);
+			}
 		})
 		//---------------------------------------------------
 

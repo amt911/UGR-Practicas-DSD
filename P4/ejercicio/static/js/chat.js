@@ -87,7 +87,7 @@ function enviar(){
 	comprobarPalabrotas();
 	let msg=document.getElementById("texto").value;
 	
-	 socket.emit("recibir-msg", {user, msg: msg, fecha: obtenerFechaActual()});
+	 socket.emit("recibir-msg", {user: sessionStorage.getItem("user"), msg: msg, fecha: obtenerFechaActual()});
 
 	 document.getElementById("texto").value="";
 
@@ -99,43 +99,30 @@ function enviar(){
 
 
 function registro(){
-	/*
-	let divLogin=document.getElementById("wrapper-login");
-	let divChat=document.getElementById("chat");
-*/
-
 	let name=document.getElementById("name").value;
 	let passwd=document.getElementById("passwd").value;
 	let select=document.getElementById("opcion-login");
 
 	let esInicio=(select.value==="inicio")? true: false;
-	console.log("esInicio"+esInicio);
-
-	//alert(name);
-	//alert(passwd);
 
 	if(esInicio)
 		socket.emit("comprobar-cuenta", {name: name, passwd: passwd});
 	else
 		socket.emit("crear-cuenta", {name: name, passwd: passwd});
-
-/*
-	divLogin.style.display="none";
-	divChat.style.display="grid";
-*/
 }
 
 socket.on("comprobar-cuenta", (data)=>{
 	if(data!=0){
-		let name=document.getElementById("name").innerText;
+		let name=document.getElementById("name").value;
 		let passwd=document.getElementById("passwd");
-		passwd="";
+		passwd.value="";
 
 		let divLogin=document.getElementById("wrapper-login");
 		let divChat=document.getElementById("chat");		
 		divLogin.style.display="none";
 		divChat.style.display="grid";
-		user=name;
+		//user=name;
+		sessionStorage.setItem("user", name);
 	}
 	else{
 		let error=document.getElementById("errores");
@@ -145,10 +132,11 @@ socket.on("comprobar-cuenta", (data)=>{
 
 socket.on("crear-cuenta", (data)=>{
 	if(data){
-		let name=document.getElementById("name").innerText;
+		let name=document.getElementById("name").value;
 		let passwd=document.getElementById("passwd");
-		passwd="";
-		user=name;
+		passwd.value="";
+		//user=name;
+		sessionStorage.setItem("user", name);
 
 		let divLogin=document.getElementById("wrapper-login");
 		let divChat=document.getElementById("chat");		
@@ -160,3 +148,10 @@ socket.on("crear-cuenta", (data)=>{
 		error.innerText="Error, los credenciales ya existen"		
 	}
 })
+
+if(sessionStorage.getItem("user")!=null){
+	let divLogin=document.getElementById("wrapper-login");
+	let divChat=document.getElementById("chat");		
+	divLogin.style.display="none";
+	divChat.style.display="grid";		
+}
