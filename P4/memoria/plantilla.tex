@@ -30,11 +30,13 @@ Para ello, es necesario tener instalado Node.js y MongoDB. También es necesario
 
 Un problema que he tenido ha sido que no podía ejecutar el archivo de prueba \textit{mongo-test.js}. Mostraba el mensaje de que el servidor se había iniciado, pero al intentar acceder con la URL ponía que la conexión había sido rechazada. Tras pasar un periodo de tiempo de unos 40 segundos, el programa mostraba un mensaje de error.
 
-%MOSTRAR MENSAJE DE ERROR
-
 Tras depurar el programa en busca del mensaje de error, me di cuenta que localhost se resolvía a \textit{::1}, que es la versión IPv6. Además al hacer ping a localhost obtenía lo siguiente:
 
-%MOSTRAR PING CON IPV6
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/ping.png}
+    \caption{Salida que salía. Al estar arreglado sale localhost6, pero ponía localhost antes.}
+\end{figure}
 
 Por tanto siempre se estaba resolviendo a la dirección IPv6.
 
@@ -48,7 +50,11 @@ MongoDB por defecto no usa IPv6, por lo que hay dos opciones para que funcione:
 
 AL final opté por la segunda opción. Para ello llamé a ``localhost'' en IPv6 como ``localhost6''. Ahora al hacer ping sí se obtiene la dirección loopback de IPv4:
 
-%MOSTRAR FOTO DEL PING CORRECTO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/pingOk.png}
+    \caption{Salida después del arreglo.}
+\end{figure}
 
 %QUIZAS SI DA MAS FALLOS MONGO PONERLOS
 
@@ -59,7 +65,20 @@ Este ejemplo lo único que realiza es mostrar por pantalla en el navegador el me
 
 Adicionalmente, también muestra por la terminal del servidor el JSON con toda la información de la petición del cliente (navegador).
 
-%MOSTRAR FOTOS TANTO DEL CLIENTE COMO DEL SERVIDOR
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/helloworldC.png}
+        \caption{Salida del cliente.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/helloworldS.png}
+        \caption{Salida del servidor.}
+    \end{minipage}
+\end{figure}
 
 \subsubsection{Implementación}
 Para realizar esto, lo primero que hay que hacer es montar el servidor HTTP. Para ello, se importa el módulo de Node.js ``http''.
@@ -70,9 +89,13 @@ Dentro del cuerpo de esta función, para que el servidor muestre la información
 
 Para que el cliente reciba el mensaje, es necesario escribir una cabecera básica con el código 200, indicando que es correcto y el tipo MIME, que en este caso será texto plano.
 
-Luego con el método write, se escribe el mensaje ``Hola mundo'' en la página. POr último, se finaliza con end para que se mande el mesanje. %IMPORTANTE COMPROBAR ESTO, SEGURAMENTE ESTE MAL
+Luego con el método write, se escribe el mensaje ``Hola mundo'' en el cliente. POr último, se finaliza con end para que se mande el mesanje. %IMPORTANTE COMPROBAR ESTO, SEGURAMENTE ESTE MAL
 
-%MOSTRAR FOTO DE LA PETICION GET QUE SE REALIZA
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/header.png}
+    \caption{Cabecera de la petición realizada en Firefox.}
+\end{figure}
 
 \subsection{calculadora.js}
 \subsubsection{Descripción}
@@ -82,10 +105,16 @@ A la calculadora se le pasa el operador y los operandos en la URL en el navegado
 
 Las operaciones que puede hacer son: sumar, restar, producto y dividir.
 
-La sintaxis de la URL es la siguiente: \textbf{http://localhost:8080/$<$operador$>$/$<$operando-1$>$/$<$operando-2$>$}.
+La sintaxis de la URL es la siguiente: 
+
+\verb|http://localhost:8080/<operador>/<operando-1>/<operando-2>|
 
 
-%MOSTRAR MENSAJE DE SALIDA.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/rescalcnormal.png}
+    \caption{Resultado de sumar 1 y 2 en Chrome.}
+\end{figure}
 
 \subsubsection{Implementación}
 La parte de creación del servidor es exactamente igual que en la que se realiza en ``helloworld.js''.
@@ -103,6 +132,12 @@ A continuación, se pasa a float y se llama a la funcion ``calcular''.
 
 Por último, se manda de manera idéntica a la explicada en la sección anterior para el ``helloworld.js''.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/dividircnormal.png}
+    \caption{Resultado de dividir 1 entre 2 en Chrome.}
+\end{figure}
+
 
 \subsection{calculadora-web.js}
 \subsubsection{Descripción}
@@ -110,7 +145,20 @@ Este ejemplo implementa exactamente lo mismo que ``calculadora.js'', pero tenien
 
 Tmbien hace uso de Node.js y de los módulos adicionales ``path'' y ``fs'' para buscar el archivo HTML con la ruta absoluta y también para comprobar la existencia de archivos en el sistema y de leerlos para ofrecerlos en el cliente.
 
-%MOSTRAR EJEMPLO
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cwebsuma.png}
+        \caption{Resultado de sumar 1 y 2 en Chrome.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cwebsumaserver.png}
+        \caption{Salida del servidor.}
+    \end{minipage}
+\end{figure}
 
 
 Además muestra por la pantalla donde se ejecuta la petición REST que se ha realizado, que sigue la misma sintaxis que el ejemplo anterior.
@@ -120,28 +168,69 @@ La implementacion es muy similar al anterior, pero en este caso se usa el modulo
 
 Lo primero que tiene que hacer es enviar la pagina al navegador. Para ello, se consigue la URI como antes, luego se comprueba que si el usuario solo ha puesto la direccion (en este caso localhost:8080), en caso afirmativo se pone que sirva el archivo HTML. A continuación, se le añade la ruta absoluta de ese archivo y, finalmente, con el método ``exists'' comprueba que existe, y en caso afirmativo, con el método ``readFile'' se carga el archivo HTML de una manera similar a como se hacía para los mensajes en los ejemplos anteriores.
 
-Una vez cargada la página, el usuario puede insertar los operandos y el operador y, al darle a enviar se ejecuta la función ``enviar'' que lo que hace es convertir los valores introducidos en una cadena del tipo ``operador/operando1/operando2''. LUego, realiza una petición HTTP GET al servidor con esta cadena, la cual al pasar por el método ``exists'' va a devolver que no existe porque no es un archivo y va a ejecutar el mismo código que en el ejemplo de la calculadora anterior.
+Una vez cargada la página, el usuario puede insertar los operandos y el operador y, al darle a enviar se ejecuta la función ``enviar'' que lo que hace es convertir los valores introducidos en una cadena del tipo ``operador/operando1/operando2''. LUego, realiza una petición HTTP GET al servidor con esta cadena, la cual al pasar por el método ``exists'' va a devolver que no existe porque no es un archivo y va a ejecutar el mismo código que en el ejemplo de la calculadora anterior, devolviendo asi el resultado de la operacion.
 
-%MOSTAR IMAGENES DE EJEMPLOS DE EJECUCION
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cwebprod.png}
+        \caption{Resultado de multiplicar 3 por 8 en Chrome.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cwebprodserver.png}
+        \caption{Salida del servidor.}
+    \end{minipage}
+\end{figure}
 
 \subsection{connections.js}
 \subsubsection{Descripción}
 Este ejemplo hace uso del modulo Socket.io para poder actualizar todos los clientes de manera asíncrona y realizar una comunicación entre el cliente y el servidor para que todos tengan la información mas actualizada.
 
-Cuando un cliente se conecta, este aparece en la pantalla del navegador con su direccion IP y el puerto usado. Además, si se abren mas pestañas se puede ver como aparece la direccion y puerto del nuevo cliente, y si nos vamos a la pestaña del primer cliente se puede ver que se actualiza también. Esto mismo pasa tambien para las desconexiones, cuando un cliente se desconecta los demás lo ven en su sesión.
+Cuando un cliente se conecta, este aparece en la pantalla del navegador con su direccion IP y el puerto usado. Además, si se abren mas pestañas se puede ver como aparece la direccion y puerto del nuevo cliente, junto a los que ya estaban conectados. Si nos dirigimos de nuevo a la pestaña del primer cliente se puede ver que se actualizan las conexiones también. Esto mismo pasa tambien para las desconexiones, cuando un cliente se desconecta los demás lo ven en su sesión.
 
 En la pantalla del servidor aparecen los clientes conectados, las nuevsas conexiones y cuando un usuario se va a desconectar.
 
-%MOSTRAR FOTO PARA 1 CLIENTE Y LUEGO PARA VARIOS
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/connect1.png}
+        \caption{Un solo cliente conectado.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/connect2.png}
+        \caption{Dos clientes conectados}
+    \end{minipage}
+\end{figure}
 
 Además, cuando se desconecta el servicio, aparece un mensaje informandolo.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/connectserver.png}
+        \caption{Salida del servidor cuando se conectan dos.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/disconnectserver.png}
+        \caption{Salida del servidor cuando un cliente se desconecta.}
+    \end{minipage}
+\end{figure}
 
 \subsubsection{Implementación}
 Para implementar este ejemplo es necesario crear un ``httpServer'' como se ha hecho en los ejemplos anteriores, pero esta vez sólo cargando el fichero html.
 
-También es necesario crear el objeto Socket.io e indicarle la funcionalidad y los eventos que debe escuchar en cuanto se conecte un cliente. En este caso lo que se hace primero es añadir el usuario al array, luego se emite a los demás suscritos el cambio y por último se configuran los eventos ``output-evt'' y ``disconnect'' para mostrar un mensaje por el navegador y para actualizar los clientes conectados respectivamente.
+También es necesario crear el objeto Socket.io e indicarle la funcionalidad y los eventos que debe escuchar y emitir en cuanto se conecte un cliente. En este caso, cuando un cliente se conecta, lo que se hace primero es añadir el usuario al array, luego se emite a todos los suscritos el cambio y por último se configuran los eventos de escucha ``output-evt'' y ``disconnect'' para mostrar un mensaje por el navegador y para actualizar los clientes conectados respectivamente, cuando el cliente emita alguno de estos eventos.
 
-En el fichero HTML se conencta al socket del servidor y se configuran los eventos que va a suscrbirise. El evento ``connect'' se ejecuta en cuanto se conecta y le manda un evnto??? del tipo ``output-evt'' al servidor, el cual devuelve de vuelta ``Hola Cliente!'' y lo capta el cliente en ``output-evt'', que actualiza el mensaje de la página HTML.
+En el fichero HTML se conencta al socket del servidor y se configuran los eventos que va a suscrbirise. El evento ``connect'' se ejecuta en cuanto se conecta y le manda un evnto del tipo ``output-evt'' al servidor, el cual devuelve de vuelta ``Hola Cliente!'' y lo capta el cliente en ``output-evt'', que actualiza el mensaje de la página HTML.
 
 Cuando un cliente se desconecta se ejecuta en el servidor el evento ``disconnect'', el cual elimina al cliente de la lista y manda a todos los clientes el evento ``all-connections'' para que actualicen ellos también la lista.
 
@@ -149,7 +238,7 @@ Por último, todos los clientes tienen el evento ``disconnect'', que permite que
 
 %INTRODUCIR FOTOS DE SALIDA CON VARIOS CLIENTES Y TODO ESO, JUNTO CON LAS DEL SERVIDOR
 
-El diagrama de interacciones es el siguiente:
+%El diagrama de interacciones es el siguiente:
 
 %MOSTRAR SI ME VEO CAPAZ EL DIAGRAMA DE INTERACCION.
 \subsection{mongo-test.js}
@@ -158,8 +247,13 @@ Este ejemplo muestra al cliente todas las conexiones a la base de datos NoSQL, m
 
 Cuando se refresca la página o se abre una pestaña nueva del navegador, aparecen nuevas líneas de conexiones a la base de datos.
 
-
 %Mostrar una foto de la salida
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/mongo3.png}
+    \caption{Tres conexiones distintas al servidor.}
+\end{figure}
+
 \subsubsection{Implementación}
 La implementación del servidor HTTP es exactamente igual que en ejemplos anteriores, cuando se realiza una petición, el servidor envia la pagina HTML que se encarga de mostrar las conexiones.
 
@@ -168,20 +262,31 @@ En la parte de la base de datos, lo primero que se hace es conectarse, luego se 
 A continuación, con Socket.io, se crean los eventos que tiene que escuchar y emitir: 
 
 \begin{itemize}
-    \item my-address: manda al cliente su dirección IP y puerto
-    \item poner: Inserta los datos que el cliente manda en la base de datos.
-    \item obtener: busca en la base de datos el registro dado por la dirección IP del cliente y se lo manda al mismo (el cliente).
-    \item poner: Se encarga de insertar en la base de datos la informacion que ha enviado el cliente.
+    \item \textbf{my-address}: manda al cliente su dirección IP y puerto
+    \item \textbf{poner:} Inserta los datos que el cliente manda en la base de datos.
+    \item \textbf{obtener:} busca en la base de datos el registro dado por la dirección IP del cliente y se lo manda al mismo (el cliente).
+    \item \textbf{poner:} Se encarga de insertar en la base de datos la informacion que ha enviado el cliente.
 \end{itemize}
 
 Para la parte del fichero HTML en el cliente, se realiza algo similar a ejemplos anteriores. Los eventos se encargan de insertar en la base de datos las nuevas conexiones y de actualizar la lista del cliente.
 
+Ahora bien, debido a que se usa el método ``createCollection'', solo se puede ejecutar el servidor una vez, en las siguientes ejecuciones da el siguiente error:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/errormongo.png}
+    \caption{Error de ejecucion del servidor.}
+\end{figure}
+
+Esto es deido a que intenta crear de nuevo la coleccion y no lo consigue, haciendo que ``result'' sea ``null''.
+
 \subsection{Diferencias entre los ejemplos}
-La principal diferencia entre los distintos ejemplos, es que en algunos se hace uso de un fichero HTML dedicado con javascript incrustado para el cliente, mientras que en otros tales como ``helloworld.js'' o ``calculadora.js'' solo incrustan el mensaje en una página básica.
+La principal diferencia entre los distintos ejemplos, es que en algunos se hace uso de un fichero HTML dedicado con javascript incrustado para el cliente, mientras que en otros tales como ``helloworld.js'' o ``calculadora.js'', el servidor solo incrusta el mensaje en una página básica.
 
 Otra diferencia es que ``helloworld.js'', ``calculadora.js'' y ``calculadora-web.js'' sólo hacen uso de Node.js, y algunos módulos del mismo. Mientras que en ``connections.js'' y ``mongo-test.js'' hacen uso de Socket.io adicionalmete.
 
 Por último, ``mongo-test.js'' hace uso de un módulo (driver) para conectarse a una base de datos NoSQL. Por tanto, este es el mas complejo de todos.
+
 \section{Segunda parte. Sistema domótico}
 \subsection{Descripción}
 En esta parte de la práctica se pide implementar un sistema de domotica basico que conste de dos sensores y dos actuadores. Los sensores reciben la informacion mediante un formulario, que en mi caso lo he hecho en una pagina aparte. Ademas deben mostrar alertas cuando los valores superen unos limites y en caso de llegar al limite de temperatura o luminosidad, se cierra la persiana automaticamente.
