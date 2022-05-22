@@ -37,6 +37,7 @@ let pizarra=document.getElementById("pizarra");
 let pizarra2D=pizarra.getContext("2d");
 
 pizarra2D.strokeStyle="blue";
+pizarra2D.lineCap = "round";
 pizarra.style.backgroundColor="#FFFFFF";
 pizarra.style.border="solid 1px black";
 
