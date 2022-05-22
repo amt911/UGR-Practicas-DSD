@@ -289,38 +289,111 @@ Por último, ``mongo-test.js'' hace uso de un módulo (driver) para conectarse a
 
 \section{Segunda parte. Sistema domótico}
 \subsection{Descripción}
-En esta parte de la práctica se pide implementar un sistema de domotica basico que conste de dos sensores y dos actuadores. Los sensores reciben la informacion mediante un formulario, que en mi caso lo he hecho en una pagina aparte. Ademas deben mostrar alertas cuando los valores superen unos limites y en caso de llegar al limite de temperatura o luminosidad, se cierra la persiana automaticamente.
+En esta parte de la práctica se pide implementar un sistema de domotica basico que conste de dos sensores y dos actuadores. Los sensores reciben la informacion mediante un formulario, que en mi caso lo he hecho en una pagina aparte. Ademas deben mostrar alertas cuando los valores superen unos limites y en caso de llegar al limite de temperatura o luminosidad, se cierra la persiana automaticamente. Como extra, también he hecho que se accionen más actuadores en funcion de distintos valores de otros sensores.
 
-Tambien he realizado algunos extras que explicare mas adelate para dotar al sistema de una mayor funcionalidad y autenticidad en la toma de decisiones sobre los actuadores.
+Tambien he realizado algunos extras que explicare mas adelante para dotar al sistema de una mayor funcionalidad y autenticidad en la toma de decisiones sobre los actuadores.
 
 \subsection{Implementación}
 \subsubsection{Parte obligatoria}
 Para esta parte lo que he hecho ha sido crear un servidor HTTP tal y como se realiza en los ejemplos proporcionados. Para la parte de la base de datos he realizado algo similar al ejemplo ``mongo-test.js'', he creado una base de datos denominada ``accionesSensores'' para almacenar todos los cambios que se realizan en los sensores a traves del formulario.
 
-Debido a que el ejemplo anteriormente mencionado usaba el método ``createCollection'', cuando el servidor se reiniciaba y la coleccion ya existia se producia un error y se paraba la ejecucion del servidor. Tras revisar la documentacion al final encontre el metodo ``collection'', muy similar al anterior, pero con la diferencia de que no tiene funcion fallback (se almacena la referencia en una variable) y que al existir ya una coleccion, simplemente obtiene la referencia y no intenta crearla de nuevo. En caso de no existir, sí crea la coleccion y devuelve la referencia a la misma.
+Debido a que el ejemplo anteriormente mencionado usaba el método ``createCollection'', cuando el servidor se reiniciaba y la coleccion ya existia se producia un error y se paraba la ejecucion del servidor. Tras revisar la documentacion al final encontre el metodo ``collection'', muy similar al anterior, pero con la diferencia de que no tiene funcion fallback (se almacena la referencia en una variable) y que al existir ya una coleccion, simplemente obtiene la referencia y no intenta crearla de nuevo. En caso de no existir, sí crea la coleccion y devuelve la referencia a la misma, asegurando así que nunca falle por intentarla crearla de nuevo.
 
 Para la parte del agente, he realizado (solo en la parte basica, en la parte extra explicare la otra funcion) una funcion, denominada \textbf{PONER EL NOMBRE DE LA FUNCION AQUI}, que se encarga de comprobar que los valores sensores esten dentro de unos umbrales, y en caso de no estarlos, crea una nueva alerta y la manda al cliente.
 
 La interfaz web he intentado que sea más o menos consistente en términos de colores y de diseño. Tiene la siguiente forma:
 
 %MOSTRAR IMAGEN DE LA PANTALLA PRINCIPAL
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/pagina1.png}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/pagina2.png}
+    \end{minipage}
+\end{figure}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/pagina3.png}
+\end{figure}
 
 Como se puede ver, tienes otro sensor más y 3 actuadores más. Esto forma parte del extra, que explicare mas adelante. Ademas, si se pulsa en un actuador, este se activa o desactiva, reflejandose el cambio en los demas clientes conectados y en los que se van a conectar.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/humoff.png}
+        \caption{Humidificador apagado.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/humon.png}
+        \caption{Humidificador encendido}
+    \end{minipage}
+\end{figure}
 
 Tambien se puede observar que abajo tiene la opcion de cambiar los valores de los sensores. Cuando se pulsa lleva a una pagina distinta con un formulario para cambiar el valor del sensor elegido en el desplegable:
 
 %MOSTRAR FOTO DEL FORMULARIO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/cambiarsensor.png}
+    \caption{Boton para cambiar los valores de los sensores.}
+\end{figure}
 
-Un problema que tuve era que qería que al enviar el nuevo valor del sensor, se redireccionase a la pagina principal de nuevo, pero el emit que realizaba el socket no se llegaba a mandar al servidor. Al final opte por no redireccionar a ninguna pagina, esto hizo que ya funcionase, ademas asi se permite modificar el valor de varios sensores a la vez. Cabe decir que cuando se envia el valor nuevo, este se guarda en la base de datos y se muestra en la pagina principal de todos los clientes que se encuentren en la misma.
+Un problema que tuve era que qería que al enviar el nuevo valor del sensor, se redireccionase a la pagina principal de nuevo, pero el emit que realizaba el socket no se llegaba a mandar al servidor, haciendo que los cambios no se produjesen. Al final opte por no redireccionar a ninguna pagina, esto hizo que ya funcionase, ademas asi se permite modificar el valor de varios sensores a la vez. Cabe decir que cuando se envia el valor nuevo, este se guarda en la base de datos y se muestra en la pagina principal de todos los clientes que se encuentren en la misma.
 
 %MOSTRAR FOTO DE UN CAMBIO, LUEGO DE LA PAGINA PRINCIPAL CON EL CAMBIO DEL SENSOR Y FINALMENTE OTRA CON EL CAMBIO REFLEJADO EN LA BASE DE DATOS.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/form.png}
+    \caption{Formulario para cambiar el valor del sensor.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/cambiotemp.png}
+    \caption{Cambio del sensor de temperatura}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/cambiovalordb.png}
+    \caption{Cambio reflejado en la pagina y en la base de datos.}
+\end{figure}
+
 
 POr ultimo, se puede observar que arriba a la derecha hay una opcion de alertas. Estas se activan (para la parte obligatoria, por ahora) cuando los sensores detectan un valor maximo o minimo. Cuando aparece un numero mayor que 0 significa que hay alguna alerta, y ademas, si se pulsa en el texto o en el recuadro, aparece un desplegable con todas las alertas mas detalladas.
 
-%MOSTRAR FOTOS DE LAS ALERTAS, UNA CON 0, OTRA CON VARIAS Y FINALMENTE MOSTRANDO LOS MENSAJES.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/alerta0.png}
+        \caption{Ninguna alerta.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/alerta1.png}
+        \caption{Hay una alerta}
+    \end{minipage}
+\end{figure}
 
-Ahora bien, he intentado generalizar lo maximo posible los sensores para que los eventos correspondientes puedan ser compartidos por todos. Para ello, he creado un JSON con toda la informacion relativa de un sensor. Este a su vez se almacena en un array. El JSON tiene los siguientes campos:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/alertamsg.png}
+    \caption{Explicación de las alertas.}
+\end{figure}
+
+Ahora bien, he intentado generalizar lo maximo posible los sensores para que los eventos correspondientes puedan ser compartidos por todos y se simplifique la insercion de nuevos sensores en el futuro. Para ello, he creado un JSON con toda la informacion relativa de un sensor. Este a su vez se almacena en un array. El JSON tiene los siguientes campos:
 
 \begin{itemize}
     \item \textbf{id: }Identificador del sensor.
@@ -338,6 +411,8 @@ Ahora bien, he intentado generalizar lo maximo posible los sensores para que los
     \item \textbf{imageDir: }Directorio donde se encuentra la imagen que se va a insertar.
     \item \textbf{currentValue: }Valor actual del sensor.
 \end{itemize}
+
+%Si da tiempo poner un dibujo de esto
 
 He realizado lo mismo para los actuadores, que si bien en la parte extra no se pueden crear mas, me ha parecido mas correcto que todos compartan el mismo evento y se haga de manera generica.
 
@@ -357,8 +432,9 @@ Los eventos que se usan para la página principal son los siguientes:
     \item \textbf{clientes: }Obtiene la lista de los clientes conectados en cada momentos. Se actualiza cada vez que se conecta o desconecta algun cliente.
     \item \textbf{obtener-sensores: }Sirve para inicializar la pantalla con todos los sensores que hay en el sistema. También es accionado en el cliente cuando se añade o elimina un sensor.
     \item \textbf{cambio-sensor: }Se acciona en el cliente cuando se cambia el valor de un sensor para cambiarle el estilo si está en zona de alerta. Mientras que en el servidor se acciona cuando se envía el nuevo valor a través del formulario.
-    \item \textbf{historial: }Actualiza la información del historial de cambios de los valores en los sensores. En el servidor se acciona cuando se actualiza el valor de un sensor a través del formulario.
-    \item \textbf{alerta: }Actualiza las alertas actuales. Cabe destacar que este evento no se puede hacer más eficiente (es decir, mandando solo la informacion necesaria) ya que pueden eliminarse valores intermedios del array en el servidor.
+    \item \textbf{historial: }Actualiza la información del historial de cambios de los valores en los sensores. En el servidor se acciona cuando un cliente nuevo se conecta.
+    \item \textbf{nuevo-registro: }Envia el nuevo registro que se ha producido al cambiar el valor de un sensor. Este evento extra permite una mayor eficiencia ya que no se deben mandar todos los registros y reconstruirlos. Además evita ralentizaciones de MongoDB.
+    \item \textbf{alerta: }Actualiza las alertas actuales. Cabe destacar que este evento no se puede hacer más eficiente (es decir, mandando solo la informacion necesaria como pasaba con el historial de registros de la base de datos), ya que pueden eliminarse valores intermedios del array en el servidor.
     \item \textbf{obtener-actuadores: }Al igual que ``obtener-sensores'', sirve para obtener todos los actuadores disponibles en la página.
     \item \textbf{cambio-actuador: }Actualiza el estado del actuador cuando otro cliente lo activa/desactiva.
 \end{itemize}
@@ -369,11 +445,17 @@ Cuando un cliente se conecta, el servidor le manda todos los sensores, los actua
 
 %INTENTAR HACER UN DIAGRAMA PARA LA PAGINA PRINICIPAL
 
+
 Para la parte del formulario de cambiar el valor de los sensores se hace uso del evento ``obtener-sensores'' para obtener los nombres de los sensores disponibles y mostrarlos en el desplegable y de ``obtener-sensor'', que se acciona cuando se envia la eleccion al servidor. Este a su vez emite mediante el evento ``cambio-sensor'' la información actualizada para que todos los clientes lo actualicen.
 
 Por último, se pedia que cuando la temperatura y la luminosidad llegasen a un valor umbral, se cerrase la ventana. En mi caso lo que he hecho ha sido que cuando se llegue a cualquiera de los dos umbrales, se cierre la ventana, se accione el aire acondicionado y se apague el radiador.
 
 %MOSTRAR UNA FOTO SOBRE ESTO CUANDO SE CAMBIA EL VALOR DE LUMINOSIDAD
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/muchaluz.png}
+    \caption{Se ha encendido el aire acondicionado y se ha cerrado la ventana/persiana.}
+\end{figure}
 
 \subsubsection{Parte extra}
 Para la parte extra he realizado lo siguiente:
@@ -387,55 +469,104 @@ Para la parte extra he realizado lo siguiente:
     \item Una pizarra digital distribuida en la que todos los clientes pueden dibujar a la vez y pueden a su vez ver los cambios de los demás en tiempo real.
 \end{itemize}
 
-He añadido un sensor de humedad y de actuadores he añadido un radiador, un humidificador y un deshumidificador. Además, he añadido más lógica para las combinaciones de actuadores. Por ejemplo, si se enciende el radiador y el aire acondicionado, salta una alerta recomendando una acción. O si se enciende el humidificador y deshumidificador también salta otra alerta.
+He añadido un sensor de humedad. Mientras que de actuadores he añadido un radiador, un humidificador y un deshumidificador. Además, he añadido más lógica para las combinaciones de actuadores. Por ejemplo, si se enciende el radiador y el aire acondicionado, salta una alerta recomendando una acción. O si se enciende el humidificador y deshumidificador también salta otra alerta.
 
 En total he realizado 4 posibles combinaciones ineficientes distintas.
 
 %MOSTRAR FOTO DE UN ENTRELAZAMIENTO DE ACTUADORES
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/actuadoresmal.png}
+    \caption{Muestra alertas sore dispositivos encendidos.}
+\end{figure}
 
 Tambien he hecho un formulario con la posibilidad de añadir un nuevo sensor. Este formulario cuando se envia llama al evento ``add-sensor'' que envia el sensor al servidor, y este a su vez lo inserta en el array de sensores y mediante el evento ``obtener-sensores'' hace que se actualicen todos los clientes. 
 
 %FOTO DE FORMULARIO PARA AÑADIR SENSOR
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/addsensor.png}
+    \caption{Formulario para añadir sensor.}
+\end{figure}
 
 La opción de eliminar sensor hace exactamente lo mismo, pero con el evento ``delete-sensor'', que elimina del array ese sensor en el servidor y tambien llama a ``obtener-sensores'' para actualizar a los demas clientes.
 
 %FOTO DE FORMULARIO PARA ELIMINAR SENSOR
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/deletesensorform.png}
+    \caption{Formulario para eliminar un sensor.}
+\end{figure}
 
 Además, estos nuevos sensores tambien pueden lanzar alertas cuando se superen los valores umbrales con mensajes personalizados introducidos en el formulario.
 
 %FOTO DE LA ALERTA DE UN SENSOR DE PRUEBA
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/nuevosensoralerta.png}
+    \caption{Alerta producida por el nuevo sensor.}
+\end{figure}
 
 Otra cosa que he añadido ha sido una simulación básica de humedad, temperatura y luminosidad (aunque esta ultima no me convence especialmente) que se puede accionar con un boton que se encuentra en la pagina principal, debajo de los actuadores. He supuesto que es un día de verano, por lo que si todos los actuadores están apagados va a subir la temperatura y bajar la humedad. Si la ventana esta bajada supongo total oscuridad, mientras que si esta subidad, supongo un valor demasiado alto de luminosidad.
 
 Además, cuando se acciona el aire acondicionado bjaa la temperatura, mientras que si esta el radiador sube. Si esta encendido el humidificador sube la humedad y si esta encendido el deshumidificador baja. He supuesto que si los dos aparatos de cada pareja anteriomente mencionada están encendidos, se mantienen sus valores, excepto para el caso de la ventana que si esta subida aumenta un poco la temperatura tambien.
 
 %FOTOS DE AUTOREGULACION
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/sim.png}
+    \caption{Se ha activado el aire acondicionado porque la temperatura era excesiva.}
+\end{figure}
 
 En la parte superior izquierda de la página principal hay un texto que pone ``Opciones extra'' que si se pulsa sobre el aparece un menu.
 
 %MOSTRAR FOTO DEL MENU
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/extra.png}
+    \caption{Menu con opciones extra.}
+\end{figure}
 
 La parte del chat consiste en un grupo en el que todas las personas que esten registradas se pueden mandar y recibir mensajes a la vez.
 
 Antes que nada se presenta al usuario con una pantalla de login/registro.
 
-%MOSTRAR FOTO DE LA PANTALLA DE LOGIN
-
 En caso de tener credenciales incorrectos en el login o tener un nombre existente en el registro, se muestra un error.
 
-%ERROR DEL LOGIN Y REGISTRO
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/login.png}
+        \caption{Pantalla de login.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[H]{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/errorlogin.png}
+        \caption{Error de credenciales de login.}
+    \end{minipage}
+\end{figure}
 
 Cuando el usuario inicia sesión es presentado al chat con todos los mensajes anteriores y además es capaz de poder enviar más.
 
 %MOSTRAR FOTO DEL CHAT
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/chatmsg.png}
+    \caption{Ejemplo de conversacion.}
+\end{figure}
 
 Además, si el usuario sale del chat, sin cerrar pestaña, puede seguir entrando sin iniciar sesión de nuevo. Esto se consigue utilizando ``sessionStorage'' de JavaScript.
 
 También he puesto un censurador de palabrotas que pone con el símbolo `*' la palabra que detecte como mala.
 
 %FOTO DEL CENSURADOR DE PALABROTAS
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/censura.png}
+    \caption{Palabrota censurada.}
+\end{figure}
 
 Para implementar esto he creado dos colecciones: una para los usuarios registrados y otra para los mensajes enviados.
 
@@ -457,6 +588,12 @@ La otra opcion de ``Opciones extra'' es la de una pizarra digital del estilo de 
 Para la implementacion de esto, he tenido que hacer un ``canvas'' con HTML y tener en cuenta que un dibujo es un conjunto de lineas, y que una linea esta formada por dos puntos. Por tanto, hay que ser consciente de que el servidor debe almacenar un array de JSON con el grosor y el color del trazo y con el punto de comienzo y de fin de la linea.
 
 %FOTO DE LA PIZARRA EN DOS VENTANAS DISTINTAS
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/pizarra.png}
+    \caption{Pizarra de los dos clientes. Se puede ver que tienen el mismo dibujo}
+\end{figure}
+
 
 Para ello se han creado los siguientes eventos:
 

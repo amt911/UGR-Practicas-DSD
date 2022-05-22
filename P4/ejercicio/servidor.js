@@ -577,15 +577,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		});
 
 		/**
-		 * Permite obtener el actuador con el identificador pasado
-		 */
-		/*
-		client.on("obtener-actuador-id", (data)=>{
-			client.emit("obtener-actuador-id", actuadores.find(i=>i.id==data));
-		});*/
-		//---------------------------------------------------
-
-		/**
 		 * Evento que se activa cuando se produce un cambio en la medicion de un sensor
 		 * pasado como parametro.
 		 */
