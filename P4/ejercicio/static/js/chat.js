@@ -19,7 +19,6 @@ socket.on("recibir-todos-msgs", (data)=>{
 	for(let i=data.length-1; i>=0; i--){
 		//Si son mios son de un estilo, si no de otros
 		if(data[i].user.split("(")[0].slice(0, -1)==sessionStorage.getItem("user")){
-			console.log("es la hora de las tortas");
 			caja.insertAdjacentHTML("afterbegin",
 			"<div class=\"relativo\">"+ 
 			"<div class=\"mensaje mis-msg\">"+
@@ -34,7 +33,6 @@ socket.on("recibir-todos-msgs", (data)=>{
 			);
 		}
 		else{
-			console.log("NO es la hora de las tortas");
 			caja.insertAdjacentHTML("afterbegin", 
 			"<div class=\"mensaje\">"+
 			"<div class=\"usuario\">"+
@@ -142,8 +140,6 @@ function enviar(){
 
 	 let div = document.getElementById("wrapper");
 	 div.scrollTop = div.scrollHeight;	 
-
-	 console.log(div.clientHeight);
 }
 
 /**
@@ -220,7 +216,6 @@ let cajaChat=document.getElementById("texto");
 cajaChat.addEventListener("keypress", comprobarPalabrotas);
 
 if(sessionStorage.getItem("user")!=null){
-	//alert("supuestamente entro")
 	let divLogin=document.getElementById("wrapper-login");
 	let divChat=document.getElementById("chat");		
 	divLogin.style.display="none";
@@ -228,6 +223,3 @@ if(sessionStorage.getItem("user")!=null){
 
 	socket.emit("recibir-todos-msg", {name: sessionStorage.getItem("user"), passwd: sessionStorage.getItem("passwd")});
 }
-
-console.log(sessionStorage.getItem("user"))
-console.log(sessionStorage.getItem("passwd"))

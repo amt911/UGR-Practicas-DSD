@@ -79,18 +79,18 @@ let sensores=[
 		id: 2,
 		sensorName: "Sensor de luminosidad",
 		name: "lumens",
-		unit: "lumens",
-		highWarningValue: 1000,
+		unit: "%",
+		highWarningValue: 85,
 		maxWarningMsg: "Luminosidad peligrosamente alta, considere tomar medidas",
-		redValue: 1800,
-		maxValue: 2000,
+		redValue: 90,
+		maxValue: 100,
 
-		lowWarningValue: 500,
+		lowWarningValue: 20,
 		minWarningMsg: "Luminosidad demasiado baja, considere abrir la ventana o encender la luz",
-		blueValue: 200,
+		blueValue: 10,
 		minValue: 0,		
 		imageDir: "sun.png",
-		currentValue: 750,
+		currentValue: 52.5,
 	},
 	{
 		id: 3,
@@ -204,7 +204,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				hayAlertaCambio=true;
 			}						
 
-			//console.log("mec")
 			//Si el radiador y el aire acondicionado estan encendidos
 			if(actuadores[3].state && actuadores[0].state && alertas.find(i=>i.name=="tip3")==undefined){
 				alertas.push({name: "tip3", msg:"Radiador y aire acondicionado encendidos, se recomienda realizar una acción"});
@@ -403,15 +402,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 
 		client.on("recibir-todos-msg", (data)=>{
-			console.log(data.name);
-			console.log(data.passwd);
 			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
-				console.log("resultado");
 				
 				if(res.length>0){
 					msgDB.find().toArray(function(err, res){
 						client.emit("recibir-todos-msgs", res);
-						console.log(res);
 					});
 				}
 			});
@@ -424,7 +419,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("comprobar-cuenta", (data)=>{
 			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
-				console.log(res);
 				client.emit("comprobar-cuenta", res.length);
 			});
 		})
@@ -434,7 +428,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("crear-cuenta", (data)=>{
 			usuarios.find({name: data.name}).toArray(function(err, res){
-				//console.log(res);
 				if(res.length==0){
 					usuarios.insertOne({name: data.name, passwd: data.passwd});
 					client.emit("crear-cuenta", true);		//Todo OK
@@ -468,8 +461,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("add-sensor", (data)=>{
 			data.id=sensores.length+1;
-			
-			//console.log(data);
 
 			sensores.push(data);
 			io.emit("obtener-sensores", sensores);
@@ -508,9 +499,9 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 	
 				//Parte de luminosidad
 				if(actuadores[1].state)
-					sensores[1].currentValue=1500;
+					sensores[1].currentValue=sensores[1].highWarningValue;
 				else
-					sensores[1].currentValue=0;
+					sensores[1].currentValue=sensores[1].blueValue;
 	
 				//Parte de humedad
 				let humedadDelta=0;
@@ -612,9 +603,13 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
 			
 			//Envia el historial de cambios en la base de datos
-			collection.find().toArray(function(err, res){
-				io.emit("historial", res);
-			});			
+			//collection.find().toArray(function(err, res){
+			//	io.emit("historial", res);
+			//});			
+
+			//Se envia a todos los conectados el nuevo cambio
+			io.emit("nuevo-registro", {evento: data.name, valor: data.currentValue, fecha: new Date()});
+
 
 			funcion2S(data);		//Se actualizan las alertas
 			funcion1A();
@@ -639,22 +634,11 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		})
 
 		/**
-		 * Permite obtener todos los sensores que hay instalados en el hogar
-		 */
-		/*
-		client.on("obtener-sensores", (data)=>{
-			//console.log("llamame")
-			//console.log(sensores);
-			client.emit("obtener-sensores", sensores);
-		});
-*/
-		/**
 		 * Permite obtener un sensor dado su nombre
 		 */
 		client.on("obtener-sensor", (data)=>{
 			let objeto=sensores.find(i=>i.name===data);
 			client.emit("obtener-sensor", objeto);
-			//console.log(objeto);
 		});
 
 		/**
@@ -662,10 +646,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("obtener-sensor-id", (data)=>{
 			let objeto=sensores.find(i=>i.id===data);
-			//console.log(objeto);
 
 			client.emit("obtener-sensor-id", objeto);
-			//console.log(objeto);
 		});
 
 		/**

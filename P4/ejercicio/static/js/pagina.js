@@ -20,8 +20,6 @@ socket.on("clientes", (users)=>{
  * Inicializa todos los sensores existentes y genera html para mostrarlos
  */
 socket.on("obtener-sensores", (data)=>{
-    //console.log("llamame")
-    //console.log(data);
 
     let cards=document.getElementById("div-aparatos");
     cards.innerHTML="";
@@ -107,39 +105,40 @@ function actualizarLista(usuarios){
  * @param mediciones Todas las mediciones actualizadas
  */
 function actualizarHistorial(mediciones){
-    console.log("entrada")
-    let historial=document.getElementById("historial");
-    historial.innerHTML="";
-
-    let lista=document.createElement("ul");
-    historial.appendChild(lista);
+    let historial=document.getElementById("lista-historial");
 
     for(let i=0; i<mediciones.length; i++){
-        let item=document.createElement("li");
-        item.innerHTML="<strong>Evento:</strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha;
-        lista.appendChild(item);
+        historial.insertAdjacentHTML("beforeend",
+        "<li><strong>Evento: </strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha+"</li>"
+        );
     }
-
-    console.log("salida")
-    console.log("length: "+mediciones.length);
 }
 
 /**
- * Evento que hace que se atualice el historial de cambios en los sensores
+ * Evento que hace que se actualice el historial de cambios en los sensores al conectarse el cliente
  */
 socket.on("historial", (collection)=>{
-    //console.log("entro")
     actualizarHistorial(collection);
 });
 
+
+/**
+ * Evento que hace que se inserte el nuevo cambio en algun sensor. Esto hace que no 
+ * haga falta tener que enviar todo el registro nada mas que la primera vez que se conecta
+ */
+socket.on("nuevo-registro", (data)=>{
+    let historial=document.getElementById("lista-historial");
+
+    historial.insertAdjacentHTML("beforeend",
+    "<li><strong>Evento: </strong> "+data.evento+"&emsp;<strong>Valor:</strong> "+data.valor+"&emsp;<strong>Fecha:</strong> "+data.fecha+"</li>"
+    );
+})
 
 /**
  * Modifica la pagina para mostrar las nuevas alertas.
  * @param mensajes Mensajes de las alertas a mostrar
  */
 function modificarAlertas(mensajes){
-    console.log("entrada")
-    console.log(mensajes);
     let alertas=document.getElementById("mensaje-alerta");
 
     let parentesisBegin=alertas.innerText.indexOf("(");
@@ -210,27 +209,12 @@ socket.on("obtener-actuadores", (data)=>{
 
     for(let i=0; i<actuadores.length; i++){
         actuadores[i].addEventListener("click", ()=>{
-            //alert(data[i].id);
-            //socket.emit("obtener-actuador-id", data[i].id);
             data[i].state=(data[i].state)? false : true;
             socket.emit("cambio-actuador", data[i]);            
         });
     }    
 
 })
-
-
-/**
- * Obtiene el actuador con identificador pasado al servidor
- */
-/*
-socket.on("obtener-actuador-id", (data)=>{
-    //console.log("antes: "+data.state)
-    //console.log("despues: "+data.state)
-    data.state=(data.state)? false : true;
-    socket.emit("cambio-actuador", data);
-});
-*/
 
 /**
  * Cambia el estilo del actuador pasado por parametro

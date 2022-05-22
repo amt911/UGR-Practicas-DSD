@@ -15,7 +15,6 @@ let socket=io.connect(url);
  * Obtiene la lista de sensores que se pueden eliminar
  */
 socket.on("obtener-sensores", (data)=>{
-	console.log("me actualizo???");
 	let select=document.getElementById("sensor");
 	select.innerHTML="";
 

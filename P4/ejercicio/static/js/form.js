@@ -16,7 +16,6 @@ socket.on("obtener-sensores", (data)=>{
 	select.innerHTML="";
 
 	for(let i=0; i<data.length; i++){
-		//console.log("entro");
 		let aux=document.createElement("option");
 		aux.value=data[i].name;
 		aux.innerHTML=data[i].sensorName;
@@ -50,7 +49,5 @@ socket.on("obtener-sensor", (data)=>{
 	else if(data.currentValue>data.maxValue)
 		data.currentValue=data.maxValue;
 
-
-	//console.log(valor)
 	socket.emit("cambio-sensor", data);	
 });
