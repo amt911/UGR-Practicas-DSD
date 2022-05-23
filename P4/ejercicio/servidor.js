@@ -307,7 +307,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip4")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip4");
 					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);					
+					//io.emit("alerta", alertas);		
+					hayAlertaCambio=true;			
 				}				
 			}
 
@@ -352,6 +353,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip3")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip3");
 					alertas.splice(index, 1);
+					hayAlertaCambio=true;
 				}				
 			}
 

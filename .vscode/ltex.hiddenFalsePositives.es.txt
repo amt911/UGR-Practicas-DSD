@@ -1,0 +1,23 @@
+{"rule":"INCORRECT_SPACES","sentence":"^\\QTras depurar el programa en busca del mensaje de error, me di cuenta de que localhost se resolvía a ::1, que es la versión IPv6.\\E$"}
+{"rule":"PUNTO_EN_ABREVIATURAS","sentence":"^\\QPermitir a MongoDB que use también las direcciones IPv6 o. Modificar el archivo /etc/hosts para que use otro nombre distinto.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qhelloworld.js.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcalculadora.js.\\E$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QTambién se usa el módulo “url” para obtener la URL que pasa el cliente.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcalculadora-web.js.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qconnections.js.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qmongo-test.js.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qobtener: busca en la base de datos el registro dado por la dirección IP del cliente y se lo manda al mismo (el cliente).\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qponer:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qobtener-sensores:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcambio-sensor:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qhistorial:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qnuevo-registro:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qalerta:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qobtener-actuadores:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcambio-actuador:\\E$"}
+{"rule":"ES_UNPAIRED_BRACKETS","sentence":"^\\QTambién he puesto un censurador de palabrotas que pone con el símbolo `*' la palabra que detecte como mala.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qrecibir-msg:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcomprobar-cuenta:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcrear-cuenta:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qlimpiar-lienzo:\\E$"}
