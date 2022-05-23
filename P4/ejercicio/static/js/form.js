@@ -36,6 +36,8 @@ function enviar(){
 	socket.emit("obtener-sensor", sensor);		
 }
 
+//QUITAR OBTENER-SENSOR, SE PUEDE HACER MAS EFICIENTE PASANDO UN ARRAY GLOBAL
+
 /**
  * Cuando obtiene el sensor le cambia el valor
  */
