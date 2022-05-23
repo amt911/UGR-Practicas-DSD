@@ -158,6 +158,10 @@ let interval, estadoSim=false;		//Usado para los intervalos
 let canvas=[];		//Los trazos almacenados de la pizarra digital
 
 MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, function(err, db){
+	//Si el fallo es de que no se puede conectar, directamente se aborta el programa
+	if(err)
+		throw err;
+	
 	//Base de datos a utilizar
 	let dbo = db.db("DSD_Practica_4");
 
@@ -174,7 +178,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * Función que al ser llamada detecta posibles estados incorrectos entre actuadores
 		 * (por ejemplo, raidador y aire acondicionado encendidos) y manda las alertas correspondientes
 		 */
-		function funcion1A(){
+		function comprobarActuador(){
 			let hayAlertaCambio=false;	//Sirve para evitar emitir muchos eventos, solo se manda uno al final
 
 			//Si se tiene la ventana en ON y el aire en ON, se envia alerta
@@ -243,7 +247,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * 
 		 * @param data El sensor que se va a comprobar
 		 */
-		function funcion2S(data){
+		function comprobarSensor(data){
 			let hayAlertaCambio=false;
 
 			//Si se superan los limites se muestra una advertencia
@@ -365,7 +369,10 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 		//Se emite el historial de cambios de sensor 
 		collection.find().toArray(function(err, res){
-			client.emit("historial", res);	
+			if(err)
+				console.log("Error de base de datos");
+			else
+				client.emit("historial", res);	
 		});		
 
 		//Inicializa los HTML con todos los sensores
@@ -374,11 +381,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//Inicializa los HTML con los actuadores
 		client.emit("obtener-actuadores", actuadores);
 
-		//Manda todos los mensajes de la base de datos (solo para el chat)
-		//msgDB.find().toArray(function(err, res){
-		//	client.emit("recibir-todos-msgs", res);
-		//});
-
 		//Obtiene el estado actual del boton de simulacion
 		client.emit("get-boton-sim", estadoSim);
 
@@ -386,6 +388,8 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		for(let i=0; i<canvas.length; i++)
 			client.emit("update-pizarra", canvas[i]);
 
+
+		//PARTE DE PIZARRA DIGITAL--------------------------------------------------
 		//Se guarda el nuevo trazo y se retransmite a todos para que se actualice
 		client.on("update-pizarra", (data)=>{
 			canvas.push(data);
@@ -399,41 +403,57 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("limpiar-lienzo");
 		})
-
+		//--------------------------------------------------------------------------
 
 		client.on("recibir-todos-msg", (data)=>{
 			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
+				if(err)
+					console.log("Error de base de datos");
 				
-				if(res.length>0){
+				else if(res.length>0){
 					msgDB.find().toArray(function(err, res){
-						client.emit("recibir-todos-msgs", res);
+						if(err)
+							console.log("Error de base de datos");
+						else
+							client.emit("recibir-todos-msgs", res);
 					});
 				}
 			});
 		});
 
 
-		//PARTE DE CHAT NUEVO-----------------------------------------------
+		//PARTE DE CHAT-----------------------------------------------
 		/**
 		 * Comprueba si una cuenta existe en la base de datos cuando se intenta iniciar sesion
 		 */
 		client.on("comprobar-cuenta", (data)=>{
 			usuarios.find({name: data.name, passwd: data.passwd}).toArray(function(err, res){
-				client.emit("comprobar-cuenta", res.length);
+				if(err)
+					console.log("Error de base de datos");
+				else
+					client.emit("comprobar-cuenta", res.length);
 			});
 		})
-		//------------------------------------------------------------------
+
 		/**
 		 * Permite registrar a un usuario nuevo, y en caso de existir ya ese nombre, no se crea
 		 */
 		client.on("crear-cuenta", (data)=>{
 			usuarios.find({name: data.name}).toArray(function(err, res){
-				if(res.length==0){
-					usuarios.insertOne({name: data.name, passwd: data.passwd});
-					client.emit("crear-cuenta", true);		//Todo OK
-				}
+				if(err)
+					console.log("Error de base de datos");
 				else{
-					client.emit("crear-cuenta", false);		//Ha habido un error
+					if(res.length==0){
+						usuarios.insertOne({name: data.name, passwd: data.passwd}, function(err, res){
+							if(err)
+								console.log("Error de base de datos");
+							else
+								client.emit("crear-cuenta", true);		//Todo OK
+						});
+					}
+					else{
+						client.emit("crear-cuenta", false);		//Ha habido un error
+					}
 				}
 			});
 		})
@@ -443,20 +463,26 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("recibir-msg", (data)=>{
 			if(data.user != null){
-				let res={msg: data.msg,
+				let resRegistro={msg: data.msg,
 					fecha: data.fecha, 
 					user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
 					};
 
-				msgDB.insertOne(res);
+				msgDB.insertOne(resRegistro, function(err, res){
+					if(err)
+						console.log("Error de base de datos");
+					else{
+						console.log("retransmito")
+						io.emit("recibir-msg", resRegistro);
+					}
+				});
 
-				io.emit("recibir-msg", res);
 			}
 		})		
 		//-----------------------------------------------
 
 		/**
-		 * Añade un sensor nuevo a la lista. Como desventaja, debido a la implementacionm
+		 * Añade un sensor nuevo a la lista. Como desventaja, debido a la implementacion,
 		 * no puede interactuar con actuadores, pero si puede cambiarse su valor.
 		 */
 		client.on("add-sensor", (data)=>{
@@ -466,7 +492,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			io.emit("obtener-sensores", sensores);
 		});
 
-		//PARTE DE SIM
+		//PARTE DE SIMULACION
 		/**
 		 * Evento que se activa cuando se pulsa el boton de comenzar simulacion
 		 */
@@ -530,12 +556,12 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				io.emit("cambio-sensor", sensores[2]);
 	
 				//Se emiten las alertas correspondientes y se accionan los actuadores correspondientes
-				funcion2S(sensores[0]);
-				funcion2S(sensores[1]);
-				funcion2S(sensores[2]);
+				comprobarSensor(sensores[0]);
+				comprobarSensor(sensores[1]);
+				comprobarSensor(sensores[2]);
 
 				//Ademas se comprueba si hay algunos actuadores incompatibles (explicado anteriormente)
-				funcion1A();
+				comprobarActuador();
 			}, 2000);
 
 			estadoSim=true;
@@ -555,13 +581,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		//FIN PARTE DE SIM
 
 
-		//PARTE ACTUADORES NUEVO-----------------------------
-		//QUIZAS ESTO SE PUEDA PONER MEJOR???
-		//client.on("obtener-actuadores", ()=>{
-		//	client.emit("obtener-actuadores", actuadores);
-		//})
-
-
 		/**
 		 * Evento que capta cuando se realiza un cambio en un actuador. Ademas comprueba 
 		 * si se ha producido alguna alerta.
@@ -573,7 +592,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 
 			io.emit("cambio-actuador", data);
 
-			funcion1A();
+			comprobarActuador();
 		});
 
 		/**
@@ -587,23 +606,26 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 			sensores.splice(index, 1, data);
 			
 			//Multicast a los clientes del cambio
-			io.emit("cambio-sensor", data);		//NO LO ENTIENDO, REVISAR
+			io.emit("cambio-sensor", data);
 
 			//Insercion de lo realizado en la base de datos
 			//No se envian datos actualizados debido a que no se han propagado aun
-			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()});
-			
-			//Envia el historial de cambios en la base de datos
-			//collection.find().toArray(function(err, res){
-			//	io.emit("historial", res);
-			//});			
+			//La solucion es mandar directamente los mismos datos que se han insertado
+			//en la base de datos
+			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()}, function(err, res){
+				if(err)
+					console.log("Error de base de datos");
+				else{
+					//Se envia directamente a todos los conectados el nuevo cambio, 
+					//asi se evita sobrecargar la base de datos
+					io.emit("nuevo-registro", {evento: data.name, valor: data.currentValue, fecha: new Date()});
+				}
+			});		
 
-			//Se envia a todos los conectados el nuevo cambio
-			io.emit("nuevo-registro", {evento: data.name, valor: data.currentValue, fecha: new Date()});
 
 
-			funcion2S(data);		//Se actualizan las alertas
-			funcion1A();
+			comprobarSensor(data);		//Se actualizan las alertas
+			comprobarActuador();
 		});
 
 		/**
