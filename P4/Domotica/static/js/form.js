@@ -1,9 +1,5 @@
 // Esta parte obtiene la URL base para realizar peticiones
-let url=document.URL.slice(0);
-
-if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
-    url=url.slice(0, document.URL.lastIndexOf("/"));
-}
+let url=arreglarURL(document.URL);
 //-----------------------------------------------------------
 
 let socket=io.connect(url);
@@ -33,16 +29,17 @@ function enviar(){
     let sensor=document.getElementById("sensor").value;
 	valor=parseInt(document.getElementById("cuadro").value);
 
+	//Obtengo el sensor que quiero, lo hago asi porque (aunque no este implementado)
+	//puede cambiarse otro campo del sensor y al enviarse este se machaca.
+	//Tambien se podria hacer creando un evento solo para temperatura, pero me parece
+	//mejor que sea mas generico a costa de ser un poco menos eficiente.
 	socket.emit("obtener-sensor", sensor);		
 }
-
-//QUITAR OBTENER-SENSOR, SE PUEDE HACER MAS EFICIENTE PASANDO UN ARRAY GLOBAL
 
 /**
  * Cuando obtiene el sensor le cambia el valor
  */
 socket.on("obtener-sensor", (data)=>{
-	//data.currentValue=(valor>data.maxValue)? data.maxValue : valor;
 	data.currentValue=valor;
 
 	if(data.currentValue<data.minValue)

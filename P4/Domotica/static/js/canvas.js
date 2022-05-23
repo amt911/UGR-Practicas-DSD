@@ -1,9 +1,5 @@
 //Extrae la URL base para las peticiones
-let url=document.URL.slice(0);
-
-if((document.URL.lastIndexOf("/")-document.URL.indexOf("/"))>1){
-    url=url.slice(0, document.URL.lastIndexOf("/"));
-}
+let url=arreglarURL(document.URL);
 //-------------------------------------------
 
 let socket=io.connect(url);
