@@ -128,7 +128,7 @@ socket.on("nuevo-registro", (data)=>{
     let historial=document.getElementById("lista-historial");
 
     historial.insertAdjacentHTML("beforeend",
-    "<li><strong>Evento: </strong> "+data.evento+"&emsp;<strong>Valor:</strong> "+data.valor+"&emsp;<strong>Fecha:</strong> "+data.fecha+"</li>"
+    "<li><strong>Sensor: </strong> "+data.evento+"&emsp;<strong>Valor:</strong> "+data.valor+"&emsp;<strong>Fecha:</strong> "+data.fecha+"</li>"
     );
 })
 
@@ -207,12 +207,13 @@ socket.on("obtener-actuadores", (data)=>{
 
     for(let i=0; i<actuadores.length; i++){
         actuadores[i].addEventListener("click", ()=>{
-            data[i].state=(data[i].state)? false : true;
-            socket.emit("cambio-actuador", data[i]);            
+            //Esto es necesario hacerlo asi, ya que si usamos data puede llegar a
+            //tener valores desactualizados
+            socket.emit("toggle-actuador-id", data[i].id);
         });
     }    
 
-})
+});
 
 /**
  * Cambia el estilo del actuador pasado por parametro

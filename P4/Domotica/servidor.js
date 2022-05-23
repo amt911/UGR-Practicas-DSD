@@ -290,8 +290,7 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				//Si antes estaban los dos accionados, habia una alerta, por lo que se debe eliminar
 				if(alertas.find(i=>i.name=="tip")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip");
-					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);					
+					alertas.splice(index, 1);					
 					hayAlertaCambio=true;
 				}
 			}
@@ -307,7 +306,6 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 				if(alertas.find(i=>i.name=="tip4")!=undefined){
 					let index=alertas.findIndex(i=>i.name=="tip4");
 					alertas.splice(index, 1);
-					//io.emit("alerta", alertas);		
 					hayAlertaCambio=true;			
 				}				
 			}
@@ -593,12 +591,25 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * Evento que capta cuando se realiza un cambio en un actuador. Ademas comprueba 
 		 * si se ha producido alguna alerta.
 		 */
+/*
 		client.on("cambio-actuador", (data)=>{
 			let index=actuadores.findIndex(i=>i.id==data.id);
 
 			actuadores.splice(index, 1, data);
 
 			io.emit("cambio-actuador", data);
+
+			comprobarActuador();
+		});
+*/
+		/**
+		 * Cambia el estado del actuador y lo retransmite a todos los clientes
+		 */
+		client.on("toggle-actuador-id", (data)=>{
+			let i=actuadores.findIndex(i=>i.id==data);
+			actuadores[i].state=(actuadores[i].state)? false : true;
+
+			io.emit("cambio-actuador", actuadores[i]);
 
 			comprobarActuador();
 		});

@@ -351,7 +351,7 @@ La interfaz web he intentado que sea más o menos consistente en términos de co
     \includegraphics[width=0.7\textwidth]{images/pagina3.png}
 \end{figure}
 
-Como se puede ver, tiene otro sensor más y 3 actuadores más. Esto forma parte del extra, que explicaré más adelante. Además, si se pulsa en un actuador, este se activa o desactiva, reflejándose el cambio en los demás clientes conectados y en los que se van a conectar.
+Como se puede ver, tiene otro sensor más y 3 actuadores más. Esto forma parte del extra, que explicaré más adelante. Además, si se pulsa en un actuador, este se activa o desactiva, reflejándose el cambio en los demás clientes conectados y en los que se van a conectar. Esto se consigue con el evento ``toggle-actuador-id'', que con el id del actuador cambia el estado del mismo en el servidor. Una vez hecho eso, mediante el evento ``cambio-actuador'' actualiza el recuadro de la interfaz web.
 
 \begin{figure}[H]
     \centering
@@ -470,6 +470,7 @@ Los eventos que se usan para la página principal son los siguientes:
     \item \textbf{alerta: }Actualiza las alertas actuales. Cabe destacar que este evento no se puede hacer más eficiente (es decir, mandando solo la información necesaria como pasaba con el historial de registros de la base de datos), ya que pueden eliminarse valores intermedios del array en el servidor.
     \item \textbf{obtener-actuadores: }Al igual que ``obtener-sensores'', sirve para obtener todos los actuadores disponibles en la página (cliente).
     \item \textbf{cambio-actuador: }Actualiza el estado del actuador cuando otro cliente lo activa/desactiva.
+    \item \textbf{toggle-actuador-id: }Sirve para que el cliente alterne el estado del actuador con id pasada como parámetro. En el lado del servidor al recibirlo cambia el estado, lo retransmite a todos y comprueba si hay alguna alerta nueva.
 \end{itemize}
 
 No están explicados todos, ya que los demás son extra y los explicaré en la siguiente subsección.

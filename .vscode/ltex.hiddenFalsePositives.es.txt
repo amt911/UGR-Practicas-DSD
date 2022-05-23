@@ -21,3 +21,9 @@
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcomprobar-cuenta:\\E$"}
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qcrear-cuenta:\\E$"}
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qlimpiar-lienzo:\\E$"}
+{"rule":"PREP_VERB","sentence":"^\\QSirve para que el cliente alterne el estado del actuador con id pasada como parámetro.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qname:\\E$"}
+{"rule":"WRONG_IMPERATIVE","sentence":"^\\QEsto se consigue con el evento “toggle-actuador-id”, que con el id del actuador cambia el estado del mismo en el servidor.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qunit:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qstate:\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qimg:\\E$"}
