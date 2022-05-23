@@ -105,7 +105,7 @@ function actualizarHistorial(mediciones){
 
     for(let i=0; i<mediciones.length; i++){
         historial.insertAdjacentHTML("beforeend",
-        "<li><strong>Evento: </strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha+"</li>"
+        "<li><strong>Sensor: </strong> "+mediciones[i].evento+"&emsp;<strong>Valor:</strong> "+mediciones[i].valor+"&emsp;<strong>Fecha:</strong> "+mediciones[i].fecha+"</li>"
         );
     }
 }

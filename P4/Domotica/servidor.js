@@ -609,30 +609,39 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 */
 		client.on("cambio-sensor", (data)=>{
 			let index=sensores.findIndex(i=>i.id==data.id);
+			//console.log(sensores[index]);
 
-			//Inserta el nuevo estado del sensor pasado
-			sensores.splice(index, 1, data);
+			//Se comprueba si se han superado los limites inferior o superior
+			if(data.currentValue>sensores[index].maxValue)
+				sensores[index].currentValue=sensores[index].maxValue;
+
+			else if(data.currentValue<sensores[index].minValue)
+				sensores[index].currentValue=sensores[index].minValue;
+
+			else
+				sensores[index].currentValue=data.currentValue;
 			
 			//Multicast a los clientes del cambio
-			io.emit("cambio-sensor", data);
+			io.emit("cambio-sensor", sensores[index]);
 
 			//Insercion de lo realizado en la base de datos
 			//No se envian datos actualizados debido a que no se han propagado aun
 			//La solucion es mandar directamente los mismos datos que se han insertado
 			//en la base de datos
-			collection.insertOne({evento: data.name, valor: data.currentValue, fecha: new Date()}, function(err, res){
+			let fecha=new Date();
+			collection.insertOne({evento: sensores[index].sensorName, valor: sensores[index].currentValue, fecha: fecha}, function(err, res){
 				if(err)
 					console.log("Error de base de datos");
 				else{
 					//Se envia directamente a todos los conectados el nuevo cambio, 
 					//asi se evita sobrecargar la base de datos
-					io.emit("nuevo-registro", {evento: data.name, valor: data.currentValue, fecha: new Date()});
+					io.emit("nuevo-registro", {evento: sensores[index].sensorName, valor: sensores[index].currentValue, fecha: fecha});
 				}
 			});		
 
 
 
-			comprobarSensor(data);		//Se actualizan las alertas
+			comprobarSensor(sensores[index]);		//Se actualizan las alertas
 			comprobarActuador();
 		});
 

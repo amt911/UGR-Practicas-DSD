@@ -4,10 +4,14 @@ let url=arreglarURL(document.URL);
 
 let socket=io.connect(url);
 
+let sensores=[];
+
 /**
  * Obtiene todos los nombres de los sensores y los añade al select
  */
 socket.on("obtener-sensores", (data)=>{
+	sensores=[...data];
+
 	let select=document.getElementById("sensor");
 	select.innerHTML="";
 
@@ -27,18 +31,19 @@ let valor=0;
  */
 function enviar(){
     let sensor=document.getElementById("sensor").value;
-	valor=parseInt(document.getElementById("cuadro").value);
+	valor=parseInt(document.getElementById("cuadro").value, 10);
+	console.log(valor)
 
-	//Obtengo el sensor que quiero, lo hago asi porque (aunque no este implementado)
-	//puede cambiarse otro campo del sensor y al enviarse este se machaca.
-	//Tambien se podria hacer creando un evento solo para temperatura, pero me parece
-	//mejor que sea mas generico a costa de ser un poco menos eficiente.
-	socket.emit("obtener-sensor", sensor);		
+	
+	let sensorObj=sensores.find(i=>i.name==sensor);
+
+	socket.emit("cambio-sensor", {id: sensorObj.id, currentValue: valor});
 }
 
 /**
  * Cuando obtiene el sensor le cambia el valor
  */
+/*
 socket.on("obtener-sensor", (data)=>{
 	data.currentValue=valor;
 
@@ -50,3 +55,4 @@ socket.on("obtener-sensor", (data)=>{
 
 	socket.emit("cambio-sensor", data);	
 });
+*/
