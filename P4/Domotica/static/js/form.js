@@ -31,28 +31,8 @@ let valor=0;
  */
 function enviar(){
     let sensor=document.getElementById("sensor").value;
-	valor=parseInt(document.getElementById("cuadro").value, 10);
-	console.log(valor)
-
-	
+	valor=parseFloat(document.getElementById("cuadro").value);	
 	let sensorObj=sensores.find(i=>i.name==sensor);
 
 	socket.emit("cambio-sensor", {id: sensorObj.id, currentValue: valor});
 }
-
-/**
- * Cuando obtiene el sensor le cambia el valor
- */
-/*
-socket.on("obtener-sensor", (data)=>{
-	data.currentValue=valor;
-
-	if(data.currentValue<data.minValue)
-		data.currentValue=data.minValue;
-		
-	else if(data.currentValue>data.maxValue)
-		data.currentValue=data.maxValue;
-
-	socket.emit("cambio-sensor", data);	
-});
-*/

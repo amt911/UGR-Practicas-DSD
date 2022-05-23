@@ -71,7 +71,9 @@ function setSensorValores(data){
 }
 
 /**
- * Cuando hay un cambio en el sensor, se cambia su estilo de nuevo
+ * Cuando hay un cambio en el sensor, 
+ * se cambia su estilo de nuevo y se actualiza la informacion
+ * data representa el JSON del sensor
  */
 socket.on('cambio-sensor', (data)=>{
     setSensorValores(data);
