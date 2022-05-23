@@ -130,7 +130,7 @@ function enviar(){
 	comprobarPalabrotas();
 	let msg=document.getElementById("texto").value;
 	
-	 socket.emit("recibir-msg", {user: sessionStorage.getItem("user"), msg: msg, fecha: obtenerFechaActual()});
+	 socket.emit("recibir-msg", {user: sessionStorage.getItem("user"), passwd: sessionStorage.getItem("passwd"),msg: msg, fecha: obtenerFechaActual()});
 
 	 document.getElementById("texto").value="";
 

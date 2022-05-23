@@ -464,22 +464,28 @@ MongoClient.connect("mongodb://localhost:27017/", {useUnifiedTopology: true}, fu
 		 * Permite recibir un mensaje y mandarselo al resto
 		 */
 		client.on("recibir-msg", (data)=>{
-			if(data.user != null){
-				let resRegistro={msg: data.msg,
-					fecha: data.fecha, 
-					user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
-					};
-
-				msgDB.insertOne(resRegistro, function(err, res){
-					if(err)
-						console.log("Error de base de datos");
-					else{
-						console.log("retransmito")
-						io.emit("recibir-msg", resRegistro);
+			usuarios.find({name: data.user, passwd: data.passwd}).toArray(function(err, res){
+				if(err)
+					console.log("Error de base de datos");
+				else{
+					if(res.length!=0){
+						let resRegistro={msg: data.msg,
+							fecha: data.fecha, 
+							user: data.user + " ("+client.request.connection.remoteAddress+":"+client.request.connection.remotePort+")",
+							};
+		
+						msgDB.insertOne(resRegistro, function(err, res){
+							if(err)
+								console.log("Error de base de datos");
+							else{
+								io.emit("recibir-msg", resRegistro);
+							}
+						});
 					}
-				});
+				}
+			});
 
-			}
+			//}
 		})		
 		//-----------------------------------------------
 
