@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Arch Linux) (preloaded format=pdflatex 2022.4.30)  15 JUN 2022 13:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Arch Linux) (preloaded format=pdflatex 2022.4.30)  15 JUN 2022 17:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -217,12 +217,11 @@ Overfull \hbox (2.12817pt too wide) in paragraph at lines 78--79
 []\T1/cmr/m/n/10 Además, to-dos los ser-vi-cios que es-ten disponibles para las core-ografias, dispon-
  []
 
-[2]
+[2] [3]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 128.
+(Font)              <9> on input line 143.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 128.
- [3]
+(Font)              <6> on input line 143.
 Package epstopdf Info: Source file: <fig1.eps>
 (epstopdf)                    date: 2017-10-04 10:21:14
 (epstopdf)                    size: 357553 bytes
@@ -230,14 +229,14 @@ Package epstopdf Info: Source file: <fig1.eps>
 (epstopdf)                    date: 2022-06-14 12:20:57
 (epstopdf)                    size: 26206 bytes
 (epstopdf)             Command: <repstopdf --outfile=fig1-eps-converted-to.pdf fig1.eps>
-(epstopdf)             \includegraphics on input line 152.
+(epstopdf)             \includegraphics on input line 167.
 Package epstopdf Info: Output file is already uptodate.
 <fig1-eps-converted-to.pdf, id=19, 345.29pt x 142.5325pt>
 File: fig1-eps-converted-to.pdf Graphic file (type pdf)
 <use fig1-eps-converted-to.pdf>
-Package pdftex.def Info: fig1-eps-converted-to.pdf  used on input line 152.
+Package pdftex.def Info: fig1-eps-converted-to.pdf  used on input line 167.
 (pdftex.def)             Requested size: 347.12354pt x 143.29115pt.
- [4 <./fig1-eps-converted-to.pdf>] [5] (./samplepaper.aux) ) 
+ [4] [5 <./fig1-eps-converted-to.pdf>] (./samplepaper.aux) ) 
 Here is how much of TeX's memory you used:
  2019 strings out of 478238
  30067 string characters out of 5850456
@@ -247,7 +246,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  55i,9n,62p,547b,253s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
-Output written on samplepaper.pdf (5 pages, 225175 bytes).
+Output written on samplepaper.pdf (5 pages, 230440 bytes).
 PDF statistics:
  87 PDF objects out of 1000 (max. 8388607)
  53 compressed objects within 1 object stream

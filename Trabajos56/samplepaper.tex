@@ -98,6 +98,21 @@ Los mensajes propios de los servicios para realizar la tarea deseada en un siste
 Además, en caso de caída de un servicio, el middleware debe ser capaz de reasignar a las coreografias que usen dicho servicio a otra replica, siendo transparente para los clientes.
 \section{Protocolos y servicios}
 %quizas tenga un servicio esto, si no explicar como funciona para la cooridnacion y eso. Quedarse en el final de la pagina 3. Aqui se habla del ee de choreos.
+Para la interconexión de las distintas componentes de Choreos, se ha usado una API REST sobre HTTP, ya que es superior en terminos de rendimiento, velocidad y fiablidad que otros protocolos.[128]
+
+Esto permite tener una interfaz uniforme entre todos los componentes, haciendo que la comunicación y la depuración sea más sencilla frente a otras opciones como DPWS. [128]
+
+Este middleware consta principalmente de un servicio, denominado ``Enactment Engine'' (EE). Este se encarga de manejar los fallos de los componentes externos, muy importante en sistemas a gran escala [128].
+
+Este servicio consta de los siguientes componentes:
+
+\begin{itemize}
+    \item \textbf{Choreography Deployer: }Expone la API la dar soporte al despliegue de coreografias. El cliente debe suministrar la especificacion de la coreografia, esta contiene la localizacion de los servicios [128] y la forma de interaccion de los mismos.
+    \item \textbf{Deployment Manager: }Se encarga de desplegar servicios en un entorno cloud. Recibe la especificiacion de la coreogradia en un script que realiza todas las tareas necesarias para lanzar el servicio (procesos, preparacion de servicios, etc)[128].
+\end{itemize}
+
+Estas son las componentes que el servicio ``Enactment Engine '' tiene por defecto. Además incluye otras componentes de terceros como ``Chef Solo'', encargada de instalar la configuracion del middleware y sus componentes en un nodo concreto, y el ``Cloud Gateway'', encargado de crear y destruir máquinas virtuales (nodos)[128] para el despliegue de los servicios.
+
 \section{Propiedades}
 %Repetir por tercera vez todo
 \section{Ejemplos de funcionamiento}
