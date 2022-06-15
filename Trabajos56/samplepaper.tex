@@ -114,7 +114,13 @@ Este servicio consta de los siguientes componentes:
 Estas son las componentes que el servicio ``Enactment Engine '' tiene por defecto. Además incluye otras componentes de terceros como ``Chef Solo'', encargada de instalar la configuracion del middleware y sus componentes en un nodo concreto, y el ``Cloud Gateway'', encargado de crear y destruir máquinas virtuales (nodos)[128] para el despliegue de los servicios.
 
 \section{Propiedades}
-%Repetir por tercera vez todo
+Las principales propiedades de Choreos, como ya se ha dicho en secciones anteriores, son las siguientes:
+
+\begin{itemize}
+    \item \textbf{Escalable: }La naturaleza distribuida de los servicios, hace que se puedan tener mas nodos en momentos dados para hacer frente a la demanda de un servicio concreto. Además, el middleware tiene un mecanismo de escalabilidad que permite estimar el rendimiento de un servicio en función del tiempo de respuesta de los mismos.
+    \item \textbf{Tolerante a fallos: }Al igual que antes, debido a la naturalzea distribuida, se pueden tener replicas de servicios, los cuales pueden ser cambiados por el EE en caso de fallo.
+    \item \textbf{Fiable y sencillo: }Ofrece un IDRE que permite crear coreografias de una manera mas sencilla que si no se utilizase el middleware. Además se comprueba que tenga unos criterios de calidad minimos antes de poder ser desplegado.
+\end{itemize}
 \section{Ejemplos de funcionamiento}
 %Las demos que la organizacion ha realizado
 \section{Análisis crítico}
