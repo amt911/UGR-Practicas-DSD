@@ -80,10 +80,24 @@ Además, todos los servicios que esten disponibles para las coreografias, dispon
 \section{Características}
 %Repetir un poco otra vez todo. Acabar la segunda pagina
 %Principalmente poner lo que habia en un texto de escalabilidad, no se que, ...
+Las principales caracteristicas que tendra este middleware son las siguientes:
+
+\begin{itemize}
+    \item \textbf{Rendimiento: }Gracias al uso del Grid y Cloud Computing, se pueden servir a millones de usuarios, realizando miles de peticiones simultaneas.[1]
+    \item \textbf{QoS-aware: }Haciendo uso de una subcomponente denominada ``Predictor'', el middleware puede estimar comportamiento de la calidad de servicio frente al tiempo[10], haciendo que otras subcomponentes puedan tomar decisiones. 
+    \item \textbf{Escalabilidad: }La arquitectura especificada permite que se puedan lanzar muchos servicios sin repercutir demasiado en el rendimiento. Además, haciendo uso del ``Predictor'' y un analizador de escalabilidad (Scalability Analyser), se puede estimar la evolución del QoS, algo directamente relacionado con la escalabilidad. [10]
+    \item \textbf{Tolerante a fallos: }Debido a la naturaleza distrbuida de los servicios, estos pueden estar replicados y poder continuar el funcionamiento del sistema sin problema. Además, el middleware posee un mecanismo de tolerancia a fallos [20], que se encarga de mantener el servicio siempre activo.
+    \item \textbf{Simplicidad en la modelacion de coreografias: }Gracias al uso del IDRE, se puede modelar coreografias de servicios de manera sencilla, permitiendo especificar los requisitos y modelar las coreografias. La coreogradia es creada automaticamente, asegurando los criterios de calidad y escalabilidad[30].
+\end{itemize}
 \section{Mecanismos}
 %paso de mensajes, quizas poner la foto de uno de ellos en la que aparecen los servicios interconectados. Quedarse a medias de la tercera, potencialmente.
+El principal mecanismo para la coordinacion de los servicios es mediante el uso de paso de mensajes en los CDs. Los CDs se encargan de enviar informacion para asegurarse en todo momento de que se esten realizando las coreografias correctamente. 
+
+Los mensajes propios de los servicios para realizar la tarea deseada en un sistema web, se intercambian siguiendo el protocolo peticion/respuesta (Request/Response RR). Además, estos mensajes deben ser enviados por los propios CDs [2], luego pasar por el adaptador del servicio, para traducirlo y que sea entendible por el mismo, y luego realizar la operación deseada.
+
+Además, en caso de caída de un servicio, el middleware debe ser capaz de reasignar a las coreografias que usen dicho servicio a otra replica, siendo transparente para los clientes.
 \section{Protocolos y servicios}
-%quizas tenga un servicio esto, si no explicar como funciona para la cooridnacion y eso. Quedarse en el final de la pagina 3
+%quizas tenga un servicio esto, si no explicar como funciona para la cooridnacion y eso. Quedarse en el final de la pagina 3. Aqui se habla del ee de choreos.
 \section{Propiedades}
 %Repetir por tercera vez todo
 \section{Ejemplos de funcionamiento}

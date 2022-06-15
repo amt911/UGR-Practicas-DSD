@@ -1,6 +1,6 @@
 # Fdb version 3
-["pdflatex"] 1655283820 "/home/andres/Universidad/DSD/Practicas/GitHub/Practicas-DSD/Trabajos56/samplepaper.tex" "samplepaper.pdf" "samplepaper" 1655283820
-  "/home/andres/Universidad/DSD/Practicas/GitHub/Practicas-DSD/Trabajos56/samplepaper.tex" 1655283819 10385 e240730c64fc2456e45cf18d3ddc5c8f ""
+["pdflatex"] 1655291643 "/home/andres/Universidad/DSD/Practicas/GitHub/Practicas-DSD/Trabajos56/samplepaper.tex" "samplepaper.pdf" "samplepaper" 1655291643
+  "/home/andres/Universidad/DSD/Practicas/GitHub/Practicas-DSD/Trabajos56/samplepaper.tex" 1655291643 12724 77ef17ce65c9fdd7e16c451d1fa7e85d ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1650183167 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1650183167 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1650183167 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -51,8 +51,8 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1651305049 2927661 9011b55c4df22eb4f5900529ac750c20 ""
   "fig1.eps" 1507105274 357553 784a1d3035e9550a463f314c33bb157f ""
   "llncs.cls" 1642666464 43512 637b96de164501a449212e7b2cf4d19d ""
-  "samplepaper.aux" 1655283820 2586 08c9b20a52ee7fbf4fe7be97a79a6728 "pdflatex"
-  "samplepaper.tex" 1655283819 10385 e240730c64fc2456e45cf18d3ddc5c8f ""
+  "samplepaper.aux" 1655291643 2586 9884ab3d2d037557042b20ebb2c55e14 "pdflatex"
+  "samplepaper.tex" 1655291643 12724 77ef17ce65c9fdd7e16c451d1fa7e85d ""
   (generated)
   "samplepaper.aux"
   "samplepaper.log"
