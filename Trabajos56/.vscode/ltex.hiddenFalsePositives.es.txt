@@ -1,0 +1,7 @@
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QAl haber crecido tanto internet, se ha convertido en una red heterogénea, móvil y adaptable donde tiene más sentido reutilizar servicios existentes de manera distribuida y descentralizada para los programas, en vez de realizar programas monolíticos \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QEsta solución resolvería la centralización y los problemas anteriormente mencionados, con la desventaja de ser más difíciles de gestionar por su naturaleza distribuida \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QEs por eso que aparece CHOReOS, un middleware para componer coreografías de servicios a gran escala orientado principalmente al Internet del Futuro (FI) \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QEsto es algo también muy importante, ya que tienen pensado su uso para el Internet Futuro (FI) de ultra gran escala (ULS) \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"AGREEMENT_DET_NOUN","sentence":"^\\QEsto permitirá hacer un DSB muy escalable, que permitirá coreografías de servicios muy heterogéneos, muy indicado para el FI (Future Internet) \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
+{"rule":"MORFOLOGIK_RULE_ES","sentence":"^\\QEsto permitirá hacer un DSB muy escalable, que permitirá coreografías de servicios muy heterogéneos, muy indicado para el FI (Future Internet) \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
