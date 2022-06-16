@@ -120,22 +120,34 @@ Las principales propiedades de Choreos, como ya se ha dicho en secciones anterio
     \item \textbf{Escalable: }La naturaleza distribuida de los servicios, hace que se puedan tener mas nodos en momentos dados para hacer frente a la demanda de un servicio concreto. Además, el middleware tiene un mecanismo de escalabilidad que permite estimar el rendimiento de un servicio en función del tiempo de respuesta de los mismos.
     \item \textbf{Tolerante a fallos: }Al igual que antes, debido a la naturalzea distribuida, se pueden tener replicas de servicios, los cuales pueden ser cambiados por el EE en caso de fallo.
     \item \textbf{Fiable y sencillo: }Ofrece un IDRE que permite crear coreografias de una manera mas sencilla que si no se utilizase el middleware. Además se comprueba que tenga unos criterios de calidad minimos antes de poder ser desplegado.
+    \item \textbf{Interoperabilidad: }Al hacer uso de adaptadores, los distintos servicios heterogeneos pueden comunicarse sin problema, al traducir sus mensajes a un lenguaje comun y luego ser vueltos a traducir en el otro extremo.[30]
 \end{itemize}
 \section{Ejemplos de funcionamiento}
 %Las demos que la organizacion ha realizado
+La organizacion ha realizado tres ejemplos de uso de Choreos. ``Passenger-Friendly Airport'', ``Adaptive Customer Relationship Booster'' y ``DynaRoute''.[30] Yo me centraré solo en el primer ejemplo.
+
+\textit{Passenger-Friendly Airport} se concentra en los servicios suministrados a los pasajeros. Describe el uso de la informacion que aparece en un aeropuerto para adaptar los servicios ofrecidos a los biajeros, ofreciendo una mejor calidad. Chroeos se usa para obtener acceso a los sensores, tanto del aeropuerto como en los dispositivos de los pasajeros. Por ejemplo, se usan microfonos para ajusta automaticamente el volumen de las megafonias, dependiendo de que nivel de sonido haya (si hay mucha gente, se sube el nivel de la megafonia automaticamente).[128]
+
+Además, en los dispostivios de los pasajeros se instala un serivico de localizacion, para darles indicaciones de donde deben ir, haciendo que la navegacion por el aeropuerto sea más sencilla.[128]
+
 \section{Análisis crítico}
 %ni idea la verdad
-Este middleware presenta una capa de abstraccion muy interesante. El realizar servicios distribuidos a patir de otros servicios, tambien distribuidos. Ademas, incluye un entorno en el que definir las interacciones con otros servicios necesarias, haciendo que sea mucho mas simple y general para definir.
+Este middleware presenta una capa de abstraccion muy interesante. El poder realizar servicios distribuidos a patir de otros servicios, tambien distribuidos. Ademas, incluye un entorno en el que definir las interacciones con otros servicios necesarias, haciendo que sea mucho mas simple y general para definir.
 
-Otro aspecto muy interesante es el hecho de tener una tolerancia a fallos en el propio middleware, algo muy importante cuando se trabaja en entornos distribuidos. También es agnostico de la arquitectura subyacente de los servicios, proveiendo una interfaz general para que puedan interactuar entre ellos.
+Otro aspecto muy interesante es el hecho de tener una tolerancia a fallos en el propio middleware, algo muy importante cuando se trabaja en entornos distribuidos. También es agnostico de la arquitectura y protocolos subyacente de los servicios, proveiendo una interfaz general para que puedan interactuar entre ellos.
 
-La eficacia de este middleware esta ya probada y documentada, haciendo que sea una muy buena opcion para desarrollar una aplicacion de servicios.
+Además, parece ser que va a ser el dominante, ya que han aparecido más estándares, incluso antes que Choreos, pero que nunca han llegado a implementarse del todo, haciendo que este middleware sea el único en su campo.
+
+La eficacia de este middleware esta ya probada y documentada, haciendo que sea una muy buena opcion para desarrollar una aplicacion de servicios escalable y tolerante a fallos.
 
 \section{Conclusiones}
 %supongo que una breve opinion personas, que esto no sea lo mas gordo
-Como conclusión, se puede decir que este middleware tiene mucho potencial para ser el dominante en su ambito. Han aparecido otros estandares antes que este middleware, pero nunca han llegado a estar implementados del todo, haciendo que Choreos sea el único que en la actualidad permite resolver este tipo de problemas.
+Como conclusión, se puede decir que este middleware tiene mucho potencial para ser el dominante en su ambito. Además, se puede ver que han tenido en cuenta cuestiones de heterogeneidad, deteccion de errores, escalabilidad, etc. Esto hace que tenga un rendimiento excelente, como aparece en algunos artículos.
 
-Además, se puede ver que han tenido en cuenta cuestiones de heterogeneidad, deteccion de errores, escalabilidad, etc. Esto hace que tenga un rendimiento excelente, como aparece en algunos artículos.
+Además, no solo proveen el propio middleware, también proveen un entorno de desarrollo (IDRE), haciendo que sea mucho mas facil el modelado y la verificacion de los servicios.
+
+Por último, como la tendencia es hacer uso cada vez más de los servicios, puede que sea una excelente herramienta para desarrollar aplicaciones basadas en servicios, o incluso desarrollar más servicios a partir de existentes.
+
 \section{First Section}
 \subsection{A Subsection Sample}
 Please note that the first paragraph of a section or subsection is
