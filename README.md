@@ -1,6 +1,6 @@
 # Practicas-DSD
 
-##Como compilar:
+## Como compilar:
 
 
 Primero se realiza 
@@ -20,7 +20,7 @@ LDLIBS += -lnsl -ltirpc
 
 Luego al compilarlo.
 
-##Como se ejecuta
+## Como se ejecuta
 $ rpcbind
 $ rpcinfo
 
